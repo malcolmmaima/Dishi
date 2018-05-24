@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">Dishi</string>
+
+    <string name="title_activity_welcome">Home Screen</string>
+    <string name="next">NEXT</string>
+    <string name="skip">SKIP</string>
+    <string name="start">GOT IT</string>
+    <string name="slide_1_title">Dishi Slide 1</string>
+    <string name="slide_1_desc">Bleh bleeeh bleh bleh bleeeh blaah blehh</string>
+    <string name="slide_2_title">Dish Slide 2</string>
+    <string name="slide_2_desc">bum bam bem grrrr bleh bleh bleh bla blah yo yo</string>
+    <string name="slide_3_title">Dish Slide 3</string>
+    <string name="slide_3_desc">uuhhmmm bruh bluh blaaa blaaaaaa bleh</string>
+    <string name="play_again_desc">Clear app data to see welcome slider again</string>
+    <string name="play_again">Play Again</string>
 </resources>
