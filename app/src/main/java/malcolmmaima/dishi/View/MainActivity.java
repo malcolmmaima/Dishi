@@ -1,9 +1,9 @@
 package malcolmmaima.dishi.View;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -44,12 +44,12 @@ public class MainActivity extends AppCompatActivity {
     Boolean mVerified = false;
     private PhoneAuthProvider.ForceResendingToken mResendToken;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //getSupportActionBar().setTitle("Dishi");
+
         phoneed = (EditText) findViewById(R.id.numbered);
         codeed = (EditText) findViewById(R.id.verificationed);
         fabbutton = (FloatingActionButton) findViewById(R.id.sendverifybt);
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
         if(mAuth.getInstance().getCurrentUser() != null){
             //User is still signed in
-            startActivity(new Intent(MainActivity.this, SuccessActivity.class)
+            startActivity(new Intent(MainActivity.this, SetupProfile.class)
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));//Load Main Activity and clear activity stack
         }
         else {
@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
                         signInWithPhoneAuthCredential(credential);
                     }
                     if (mVerified) {
-                        startActivity(new Intent(MainActivity.this, SuccessActivity.class)
+                        startActivity(new Intent(MainActivity.this, SetupProfile.class)
                                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));//Load Main Activity and clear activity stack
                     }
 
@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
 
                             snackbar.show();
                             // ...
-                            startActivity(new Intent(MainActivity.this,SuccessActivity.class)
+                            startActivity(new Intent(MainActivity.this,SetupProfile.class)
                                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
 
                         } else {

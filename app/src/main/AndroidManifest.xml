@@ -19,7 +19,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".View.SuccessActivity"></activity>
+        <activity android:name=".View.SetupProfile"></activity>
     </application>
 
 </manifest>
