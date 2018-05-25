@@ -57,6 +57,15 @@ public class MainActivity extends AppCompatActivity {
         verifiedimg = (ImageView) findViewById(R.id.verifiedsign);
         mAuth = FirebaseAuth.getInstance();
 
+        if(mAuth.getInstance().getCurrentUser() != null){
+            //User is still signed in
+            startActivity(new Intent(MainActivity.this, SuccessActivity.class)
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));//Load Main Activity and clear activity stack
+        }
+        else {
+            //Remain in same activity
+        }
+
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
             @Override
@@ -133,7 +142,8 @@ public class MainActivity extends AppCompatActivity {
                         signInWithPhoneAuthCredential(credential);
                     }
                     if (mVerified) {
-                        startActivity(new Intent(MainActivity.this, SuccessActivity.class));
+                        startActivity(new Intent(MainActivity.this, SuccessActivity.class)
+                                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));//Load Main Activity and clear activity stack
                     }
 
                 }
@@ -183,7 +193,9 @@ public class MainActivity extends AppCompatActivity {
 
                             snackbar.show();
                             // ...
-                            startActivity(new Intent(MainActivity.this,SuccessActivity.class));
+                            startActivity(new Intent(MainActivity.this,SuccessActivity.class)
+                                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+
                         } else {
                             // Sign in failed, display a message and update the UI
                             Log.w("TAG", "signInWithCredential:failure", task.getException());
