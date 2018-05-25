@@ -13,4 +13,7 @@
     <string name="slide_3_desc">uuhhmmm bruh bluh blaaa blaaaaaa bleh</string>
     <string name="play_again_desc">Clear app data to see welcome slider again</string>
     <string name="play_again">Play Again</string>
+    <string name="fui_progress_dialog_signing_up">Creating your shiny new account...</string>
+    <string name="tag_send">send</string>
+    <string name="tag_verify">verify</string>
 </resources>

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#EE712B</color>
+    <color name="colorPrimaryDark">#DC4712</color>
+    <color name="colorAccent">#FFCD00</color>
+    <color name="offwhile">#F1E9E3</color>
     <!-- Screens background color-->
     <color name="bg_slider_screen1">#f4b241</color>
     <color name="bg_slider_screen2">#16bc7d</color>
