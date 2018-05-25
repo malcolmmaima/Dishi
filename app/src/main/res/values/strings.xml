@@ -16,4 +16,13 @@
     <string name="fui_progress_dialog_signing_up">Creating your shiny new account...</string>
     <string name="tag_send">send</string>
     <string name="tag_verify">verify</string>
+
+    <string name="verify">Verifying your number!</string>
+    <string name="sent">We have sent an OTP on your number</string>
+    <string name="resend">Resend Code?</string>
+    <string name="need">We need to text you a verification code</string>
+    <string name="auth">to authenticate your account</string>
+    <string name="phone">Your mobile number</string>
+    <string name="number">+91-4445556987</string>
+    <string name="ok">OK</string>
 </resources>

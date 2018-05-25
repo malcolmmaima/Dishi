@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -79,13 +80,13 @@ public class MainActivity extends AppCompatActivity {
 
                 if (e instanceof FirebaseAuthInvalidCredentialsException) {
                     Snackbar snackbar = Snackbar
-                            .make((CoordinatorLayout) findViewById(R.id.parentlayout), "Verification Failed !! Invalied verification Code", Snackbar.LENGTH_LONG);
+                            .make((LinearLayout) findViewById(R.id.parentlayout), "Verification Failed !! Invalid verification Code", Snackbar.LENGTH_LONG);
 
                     snackbar.show();
                 }
                 else if (e instanceof FirebaseTooManyRequestsException) {
                     Snackbar snackbar = Snackbar
-                            .make((CoordinatorLayout) findViewById(R.id.parentlayout), "Verification Failed !! Too many request. Try after some time. ", Snackbar.LENGTH_LONG);
+                            .make((LinearLayout) findViewById(R.id.parentlayout), "Verification Failed !! Too many request. Try after some time. ", Snackbar.LENGTH_LONG);
 
                     snackbar.show();
                 }
@@ -125,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
                 if (fabbutton.getTag().equals(getResources().getString(R.string.tag_verify))) {
                     if (!codeed.getText().toString().trim().isEmpty() && !mVerified) {
                         Snackbar snackbar = Snackbar
-                                .make((CoordinatorLayout) findViewById(R.id.parentlayout), "Please wait...", Snackbar.LENGTH_LONG);
+                                .make((LinearLayout) findViewById(R.id.parentlayout), "Please wait...", Snackbar.LENGTH_LONG);
 
                         snackbar.show();
                         PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, codeed.getText().toString().trim());
@@ -152,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
                     fabbutton.setImageResource(R.drawable.ic_arrow_forward_white_24dp);
                     fabbutton.setTag(getResources().getString(R.string.tag_verify));
                     Snackbar snackbar = Snackbar
-                            .make((CoordinatorLayout) findViewById(R.id.parentlayout), "Resending verification code...", Snackbar.LENGTH_LONG);
+                            .make((LinearLayout) findViewById(R.id.parentlayout), "Resending verification code...", Snackbar.LENGTH_LONG);
 
                     snackbar.show();
                 }
@@ -178,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
                             phoneed.setEnabled(false);
                             codeed.setVisibility(View.INVISIBLE);
                             Snackbar snackbar = Snackbar
-                                    .make((CoordinatorLayout) findViewById(R.id.parentlayout), "Successfully Verified", Snackbar.LENGTH_LONG);
+                                    .make((LinearLayout) findViewById(R.id.parentlayout), "Successfully Verified", Snackbar.LENGTH_LONG);
 
                             snackbar.show();
                             // ...
@@ -189,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
                             if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
                                 // The verification code entered was invalid
                                 Snackbar snackbar = Snackbar
-                                        .make((CoordinatorLayout) findViewById(R.id.parentlayout), "Invalid OTP ! Please enter correct OTP", Snackbar.LENGTH_LONG);
+                                        .make((LinearLayout) findViewById(R.id.parentlayout), "Invalid OTP ! Please enter correct OTP", Snackbar.LENGTH_LONG);
 
                                 snackbar.show();
                             }
