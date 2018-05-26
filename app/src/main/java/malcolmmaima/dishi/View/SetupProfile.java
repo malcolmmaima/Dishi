@@ -20,6 +20,8 @@ import android.widget.Toast;
 import android.widget.Toolbar;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.rey.material.widget.Switch;
 
 import malcolmmaima.dishi.R;
@@ -126,6 +128,18 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
                     Boolean switchState = notifications.isChecked();
 
                     Toast.makeText(SetupProfile.this, "Name: " + name + " email: " + email + " Gender: " + gender + " Account Type:" + account_type + " Notification: " + switchState, Toast.LENGTH_LONG).show();
+
+                    // Write user data to the database
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference myRef = database.getReference("User");
+
+                    myRef.child("Name ").setValue(name);
+                    //myRef.child("Cover_pic ").setValue(cover_pic);
+                    myRef.child("Email ").setValue(email);
+                    myRef.child("Gender ").setValue(gender);
+                    myRef.child("Account type ").setValue(account_type);
+                    myRef.child("Notifications").setValue(switchState);
+
 
                 }
 
