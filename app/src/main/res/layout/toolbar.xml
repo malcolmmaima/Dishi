@@ -8,6 +8,7 @@
 
 
     <ImageView
+        android:id="@+id/backBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/leftarrowarrows"
@@ -24,6 +25,7 @@
 
 
     <TextView
+        android:id="@+id/saveProfile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="SAVE"

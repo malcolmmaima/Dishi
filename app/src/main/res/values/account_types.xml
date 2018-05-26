@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_prompt">Choose account type</string>
+
+    <string-array name="accounts">
+        <item> </item>
+        <item>Customer</item>
+        <item>Provider</item>
+        <item>Nduthi</item>
+        <item>Other</item>
+    </string-array>
+</resources>
