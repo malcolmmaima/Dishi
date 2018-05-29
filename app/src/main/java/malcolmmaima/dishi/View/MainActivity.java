@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     Timer timer;
     ImageView verifiedimg;
     Boolean mVerified = false;
+    String phonenumber;
     private PhoneAuthProvider.ForceResendingToken mResendToken;
 
     @Override
@@ -126,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
                         codeed.setVisibility(View.VISIBLE);
                         fabbutton.setImageResource(R.drawable.ic_arrow_forward_white_24dp);
                         fabbutton.setTag(getResources().getString(R.string.tag_verify));
+                        phonenumber = phoneed.getText().toString();
                     }
                     else {
                         phoneed.setError("Please enter valid mobile number");
@@ -142,8 +145,10 @@ public class MainActivity extends AppCompatActivity {
                         signInWithPhoneAuthCredential(credential);
                     }
                     if (mVerified) {
-                        startActivity(new Intent(MainActivity.this, SetupProfile.class)
-                                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));//Load Main Activity and clear activity stack
+                        Intent username_num = new Intent(MainActivity.this, SetupProfile.class);
+                        username_num.putExtra("strings", phonenumber);
+                        username_num.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);//Load Main Activity and clear activity stack
+                        startActivity(username_num);
                     }
 
                 }
@@ -193,8 +198,11 @@ public class MainActivity extends AppCompatActivity {
 
                             snackbar.show();
                             // ...
-                            startActivity(new Intent(MainActivity.this,SetupProfile.class)
-                                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                            Intent username_num = new Intent(MainActivity.this, SetupProfile.class);
+                            username_num.putExtra("strings", phonenumber);
+                            username_num.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);//Load Main Activity and clear activity stack
+                            startActivity(username_num);
+
 
                         } else {
                             // Sign in failed, display a message and update the UI

@@ -20,9 +20,15 @@ import android.widget.Toast;
 import android.widget.Toolbar;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.rey.material.widget.Switch;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.customfonts.EditText_Roboto_Regular;
@@ -41,6 +47,7 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
     RadioGroup gender;
     Spinner accType;
     Switch notifications;
+    String myPhone;
 
     int account_type;
 
@@ -51,6 +58,16 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
 
         Typeface face1 = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Medium.ttf");
         Typeface face2 = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Regular.ttf");
+
+        //Get user phone number from MainActivity
+        Intent intent = getIntent();
+        if(intent !=null){
+            myPhone = intent.getStringExtra("strings");
+        }
+        else {
+            Toast.makeText(this, "Phone Number is Null", Toast.LENGTH_LONG).show();
+        }
+
 
         //name = (TextView) findViewById(R.id.name);
         //status = (TextView)findViewById(R.id.status);
@@ -127,19 +144,22 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
 
                     Boolean switchState = notifications.isChecked();
 
-                    Toast.makeText(SetupProfile.this, "Name: " + name + " email: " + email + " Gender: " + gender + " Account Type:" + account_type + " Notification: " + switchState, Toast.LENGTH_LONG).show();
 
-                    // Write user data to the database
+                    //Toast.makeText(SetupProfile.this, "Phone: " + myPhone + " Name: " + name + " email: " + email + " Gender: " + gender + " Account Type:" + account_type + " Notification: " + switchState, Toast.LENGTH_LONG).show();
+
+                        // Write user data to the database
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    DatabaseReference myRef = database.getReference("User");
-
+                    DatabaseReference myRef = database.getReference(myPhone);
                     myRef.child("Name ").setValue(name);
-                    //myRef.child("Cover_pic ").setValue(cover_pic);
                     myRef.child("Email ").setValue(email);
                     myRef.child("Gender ").setValue(gender);
                     myRef.child("Account type ").setValue(account_type);
                     myRef.child("Notifications").setValue(switchState);
 
+                    Intent myaccount = new Intent(SetupProfile.this, MyAccount.class);
+                    myaccount.putExtra("username", name);
+                    myaccount.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);//Load Main Activity and clear activity stack
+                    startActivity(myaccount);
 
                 }
 
@@ -147,8 +167,31 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(myPhone == ""){
+            Toast.makeText(this, "Phone is empty!", Toast.LENGTH_SHORT).show();
+        }
+    }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Toast.makeText(this, "onRestart", Toast.LENGTH_SHORT).show();
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Toast.makeText(this, "onPause", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Toast.makeText(this, "onDestroy", Toast.LENGTH_SHORT).show();
+    }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -201,4 +244,6 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
 
         return valid;
     }
+
+
 }
