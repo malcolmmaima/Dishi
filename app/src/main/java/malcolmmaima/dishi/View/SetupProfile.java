@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -19,7 +21,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,6 +34,7 @@ import com.rey.material.widget.Switch;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Map;
 
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.customfonts.EditText_Roboto_Regular;
@@ -49,6 +55,8 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
     Switch notifications;
     String myPhone;
 
+    private FirebaseAuth mAuth;
+
     int account_type;
 
     @Override
@@ -56,24 +64,41 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile_setup);
 
-        Typeface face1 = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Medium.ttf");
-        Typeface face2 = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Regular.ttf");
+        mAuth = FirebaseAuth.getInstance();
 
-        //Get user phone number from MainActivity
-        Intent intent = getIntent();
-        if(intent !=null){
-            myPhone = intent.getStringExtra("strings");
-        }
-        else {
-            Toast.makeText(this, "Phone Number is Null", Toast.LENGTH_LONG).show();
+        if(mAuth.getInstance().getCurrentUser() == null){
+            //User is not signed in, send them back to verification page
+            Toast.makeText(this, "Not logged in!", Toast.LENGTH_LONG).show();
+            startActivity(new Intent(SetupProfile.this, MainActivity.class)
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));//Load Main Activity and clear activity stack
         }
 
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        myPhone = user.getPhoneNumber(); //Current logged in user phone number
 
-        //name = (TextView) findViewById(R.id.name);
-        //status = (TextView)findViewById(R.id.status);
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        DatabaseReference dbRef = db.getReference(myPhone);
 
-        //name.setTypeface(face1);
-        //status.setTypeface(face2);
+        //Check whether user is verified, if true send them directly to MyAccount
+        dbRef.child("Verified").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Boolean verified = dataSnapshot.getValue(Boolean.class);
+
+                //Toast.makeText(SetupProfile.this, "Verified: " + verified, Toast.LENGTH_LONG).show();
+                if(verified == true){
+                    startActivity(new Intent(SetupProfile.this,MyAccount.class)
+                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                } else {
+                    //Remain on SetupProfile to verify profile details
+                }
+
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
 
         //Our EditText Boxes
         userName = findViewById(R.id.userName);
@@ -84,9 +109,7 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
         //Our RadioButtons
         maleRd = findViewById(R.id.maleRd);
         femaleRd = findViewById(R.id.femaleRd);
-
         gender = findViewById(R.id.gender);
-
 
         //Our Account Type Spinner
         accType = findViewById(R.id.accType);
@@ -150,17 +173,31 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
                         // Write user data to the database
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                     DatabaseReference myRef = database.getReference(myPhone);
-                    myRef.child("Name ").setValue(name);
-                    myRef.child("Email ").setValue(email);
-                    myRef.child("Gender ").setValue(gender);
-                    myRef.child("Account type ").setValue(account_type);
+                    myRef.child("Name").setValue(name);
+                    myRef.child("Email").setValue(email);
+                    myRef.child("Gender").setValue(gender);
+                    myRef.child("Account type").setValue(account_type);
                     myRef.child("Notifications").setValue(switchState);
+                    myRef.child("Verified").setValue(true).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            // Write was successful!
 
-                    Intent myaccount = new Intent(SetupProfile.this, MyAccount.class);
-                    myaccount.putExtra("username", name);
-                    myaccount.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);//Load Main Activity and clear activity stack
-                    startActivity(myaccount);
+                            Intent myaccount = new Intent(SetupProfile.this, MyAccount.class);
+                            //myaccount.putExtra("username", name);
+                            myaccount.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);//Load Main Activity and clear activity stack
+                            startActivity(myaccount);
 
+                        }
+                    })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    // Write failed
+
+                                    Toast.makeText(SetupProfile.this, "Failed, Try again!", Toast.LENGTH_LONG).show();
+                                }
+                            });
                 }
 
             }
@@ -170,21 +207,19 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
     @Override
     protected void onResume() {
         super.onResume();
-        if(myPhone == ""){
-            Toast.makeText(this, "Phone is empty!", Toast.LENGTH_SHORT).show();
-        }
+        //Toast.makeText(this, "Verified: "+ verified, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
-        Toast.makeText(this, "onRestart", Toast.LENGTH_SHORT).show();
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Toast.makeText(this, "onPause", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "onPause", Toast.LENGTH_SHORT).show();
     }
 
     @Override

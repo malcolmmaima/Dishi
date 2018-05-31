@@ -25,6 +25,11 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -45,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     Boolean mVerified = false;
     String phonenumber;
     private PhoneAuthProvider.ForceResendingToken mResendToken;
+    String myPhone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,21 +58,42 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         //getSupportActionBar().setTitle("Dishi");
 
+        if(mAuth.getInstance().getCurrentUser() != null){
+
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            myPhone = user.getPhoneNumber(); //Current logged in user phone number
+
+            FirebaseDatabase db = FirebaseDatabase.getInstance();
+            DatabaseReference dbRef = db.getReference(myPhone);
+
+            //Check whether user is verified, if true send them directly to MyAccount
+            dbRef.child("Verified").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Boolean verified = dataSnapshot.getValue(Boolean.class);
+
+                    Toast.makeText(MainActivity.this, "Verified: " + verified, Toast.LENGTH_LONG).show();
+                    if(verified == true){
+                        startActivity(new Intent(MainActivity.this,MyAccount.class)
+                                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                    } else {
+                        //User is not verified so have them verify their profile details first
+                        startActivity(new Intent(MainActivity.this, SetupProfile.class)
+                                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));//Load Main Activity and clear activity stack
+                    }
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+        }
+
         phoneed = (EditText) findViewById(R.id.numbered);
         codeed = (EditText) findViewById(R.id.verificationed);
         fabbutton = (FloatingActionButton) findViewById(R.id.sendverifybt);
         timertext = (TextView) findViewById(R.id.timertv);
         verifiedimg = (ImageView) findViewById(R.id.verifiedsign);
         mAuth = FirebaseAuth.getInstance();
-
-        if(mAuth.getInstance().getCurrentUser() != null){
-            //User is still signed in
-            startActivity(new Intent(MainActivity.this, SetupProfile.class)
-                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));//Load Main Activity and clear activity stack
-        }
-        else {
-            //Remain in same activity
-        }
 
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
@@ -145,10 +172,32 @@ public class MainActivity extends AppCompatActivity {
                         signInWithPhoneAuthCredential(credential);
                     }
                     if (mVerified) {
-                        Intent username_num = new Intent(MainActivity.this, SetupProfile.class);
-                        username_num.putExtra("strings", phonenumber);
-                        username_num.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);//Load Main Activity and clear activity stack
-                        startActivity(username_num);
+
+                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        myPhone = user.getPhoneNumber(); //Current logged in user phone number
+
+                        FirebaseDatabase db = FirebaseDatabase.getInstance();
+                        DatabaseReference dbRef = db.getReference(myPhone);
+
+                        dbRef.child("Verified").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Boolean verified = dataSnapshot.getValue(Boolean.class);
+
+                                Toast.makeText(MainActivity.this, "Verified: " + verified, Toast.LENGTH_LONG).show();
+                                if(verified == true){
+                                    startActivity(new Intent(MainActivity.this,MyAccount.class)
+                                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                                } else {
+                                    //User is not verified so have them verify their profile details first
+                                    startActivity(new Intent(MainActivity.this, SetupProfile.class)
+                                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));//Load Main Activity and clear activity stack
+                                }
+                            }
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                            }
+                        });
                     }
 
                 }
@@ -175,6 +224,40 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(mAuth.getInstance().getCurrentUser() != null){
+
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            myPhone = user.getPhoneNumber(); //Current logged in user phone number
+
+            FirebaseDatabase db = FirebaseDatabase.getInstance();
+            DatabaseReference dbRef = db.getReference(myPhone);
+
+            //Check whether user is verified, if true send them directly to MyAccount
+            dbRef.child("Verified").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Boolean verified = dataSnapshot.getValue(Boolean.class);
+
+                    Toast.makeText(MainActivity.this, "Verified: " + verified, Toast.LENGTH_LONG).show();
+                    if(verified == true){
+                        startActivity(new Intent(MainActivity.this,MyAccount.class)
+                                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                    } else {
+                        //User is not verified so have them verify their profile details first
+                        startActivity(new Intent(MainActivity.this, SetupProfile.class)
+                                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));//Load Main Activity and clear activity stack
+                    }
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+        }
     }
 
     private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
