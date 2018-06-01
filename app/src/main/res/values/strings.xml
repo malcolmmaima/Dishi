@@ -27,18 +27,25 @@
     <string name="number">+91-4445556987</string>
     <string name="ok">OK</string>
 
-    <!-- Bottom navigation menu items -->
-    <string name="item_1">Item 1</string>
-    <string name="item_2">Item 2</string>
-    <string name="item_3">Item 3</string>
-    <string name="item_4">Item 4</string>
-    <string name="item_5">Item 5</string>
-    <string name="item_6">Item 6</string>
+    <!-- Restaurant Bottom Nav-->
+    <string name="item_1">Orders</string>
+    <string name="item_2">Profile</string>
+    <string name="item_3">Manage</string>
+
+    <!-- Customer Bottom Nav-->
+    <string name="item_4">Order</string>
+    <string name="item_5">Profile</string>
+    <string name="item_6">Restaurants</string>
 
     <!-- Toolbar-->
     <string name="action_settings">Settings</string>
     <string name="action_refresh">Refresh</string>
     <string name="action_logout">Logout</string>
     <string name="action_new">New Item</string>
+    <string name="about_app">About</string>
     <string name="logo_desc">App logo</string>
+
+    <!-- Add menu activity toolbar-->
+    <string name="action_multiple">Add Multiple</string>
+    <string name="action_save">Save</string>
 </resources>

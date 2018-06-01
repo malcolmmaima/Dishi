@@ -7,6 +7,14 @@
     android:orientation="vertical"
     tools:context=".View.AddMenu">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:maxHeight="@dimen/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/actionBarSize">
+    </android.support.v7.widget.Toolbar>
+
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
