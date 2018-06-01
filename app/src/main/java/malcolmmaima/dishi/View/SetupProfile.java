@@ -47,8 +47,7 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
     private ImageView image;
     private  TextView status;
 
-    EditText_Roboto_Regular userName, userEmail, changeNumber;
-    EditText userBio;
+    EditText_Roboto_Regular userName, userBio, userEmail, changeNumber;
     RadioButton maleRd, femaleRd;
     RadioGroup gender;
     Spinner accType;
@@ -157,6 +156,7 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
                 if(CheckFieldValidation()) {
                     String name = userName.getText().toString();
                     String email = userEmail.getText().toString();
+                    String userbio = userBio.getText().toString();
 
                     int userGender = gender.getCheckedRadioButtonId();
 
@@ -174,6 +174,7 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                     DatabaseReference myRef = database.getReference(myPhone);
                     myRef.child("Name").setValue(name);
+                    myRef.child("Bio").setValue(userbio);
                     myRef.child("Email").setValue(email);
                     myRef.child("Gender").setValue(gender);
                     myRef.child("Account type").setValue(account_type);
