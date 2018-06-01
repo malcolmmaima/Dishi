@@ -1,5 +1,6 @@
 package malcolmmaima.dishi.View;
 
+import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -96,9 +97,14 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
 
         if(mAuth.getInstance().getCurrentUser() == null || mAuth.getInstance().getCurrentUser().getPhoneNumber() == null){
             //User is not signed in, send them back to verification page
-            Toast.makeText(this, "Not logged in!", Toast.LENGTH_LONG).show();
-            startActivity(new Intent(SetupProfile.this, MainActivity.class)
-                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));//Load Main Activity and clear activity stack
+            //Toast.makeText(this, "Not logged in!", Toast.LENGTH_LONG).show();
+            //Slide to new activity
+            Intent slideactivity = new Intent(SetupProfile.this, MainActivity.class)
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            Bundle bndlanimation =
+                    ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+            startActivity(slideactivity, bndlanimation);
+
         }
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -125,8 +131,13 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
                 }
 
                 if(verified == true){
-                    startActivity(new Intent(SetupProfile.this,MyAccount.class)
-                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                    //Slide to new activity
+                    Intent slideactivity = new Intent(SetupProfile.this, MyAccount.class)
+                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    Bundle bndlanimation =
+                            ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                    startActivity(slideactivity, bndlanimation);
+
                 } else {
                     //Remain on SetupProfile to verify profile details
                 }
@@ -249,10 +260,12 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
                         public void onSuccess(Void aVoid) {
                             // Write was successful!
 
-                            Intent myaccount = new Intent(SetupProfile.this, MyAccount.class);
-                            //myaccount.putExtra("username", name);
-                            myaccount.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);//Load Main Activity and clear activity stack
-                            startActivity(myaccount);
+                            //Slide to new activity
+                            Intent slideactivity = new Intent(SetupProfile.this, MyAccount.class)
+                                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            Bundle bndlanimation =
+                                    ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                            startActivity(slideactivity, bndlanimation);
 
                             // Hiding the progressDialog after done uploading.
                             progressDialog.dismiss();

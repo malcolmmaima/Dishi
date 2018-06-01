@@ -1,5 +1,6 @@
 package malcolmmaima.dishi.View;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -140,10 +141,20 @@ public class MyAccount extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if(id == R.id.action_new){
-            Toast.makeText(MyAccount.this, "Add Menu", Toast.LENGTH_LONG).show();
+            //Toast.makeText(MyAccount.this, "Add Menu", Toast.LENGTH_LONG).show();
+
+            Intent slideactivity = new Intent(MyAccount.this, AddMenu.class);
+            Bundle bndlanimation =
+                    ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+            startActivity(slideactivity, bndlanimation);
+
         }
         if (id == R.id.action_settings) {
-            Toast.makeText(MyAccount.this, "Settings", Toast.LENGTH_LONG).show();
+            //Toast.makeText(MyAccount.this, "Settings", Toast.LENGTH_LONG).show();
+            Intent slideactivity = new Intent(MyAccount.this, SettingsActivity.class);
+            Bundle bndlanimation =
+                    ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+            startActivity(slideactivity, bndlanimation);
         }
         if(id == R.id.action_refresh){
             Toast.makeText(MyAccount.this, "Refresh App", Toast.LENGTH_LONG).show();

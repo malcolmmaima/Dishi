@@ -1,5 +1,7 @@
 package malcolmmaima.dishi.View;
 
+import android.app.ActivityOptions;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -52,11 +54,16 @@ public class MainActivity extends AppCompatActivity {
     private PhoneAuthProvider.ForceResendingToken mResendToken;
     String myPhone;
 
+    ProgressDialog progressDialog ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //getSupportActionBar().setTitle("Dishi");
+
+        // Assigning Id to ProgressDialog.
+        progressDialog = new ProgressDialog(MainActivity.this);
 
         if(mAuth.getInstance().getCurrentUser() != null){
 
@@ -138,6 +145,10 @@ public class MainActivity extends AppCompatActivity {
                 // now need to ask the user to enter the code and then construct a credential
                 // by combining the code with a verification ID.
                 Log.d("TAG", "onCodeSent:" + verificationId);
+                Snackbar snackbar = Snackbar
+                        .make((LinearLayout) findViewById(R.id.parentlayout), "Code Sent", Snackbar.LENGTH_LONG);
+
+                snackbar.show();
 
                 // Save verification ID and resending token so we can use them later
                 mVerificationId = verificationId;
@@ -149,6 +160,11 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (fabbutton.getTag().equals(getResources().getString(R.string.tag_send))) {
                     if (!phoneed.getText().toString().trim().isEmpty() && phoneed.getText().toString().trim().length() >= 10) {
+                        // Setting progressDialog Title.
+                        progressDialog.setTitle("Verifying...");
+                        // Showing progressDialog.
+                        progressDialog.show();
+
                         startPhoneNumberVerification(phoneed.getText().toString().trim());
                         mVerified = false;
                         starttimer();
@@ -158,6 +174,7 @@ public class MainActivity extends AppCompatActivity {
                         phonenumber = phoneed.getText().toString();
                     }
                     else {
+                        progressDialog.dismiss();
                         phoneed.setError("Please enter valid mobile number");
                     }
                 }
@@ -186,12 +203,20 @@ public class MainActivity extends AppCompatActivity {
 
                                 Toast.makeText(MainActivity.this, "Verified: " + verified, Toast.LENGTH_LONG).show();
                                 if(verified == true){
-                                    startActivity(new Intent(MainActivity.this,MyAccount.class)
-                                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                                    //Slide to new activity
+                                    Intent slideactivity = new Intent(MainActivity.this, MyAccount.class)
+                                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    Bundle bndlanimation =
+                                            ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                                    startActivity(slideactivity, bndlanimation);
+
                                 } else {
                                     //User is not verified so have them verify their profile details first
-                                    startActivity(new Intent(MainActivity.this, SetupProfile.class)
-                                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));//Load Main Activity and clear activity stack
+                                    Intent slideactivity = new Intent(MainActivity.this, SetupProfile.class)
+                                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    Bundle bndlanimation =
+                                            ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                                    startActivity(slideactivity, bndlanimation);
                                 }
                             }
                             @Override
@@ -245,12 +270,17 @@ public class MainActivity extends AppCompatActivity {
 
                     Toast.makeText(MainActivity.this, "Verified: " + verified, Toast.LENGTH_LONG).show();
                     if(verified == true){
-                        startActivity(new Intent(MainActivity.this,MyAccount.class)
-                                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                        Intent slideactivity = new Intent(MainActivity.this, MyAccount.class)
+                                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        Bundle bndlanimation =
+                                ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                        startActivity(slideactivity, bndlanimation);
                     } else {
-                        //User is not verified so have them verify their profile details first
-                        startActivity(new Intent(MainActivity.this, SetupProfile.class)
-                                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));//Load Main Activity and clear activity stack
+                        Intent slideactivity = new Intent(MainActivity.this, SetupProfile.class)
+                                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        Bundle bndlanimation =
+                                ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                        startActivity(slideactivity, bndlanimation);
                     }
                 }
                 @Override
@@ -280,12 +310,12 @@ public class MainActivity extends AppCompatActivity {
                                     .make((LinearLayout) findViewById(R.id.parentlayout), "Successfully Verified", Snackbar.LENGTH_LONG);
 
                             snackbar.show();
-                            // ...
-                            Intent username_num = new Intent(MainActivity.this, SetupProfile.class);
-                            username_num.putExtra("strings", phonenumber);
-                            username_num.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);//Load Main Activity and clear activity stack
-                            startActivity(username_num);
 
+                            Intent slideactivity = new Intent(MainActivity.this, SetupProfile.class)
+                                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            Bundle bndlanimation =
+                                    ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                            startActivity(slideactivity, bndlanimation);
 
                         } else {
                             // Sign in failed, display a message and update the UI
