@@ -145,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
                 // now need to ask the user to enter the code and then construct a credential
                 // by combining the code with a verification ID.
                 Log.d("TAG", "onCodeSent:" + verificationId);
+                progressDialog.dismiss();
                 Snackbar snackbar = Snackbar
                         .make((LinearLayout) findViewById(R.id.parentlayout), "Code Sent", Snackbar.LENGTH_LONG);
 
@@ -189,7 +190,6 @@ public class MainActivity extends AppCompatActivity {
                         signInWithPhoneAuthCredential(credential);
                     }
                     if (mVerified) {
-
                         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                         myPhone = user.getPhoneNumber(); //Current logged in user phone number
 
@@ -298,7 +298,6 @@ public class MainActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("TAG", "signInWithCredential:success");
-
                             FirebaseUser user = task.getResult().getUser();
                             mVerified = true;
                             timer.cancel();
