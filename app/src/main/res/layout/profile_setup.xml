@@ -13,13 +13,13 @@
     <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#0000000">
+        android:background="#800020">
 
         <ImageView
             android:id="@+id/image"
             android:layout_width="match_parent"
-            android:layout_height="220dp"
-            android:scaleType="fitXY"
+            android:layout_height="255dp"
+            android:scaleType="centerCrop"
             android:src="@drawable/image_bg_fast_food"
             android:alpha="0.8" />
 
@@ -33,10 +33,10 @@
             >
 
             <com.alexzh.circleimageview.CircleImageView
-                android:id="@+id/banar1"
+                android:id="@+id/profilePic"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:src="@drawable/defaultProfile"
+                android:src="@drawable/default_profile"
                 android:layout_marginTop="30dp"
                 android:layout_marginLeft="5dp"
                 app:view_shadowRadius="2dp"

@@ -1,14 +1,20 @@
 package malcolmmaima.dishi.View;
 
+import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -30,12 +36,19 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.rey.material.widget.Switch;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
+import java.util.Set;
 
+import malcolmmaima.dishi.Model.ImageUploadInfo;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.customfonts.EditText_Roboto_Regular;
 
@@ -43,9 +56,7 @@ import malcolmmaima.dishi.customfonts.EditText_Roboto_Regular;
 public class SetupProfile extends AppCompatActivity implements com.rey.material.widget.Spinner.OnItemSelectedListener, AdapterView.OnItemSelectedListener {
 
     Button logoutbutton, continueBtn, backButton;
-    private TextView name;
-    private ImageView image;
-    private  TextView status;
+    private ImageView profile_pic;
 
     EditText_Roboto_Regular userName, userBio, userEmail, changeNumber;
     RadioButton maleRd, femaleRd;
@@ -53,15 +64,33 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
     Spinner accType;
     Switch notifications;
     String myPhone;
+    String ppicStatus;
 
     private FirebaseAuth mAuth;
-
     int account_type;
+
+    // Folder path for Firebase Storage.
+    String Storage_Path = "Users/";
+
+    // Creating URI.
+    Uri FilePathUri;
+
+    // Creating StorageReference and DatabaseReference object.
+    StorageReference storageReference;
+    DatabaseReference databaseReference;
+
+    // Image request code for onActivityResult() .
+    int Image_Request_Code = 7;
+
+    ProgressDialog progressDialog ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile_setup);
+
+        // Assigning Id to ProgressDialog.
+        progressDialog = new ProgressDialog(SetupProfile.this);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -74,6 +103,12 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         myPhone = user.getPhoneNumber(); //Current logged in user phone number
+
+        // Assign FirebaseStorage instance to storageReference.
+        storageReference = FirebaseStorage.getInstance().getReference();
+
+        // Assign FirebaseDatabase instance with root database name.
+        databaseReference = FirebaseDatabase.getInstance().getReference(myPhone);
 
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         DatabaseReference dbRef = db.getReference(myPhone);
@@ -104,6 +139,9 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
         userEmail = findViewById(R.id.emailAddress);
         userBio = findViewById(R.id.userBio);
         changeNumber = findViewById(R.id.phoneNumber);
+
+        //Profile pic
+        profile_pic = findViewById(R.id.profilePic);
 
         //Our RadioButtons
         maleRd = findViewById(R.id.maleRd);
@@ -149,9 +187,26 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
             }
         });
 
+        profile_pic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                // Creating intent.
+                Intent intent = new Intent();
+
+                // Setting intent type as image to select image from phone storage.
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Please Select Image"), Image_Request_Code);
+
+            }
+        });
+
         continueBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                UploadImageFileToFirebaseStorage();
 
                 if(CheckFieldValidation()) {
                     String name = userName.getText().toString();
@@ -169,6 +224,12 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
 
 
                     //Toast.makeText(SetupProfile.this, "Phone: " + myPhone + " Name: " + name + " email: " + email + " Gender: " + gender + " Account Type:" + account_type + " Notification: " + switchState, Toast.LENGTH_LONG).show();
+
+                    // Setting progressDialog Title.
+                    progressDialog.setTitle("Saving...");
+
+                    // Showing progressDialog.
+                    progressDialog.show();
 
                         // Write user data to the database
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -189,6 +250,9 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
                             myaccount.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);//Load Main Activity and clear activity stack
                             startActivity(myaccount);
 
+                            // Hiding the progressDialog after done uploading.
+                            progressDialog.dismiss();
+
                         }
                     })
                             .addOnFailureListener(new OnFailureListener() {
@@ -204,6 +268,132 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
             }
         });
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == Image_Request_Code && resultCode == RESULT_OK && data != null && data.getData() != null) {
+
+            FilePathUri = data.getData();
+
+            try {
+
+                // Getting selected image into Bitmap.
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), FilePathUri);
+
+                // Setting up bitmap selected image into ImageView.
+                profile_pic.setImageBitmap(bitmap);
+
+                // After selecting image change choose button above text.
+                //ChooseButton.setText("Image Selected");
+
+            }
+            catch (IOException e) {
+
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // Creating Method to get the selected image file Extension from File Path URI.
+    public String GetFileExtension(Uri uri) {
+
+        ContentResolver contentResolver = getContentResolver();
+
+        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+
+        // Returning the file Extension.
+        return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri)) ;
+
+    }
+
+    // Creating UploadImageFileToFirebaseStorage method to upload image on storage.
+    public void UploadImageFileToFirebaseStorage() {
+
+        // Checking whether FilePathUri Is empty or not.
+        if (FilePathUri != null) {
+
+            ppicStatus = "set";
+            // Setting progressDialog Title.
+            //progressDialog.setTitle("Image is Uploading...");
+
+            // Showing progressDialog.
+            //progressDialog.show();
+
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            myPhone = user.getPhoneNumber(); //Current logged in user phone number
+
+            // Creating second StorageReference.
+            StorageReference storageReference2nd = storageReference.child(Storage_Path + "/" + myPhone + "/" + System.currentTimeMillis() + "." + GetFileExtension(FilePathUri));
+
+            // Adding addOnSuccessListener to second StorageReference.
+            storageReference2nd.putFile(FilePathUri)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                            // Getting image name from EditText and store into string variable.
+                            String TempImageName = userName.getText().toString().trim();
+
+                            // Hiding the progressDialog after done uploading.
+                            //progressDialog.dismiss();
+
+                            // Showing toast message after done uploading.
+                            //Toast.makeText(getApplicationContext(), "Image Uploaded Successfully ", Toast.LENGTH_LONG).show();
+
+                            @SuppressWarnings("VisibleForTests")
+                            ImageUploadInfo imageUploadInfo = new ImageUploadInfo(TempImageName, taskSnapshot.getUploadSessionUri().toString());
+
+                            // Getting image upload ID.
+                            String ImageUploadId = databaseReference.push().getKey();
+
+                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            myPhone = user.getPhoneNumber(); //Current logged in user phone number
+
+                            // Write image data to the database
+                            FirebaseDatabase database = FirebaseDatabase.getInstance();
+                            DatabaseReference myRef = database.getReference(myPhone);
+                            myRef.child("Profile").setValue(imageUploadInfo);
+
+                            // Adding image upload id s child element into databaseReference.
+                            //databaseReference.child(ImageUploadId).setValue(imageUploadInfo);
+                        }
+                    })
+                    // If something goes wrong .
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+
+                            // Hiding the progressDialog.
+                            progressDialog.dismiss();
+
+                            // Showing exception erro message.
+                            Toast.makeText(SetupProfile.this, exception.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    })
+
+                    // On progress change upload time.
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+
+                            // Setting progressDialog Title.
+                            //progressDialog.setTitle("Image is Uploading...");
+
+                        }
+                    });
+        }
+        else {
+
+            Toast.makeText(SetupProfile.this, "Please Select Profile Image", Toast.LENGTH_LONG).show();
+            ppicStatus = "empty";
+
+        }
+    }
+
+
 
     @Override
     protected void onResume() {
@@ -250,6 +440,11 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
         String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
         boolean valid=true;
+
+        if(ppicStatus.equals("empty")){
+            Toast.makeText(SetupProfile.this, "You must select image", Toast.LENGTH_SHORT).show();
+            valid=false;
+        }
 
         if(userName.getText().toString().equals("")){
             userName.setError("Can't be Empty");
