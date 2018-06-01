@@ -25,4 +25,12 @@
     <string name="phone">Your mobile number</string>
     <string name="number">+91-4445556987</string>
     <string name="ok">OK</string>
+
+    <!-- Bottom navigation menu items -->
+    <string name="item_1">Item 1</string>
+    <string name="item_2">Item 2</string>
+    <string name="item_3">Item 3</string>
+    <string name="item_4">Item 4</string>
+    <string name="item_5">Item 5</string>
+    <string name="item_6">Item 6</string>
 </resources>

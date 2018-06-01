@@ -1,21 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+android:id="@+id/activity_main"
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context=".View.MyAccount">
+
+<FrameLayout
+    android:id="@+id/frame_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:padding="16dp"
-    android:id="@+id/parentlayout">
+    android:layout_above="@+id/navigation"
+    android:animateLayoutChanges="true">
 
-    <Button
-        android:id="@+id/btnFetch"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Fetch" />
-    <TextView
-        android:id="@+id/tvValue"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/btnFetch"
-        android:gravity="center_horizontal"
-        android:textSize="16dp" />
+</FrameLayout>
+
+<android.support.design.widget.BottomNavigationView
+    android:id="@+id/navigation"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:background="@color/colorPrimary"
+    app:itemIconTint="@color/cardview_light_background"
+    app:itemTextColor="@color/common_google_signin_btn_text_light"
+    app:menu="@menu/bottom_navigation_items"/>
 </RelativeLayout>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="malcolmmaima.dishi">
+
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -22,7 +23,12 @@
             </intent-filter>
         </activity>
         <activity android:name=".View.SetupProfile" />
-        <activity android:name=".View.MyAccount"></activity>
+        <activity android:name=".View.MyAccount" />
+        <activity android:name=".View.Fragments.ItemTwoFragment" />
+        <activity android:name=".View.Fragments.ItemThreeFragment" />
+        <activity android:name=".View.Fragments.ItemFourFragment" />
+        <activity android:name=".View.Fragments.ItemFiveFragment" />
+        <activity android:name=".View.Fragments.ItemFragmentSix"></activity>
     </application>
 
 </manifest>
