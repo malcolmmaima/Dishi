@@ -8,6 +8,14 @@ android:layout_width="match_parent"
 android:layout_height="match_parent"
 tools:context=".View.MyAccount">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:maxHeight="@dimen/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/actionBarSize">
+    </android.support.v7.widget.Toolbar>
+
 <FrameLayout
     android:id="@+id/frame_layout"
     android:layout_width="match_parent"

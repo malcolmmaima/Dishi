@@ -17,6 +17,7 @@
     <string name="tag_send">send</string>
     <string name="tag_verify">verify</string>
 
+    <!-- Phone Verification-->
     <string name="verify">Verifying your number!</string>
     <string name="sent">We have sent an OTP on your number</string>
     <string name="resend">Resend Code?</string>
@@ -33,4 +34,11 @@
     <string name="item_4">Item 4</string>
     <string name="item_5">Item 5</string>
     <string name="item_6">Item 6</string>
+
+    <!-- Toolbar-->
+    <string name="action_settings">Settings</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="action_logout">Logout</string>
+    <string name="action_new">New Item</string>
+    <string name="logo_desc">App logo</string>
 </resources>

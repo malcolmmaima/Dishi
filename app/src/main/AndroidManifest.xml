@@ -28,7 +28,7 @@
         <activity android:name=".View.Fragments.ItemThreeFragment" />
         <activity android:name=".View.Fragments.ItemFourFragment" />
         <activity android:name=".View.Fragments.ItemFiveFragment" />
-        <activity android:name=".View.Fragments.ItemFragmentSix"></activity>
+        <activity android:name=".View.Fragments.ItemSixFragment"></activity>
     </application>
 
 </manifest>

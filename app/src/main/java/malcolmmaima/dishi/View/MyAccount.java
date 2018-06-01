@@ -6,6 +6,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +16,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import android.view.Menu;
+import android.view.MenuItem;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -37,13 +41,10 @@ import malcolmmaima.dishi.View.Fragments.ItemOneFragment;
 import malcolmmaima.dishi.View.Fragments.ItemThreeFragment;
 import malcolmmaima.dishi.View.Fragments.ItemTwoFragment;
 
+
 public class MyAccount extends AppCompatActivity {
 
-    String Verified;
-    EditText editText;
-    Button fetch;
-    DatabaseReference rootRef,demoRef;
-    TextView demoValue;
+    String acc_name = "Dishi 1.0";
     String myPhone;
 
     private FirebaseAuth mAuth;
@@ -74,17 +75,22 @@ public class MyAccount extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String account_name = dataSnapshot.getValue(String.class);
-                Toast.makeText(MyAccount.this, "Welcome " + account_name, Toast.LENGTH_LONG).show();
+                //Toast.makeText(MyAccount.this, "Welcome " + account_name, Toast.LENGTH_LONG).show();
+                setTitle(account_name);
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
         });
 
+        Toolbar topToolBar = findViewById(R.id.toolbar);
+        setSupportActionBar(topToolBar);
+        //topToolBar.setLogo(R.drawable.logo);
+        //topToolBar.setLogoDescription(getResources().getString(R.string.logo_desc));
+
 
         //Fragments Implementation
-        BottomNavigationView bottomNavigationView = (BottomNavigationView)
-                findViewById(R.id.navigation);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.navigation);
 
         bottomNavigationView.setOnNavigationItemSelectedListener
                 (new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -117,5 +123,40 @@ public class MyAccount extends AppCompatActivity {
         //Used to select an item programmatically
         //bottomNavigationView.getMenu().getItem(2).setChecked(true);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if(id == R.id.action_new){
+            Toast.makeText(MyAccount.this, "Add Menu", Toast.LENGTH_LONG).show();
+        }
+        if (id == R.id.action_settings) {
+            Toast.makeText(MyAccount.this, "Settings", Toast.LENGTH_LONG).show();
+        }
+        if(id == R.id.action_refresh){
+            Toast.makeText(MyAccount.this, "Refresh App", Toast.LENGTH_LONG).show();
+        }
+        if(id == R.id.action_logout){
+            //Toast.makeText(MyAccount.this, "Logout", Toast.LENGTH_LONG).show();
+            FirebaseAuth.getInstance().signOut();
+            startActivity(new Intent(MyAccount.this,MainActivity.class)
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 }
 
