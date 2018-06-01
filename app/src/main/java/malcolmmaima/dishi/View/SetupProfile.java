@@ -94,7 +94,7 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
 
         mAuth = FirebaseAuth.getInstance();
 
-        if(mAuth.getInstance().getCurrentUser() == null){
+        if(mAuth.getInstance().getCurrentUser() == null || mAuth.getInstance().getCurrentUser().getPhoneNumber() == null){
             //User is not signed in, send them back to verification page
             Toast.makeText(this, "Not logged in!", Toast.LENGTH_LONG).show();
             startActivity(new Intent(SetupProfile.this, MainActivity.class)
@@ -120,6 +120,10 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
                 Boolean verified = dataSnapshot.getValue(Boolean.class);
 
                 //Toast.makeText(SetupProfile.this, "Verified: " + verified, Toast.LENGTH_LONG).show();
+                if(verified == null){
+                    verified = false;
+                }
+
                 if(verified == true){
                     startActivity(new Intent(SetupProfile.this,MyAccount.class)
                             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
