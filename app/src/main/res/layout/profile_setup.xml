@@ -13,7 +13,7 @@
     <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#800020">
+        android:background="#000000">
 
         <ImageView
             android:id="@+id/image"
@@ -21,7 +21,7 @@
             android:layout_height="255dp"
             android:scaleType="centerCrop"
             android:src="@drawable/image_bg_fast_food"
-            android:alpha="0.8" />
+            android:alpha="0.3" />
 
         <!-- <include layout="@layout/toolbar"
             android:id="@+id/toolbar"/> -->
@@ -65,7 +65,7 @@
                         android:textSize="16dp"
                         android:textColor="#fff"
                         android:layout_marginTop="30dp"
-                        android:padding="15dp"
+                        android:padding="10dp"
                         />
 
                     <malcolmmaima.dishi.customfonts.EditText_Roboto_Regular
@@ -80,8 +80,7 @@
                         android:layout_marginTop="30dp"
                         android:textColorHint="#fff"
                         android:paddingTop="15dp"
-                        android:paddingLeft="15dp"
-                        android:paddingRight="15dp"/>
+                        android:paddingRight="5dp"/>
 
                 </LinearLayout>
 
@@ -95,12 +94,14 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:layout_marginRight="10dp">
 
                     <malcolmmaima.dishi.customfonts.MyTextView_Roboto_Medium
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Bio"
+                        android:text="Short bio"
+                        android:layout_weight="0.6"
                         android:textColor="#fff"
                         android:textSize="18dp"
                         android:layout_marginTop="20dp"
@@ -116,7 +117,7 @@
                         android:textColorHint="#fff"
                         android:background="#00000000"
                         android:textColor="#fff"
-                        android:textSize="14dp"
+                        android:textSize="20dp"
                         android:layout_marginTop="10dp"
                         android:layout_marginLeft="10dp"
                         />
@@ -127,8 +128,7 @@
                     android:layout_height="0.001dp"
                     android:background="#fff"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginTop="10dp"/>
+                    android:layout_marginRight="10dp"/>
 
             </LinearLayout>
 
@@ -145,7 +145,7 @@
             android:layout_weight="0.3"
             android:layout_height="wrap_content"
             android:text="Email"
-            android:textSize="14dp"
+            android:textSize="16dp"
             android:layout_marginLeft="15dp"
             android:padding="20dp"/>
         <malcolmmaima.dishi.customfonts.EditText_Roboto_Regular
@@ -154,7 +154,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:inputType="textEmailAddress"
-            android:padding="16dp"
+            android:padding="14dp"
             android:layout_gravity="center"
             android:background="#00000000"/>
 
@@ -177,13 +177,14 @@
             android:layout_weight="0.5"
             android:padding="20dp"
             android:text="Gender"
-            android:textSize="14dp" />
+            android:textSize="16dp" />
 
 
         <!-- Radio buttons under RelativeLayout -->
         <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            >
 
             <RadioGroup
                 android:id="@+id/gender"
@@ -320,13 +321,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#f0f0f4"
+        android:gravity="center_horizontal"
         android:paddingBottom="10dp"
         android:paddingLeft="30dp"
         android:paddingTop="10dp"
-        android:text="Change Number"
+        android:text="Click here to change number"
         android:textColor="#868686"
-        android:textSize="16dp"
-        />
+        android:textSize="16dp" />
 
     <malcolmmaima.dishi.customfonts.EditText_Roboto_Regular
         android:id="@+id/phoneNumber"
@@ -346,14 +347,6 @@
         android:layout_width="match_parent"
         android:layout_height="0.1dp"
         android:background="#ACACAC"/>
-
-    <Button
-        android:id="@+id/logoutbt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="Logout"
-        android:textSize="20sp" />
 
 </LinearLayout>
 

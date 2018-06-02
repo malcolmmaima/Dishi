@@ -8,10 +8,10 @@
     android:background="@drawable/gradient2">
 
     <ImageView
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_gravity="center"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="80dp"
         android:src="@drawable/logo"/>
 
     <malcolmmaima.dishi.customfonts.MyTextView_Roboto_Medium
@@ -41,7 +41,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             android:orientation="vertical">
 
@@ -68,7 +68,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginLeft="15dp"
+                    android:layout_marginLeft="-40dp"
                     android:src="@drawable/ic_check_circle_black_24dp"
                     android:visibility="invisible" />
 
@@ -79,12 +79,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_margin="25dp"
+                android:layout_margin="5dp"
                 android:background="@drawable/rect_text_edit"
                 android:hint="Enter Code"
                 android:inputType="phone"
                 android:padding="10dp"
-
                 android:visibility="invisible" />
 
             <android.support.design.widget.FloatingActionButton
@@ -92,17 +91,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_margin="20dp"
+                android:layout_margin="5dp"
                 android:src="@drawable/ic_send_white_24dp"
                 android:tag="@string/tag_send"
-                app:backgroundTint="@color/colorPrimary" />
+                app:backgroundTint="@color/dot_inactive_screen1" />
 
             <TextView
                 android:id="@+id/timertv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_margin="25sp"
+                android:layout_margin="15sp"
                 android:clickable="true"
                 android:textSize="20sp" />
 
