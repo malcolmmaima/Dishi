@@ -30,12 +30,13 @@
     <!-- Restaurant Bottom Nav-->
     <string name="item_1">Orders</string>
     <string name="item_2">Profile</string>
-    <string name="item_3">Manage</string>
+    <string name="item_3">Menu</string>
 
     <!-- Customer Bottom Nav-->
     <string name="item_4">Order</string>
     <string name="item_5">Profile</string>
     <string name="item_6">Restaurants</string>
+    <string name="history">History</string>
 
     <!-- Toolbar-->
     <string name="action_settings">Settings</string>

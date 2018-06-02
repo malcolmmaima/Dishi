@@ -5,24 +5,25 @@
 
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
+        android:icon="@drawable/ic_settings_white_48dp"
         android:orderInCategory="100"
-        app:showAsAction="never" />
+        app:showAsAction="ifRoom" />
 
     <item android:id="@+id/action_new"
         android:title="@string/action_new"
         android:icon="@drawable/ic_action_new"
         android:orderInCategory="200"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
     <item android:id="@+id/action_refresh"
         android:title="@string/action_refresh"
         android:icon="@drawable/ic_action_refresh"
         android:orderInCategory="300"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
     <item android:id="@+id/action_logout"
         android:title="@string/action_logout"
-        android:icon="@drawable/ic_action_new"
+        android:icon="@drawable/ic_exit_to_app_white_48dp"
         android:orderInCategory="400"
         app:showAsAction="ifRoom" />
 </menu>

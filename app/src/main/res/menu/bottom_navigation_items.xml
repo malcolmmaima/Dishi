@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
     <item
         android:id="@+id/action_item1"
-        android:icon="@drawable/ic_account_circle_black_24dp"
-        android:title="@string/item_1"/>
+        android:icon="@drawable/ic_reorder_white_48dp"
+        android:title="@string/item_1"
+        app:showAsAction="always"
+        />
     <item
         android:id="@+id/action_item2"
-        android:icon="@drawable/ic_account_circle_black_24dp"
-        android:title="@string/item_2"/>
+        android:icon="@drawable/ic_perm_identity_white_48dp"
+        android:title="@string/item_2"
+        app:showAsAction="always"/>
     <item
         android:id="@+id/action_item3"
-        android:icon="@drawable/ic_account_circle_black_24dp"
-        android:title="@string/item_3"/>
+        android:icon="@drawable/ic_food_menu"
+        android:title="@string/item_3"
+        app:showAsAction="always"/>
 </menu>

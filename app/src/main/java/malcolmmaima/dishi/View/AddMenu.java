@@ -74,9 +74,6 @@ public class AddMenu extends AppCompatActivity {
         if(id == R.id.action_save){
             Toast.makeText(AddMenu.this, "Save Menu", Toast.LENGTH_LONG).show();
         }
-        if(id == R.id.action_save2){
-            Toast.makeText(AddMenu.this, "Save Menu", Toast.LENGTH_LONG).show();
-        }
         return super.onOptionsItemSelected(item);
     }
 }

@@ -17,6 +17,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import malcolmmaima.dishi.R;
+
 public class SplashActivity extends AppCompatActivity {
 
     Boolean verified;
@@ -28,6 +30,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_splash);
 
         mAuth = FirebaseAuth.getInstance();
 
