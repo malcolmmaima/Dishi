@@ -8,6 +8,7 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#800020</color>
     <color name="transparent">#00000000</color>
+    <color name="colorBackroundWhite">#f0f2ea</color>
 
     <color name="offwhile">#F1E9E3</color>
     <!-- Screens background color-->

@@ -180,17 +180,6 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
 
         continueBtn = findViewById(R.id.continueBtn);
         backButton = findViewById(R.id.backButton);
-        logoutbutton = findViewById(R.id.logoutbt);
-
-        logoutbutton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(SetupProfile.this,MainActivity.class)
-                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-                finish();
-            }
-        });
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -277,7 +266,7 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
                                 public void onFailure(@NonNull Exception e) {
                                     // Write failed
 
-                                    Toast.makeText(SetupProfile.this, "Failed, Try again!", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(SetupProfile.this, "Failed: " + e.toString() + ". Try again!", Toast.LENGTH_LONG).show();
                                 }
                             });
                 }

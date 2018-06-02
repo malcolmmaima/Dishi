@@ -11,7 +11,7 @@
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_gravity="center"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="50dp"
         android:src="@drawable/logo"/>
 
     <malcolmmaima.dishi.customfonts.MyTextView_Roboto_Medium

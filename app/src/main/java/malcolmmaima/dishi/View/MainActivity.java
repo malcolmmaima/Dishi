@@ -145,7 +145,10 @@ public class MainActivity extends AppCompatActivity {
                 // now need to ask the user to enter the code and then construct a credential
                 // by combining the code with a verification ID.
                 Log.d("TAG", "onCodeSent:" + verificationId);
+
                 progressDialog.dismiss();
+                codeed.setVisibility(View.VISIBLE);
+
                 Snackbar snackbar = Snackbar
                         .make((LinearLayout) findViewById(R.id.parentlayout), "Code Sent", Snackbar.LENGTH_LONG);
 
@@ -163,13 +166,13 @@ public class MainActivity extends AppCompatActivity {
                     if (!phoneed.getText().toString().trim().isEmpty() && phoneed.getText().toString().trim().length() >= 10) {
                         // Setting progressDialog Title.
                         progressDialog.setTitle("Verifying...");
+                        progressDialog.setMessage("A text message is being sent");
                         // Showing progressDialog.
                         progressDialog.show();
 
                         startPhoneNumberVerification(phoneed.getText().toString().trim());
                         mVerified = false;
                         starttimer();
-                        codeed.setVisibility(View.VISIBLE);
                         fabbutton.setImageResource(R.drawable.ic_arrow_forward_white_24dp);
                         fabbutton.setTag(getResources().getString(R.string.tag_verify));
                         phonenumber = phoneed.getText().toString();

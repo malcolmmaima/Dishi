@@ -4,27 +4,16 @@ import android.app.ActivityOptions;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import android.view.Menu;
-import android.view.MenuItem;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
-import android.view.MenuItem;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -34,19 +23,28 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.Map;
-
-import malcolmmaima.dishi.Model.User;
+import malcolmmaima.dishi.Model.Listdata;
 import malcolmmaima.dishi.R;
-import malcolmmaima.dishi.View.Fragments.ItemOneFragment;
+import malcolmmaima.dishi.View.Fragments.RestaurantMenuFragment;
 import malcolmmaima.dishi.View.Fragments.ItemThreeFragment;
 import malcolmmaima.dishi.View.Fragments.ItemTwoFragment;
+
+import android.support.v7.widget.RecyclerView;
+import android.widget.Button;
+import android.widget.TextView;
+
+import java.util.List;
 
 
 public class MyAccount extends AppCompatActivity {
 
     String acc_name = "Dishi 1.0";
     String myPhone;
+
+    TextView ename,eemail,eaddress;
+    Button save,view;
+    List<Listdata> list;
+    RecyclerView recyclerview;
 
     private FirebaseAuth mAuth;
 
@@ -69,7 +67,7 @@ public class MyAccount extends AppCompatActivity {
         myPhone = user.getPhoneNumber(); //Current logged in user phone number
 
         FirebaseDatabase db = FirebaseDatabase.getInstance();
-        DatabaseReference dbRef = db.getReference(myPhone);
+        final DatabaseReference dbRef = db.getReference(myPhone);
 
         //Check whether user is verified, if true send them directly to MyAccount
         dbRef.child("Name").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -90,6 +88,7 @@ public class MyAccount extends AppCompatActivity {
         //topToolBar.setLogoDescription(getResources().getString(R.string.logo_desc));
 
 
+
         //Fragments Implementation
         BottomNavigationView bottomNavigationView = findViewById(R.id.navigation);
 
@@ -99,14 +98,15 @@ public class MyAccount extends AppCompatActivity {
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         Fragment selectedFragment = null;
                         switch (item.getItemId()) {
+
                             case R.id.action_item1:
-                                selectedFragment = ItemOneFragment.newInstance();
-                                break;
-                            case R.id.action_item2:
                                 selectedFragment = ItemTwoFragment.newInstance();
                                 break;
-                            case R.id.action_item3:
+                            case R.id.action_item2:
                                 selectedFragment = ItemThreeFragment.newInstance();
+                                break;
+                            case R.id.action_item3:
+                                selectedFragment = RestaurantMenuFragment.newInstance();
                                 break;
                         }
                         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -118,7 +118,7 @@ public class MyAccount extends AppCompatActivity {
 
         //Manually displaying the first fragment - one time only
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.frame_layout, ItemOneFragment.newInstance());
+        transaction.replace(R.id.frame_layout, ItemTwoFragment.newInstance());
         transaction.commit();
 
         //Used to select an item programmatically
@@ -170,4 +170,5 @@ public class MyAccount extends AppCompatActivity {
     }
 
 }
+
 
