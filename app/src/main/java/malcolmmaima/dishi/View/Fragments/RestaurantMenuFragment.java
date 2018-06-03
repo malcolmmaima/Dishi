@@ -101,8 +101,7 @@ public class RestaurantMenuFragment extends Fragment {
                     if(progressDialog.isShowing()){
                         progressDialog.dismiss();
                     }
-                    progressDialog.dismiss();
-                    Toast.makeText(getActivity(), "Menu is empty!", Toast.LENGTH_LONG).show();
+                    //Implement TextView in the middle written "Empty"
                 }
 
             }

@@ -29,18 +29,41 @@
         android:paddingTop="@dimen/activity_vertical_margin"
         tools:context=".View.AddMenu">
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/lin"
+            android:gravity="center"
+            android:layout_centerHorizontal="true"
+            android:padding="10dp">
+
+            <com.alexzh.circleimageview.CircleImageView
+                android:id="@+id/foodpic"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:src="@drawable/ic_food_menu"
+                app:view_borderColor="#cccccc"
+                app:view_borderWidth="2dp"
+                app:view_shadowDx="5dp"
+                app:view_shadowDy="5dp"
+                app:view_shadowRadius="6dp" />
+
+        </LinearLayout>
 
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:inputType="textPersonName"
             android:ems="10"
-            android:layout_alignParentTop="true"
+            android:layout_alignParentTop="false"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:id="@+id/productName"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
+            android:layout_below="@+id/lin"
             android:hint="Product name" />
 
         <EditText

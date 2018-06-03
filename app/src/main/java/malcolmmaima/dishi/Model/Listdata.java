@@ -5,6 +5,7 @@ public class Listdata {
     public String name;
     public String price;
     public String description;
+    public String product_image;
 
     public String getName() {
         return name;
@@ -28,5 +29,13 @@ public class Listdata {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getProduct_image(){
+        return product_image;
+    }
+
+    public void setProduct_image(String product_image) {
+        this.product_image = product_image;
     }
 }
