@@ -4,8 +4,7 @@ public class ProductDetails {
 
     public String name;
     public String price;
-    public String prod_description;
-
+    public String description;
 
     public String getName() {
         return name;
@@ -24,10 +23,10 @@ public class ProductDetails {
     }
 
     public String getDescription() {
-        return prod_description;
+        return description;
     }
 
-    public void setDescription(String prod_description) {
-        this.prod_description = prod_description;
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

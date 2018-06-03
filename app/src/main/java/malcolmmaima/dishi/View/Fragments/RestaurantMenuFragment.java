@@ -59,8 +59,6 @@ public class RestaurantMenuFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_restaurant_menu, container, false);
         // Assigning Id to ProgressDialog.
         progressDialog = new ProgressDialog(getContext());
-
-
         // Setting progressDialog Title.
         progressDialog.setTitle("Loading...");
         // Showing progressDialog.
@@ -68,7 +66,6 @@ public class RestaurantMenuFragment extends Fragment {
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         myPhone = user.getPhoneNumber(); //Current logged in user phone number
-
         db = FirebaseDatabase.getInstance();
         dbRef = db.getReference(myPhone);
         menusRef = db.getReference(myPhone + "/mymenu");
@@ -84,11 +81,11 @@ public class RestaurantMenuFragment extends Fragment {
                     ProductDetails productDetails = dataSnapshot1.getValue(ProductDetails.class);
                     Listdata listdata = new Listdata();
                     String name= productDetails.getName();
-                    String email= productDetails.getPrice();
-                    String address= productDetails.getDescription();
+                    String price= productDetails.getPrice();
+                    String description= productDetails.getDescription();
                     listdata.setName(name);
-                    listdata.setPrice(email);
-                    listdata.setDescription(address);
+                    listdata.setPrice(price);
+                    listdata.setDescription(description);
                     list.add(listdata);
                     progressDialog.dismiss();
                 }

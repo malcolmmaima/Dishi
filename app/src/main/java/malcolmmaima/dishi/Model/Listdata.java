@@ -6,7 +6,6 @@ public class Listdata {
     public String price;
     public String description;
 
-
     public String getName() {
         return name;
     }

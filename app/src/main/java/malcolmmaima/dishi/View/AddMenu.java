@@ -8,6 +8,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,10 +45,8 @@ public class AddMenu extends AppCompatActivity {
 
         Toolbar topToolBar = findViewById(R.id.toolbar);
         setSupportActionBar(topToolBar);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-
         setTitle("Add New Item");
 
         //Back button on toolbar
@@ -65,9 +64,7 @@ public class AddMenu extends AppCompatActivity {
 
         final DatabaseReference menusRef;
         FirebaseDatabase db;
-
         FirebaseUser user;
-
         user = FirebaseAuth.getInstance().getCurrentUser();
         myPhone = user.getPhoneNumber(); //Current logged in user phone number
 
@@ -149,58 +146,7 @@ public class AddMenu extends AppCompatActivity {
             Toast.makeText(AddMenu.this, "Add Multiple", Toast.LENGTH_LONG).show();
         }
         if(id == R.id.action_save){
-            if(CheckFieldValidation()){
-                // Setting progressDialog Title.
-                progressDialog.setTitle("Adding...");
-
-                // Showing progressDialog.
-                progressDialog.show();
-
-                final DatabaseReference menusRef;
-                FirebaseDatabase db;
-                db = FirebaseDatabase.getInstance();
-                menusRef = db.getReference(myPhone + "/mymenu");
-
-                //Toast.makeText(AddMenu.this, "Save Menu", Toast.LENGTH_LONG).show();
-                String name =  productName.getText().toString();
-                String price =  productPrice.getText().toString();
-                String description =  productDescription.getText().toString();
-
-
-                String key = menusRef.push().getKey();
-                ProductDetails productDetails = new ProductDetails();
-
-                productDetails.setName(name);
-                productDetails.setPrice(price);
-                productDetails.setDescription(description);
-
-                menusRef.child(key).setValue(productDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        // Write was successful!
-                        // Hiding the progressDialog after done uploading.
-                        progressDialog.dismiss();
-
-                        Snackbar snackbar = Snackbar
-                                .make((RelativeLayout) findViewById(R.id.parentlayout), "Added successfully!", Snackbar.LENGTH_LONG);
-
-                        snackbar.show();
-
-                    }
-                })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                // Write failed
-                                progressDialog.dismiss();
-                                Toast.makeText(AddMenu.this, "Failed: " + e.toString() + ". Try again!", Toast.LENGTH_LONG).show();
-                            }
-                        });
-                productName.setText("");
-                productPrice.setText("");
-                productDescription.setText("");
-            }
-
+            Toast.makeText(this, "Save", Toast.LENGTH_SHORT).show();
         }
         return super.onOptionsItemSelected(item);
     }
