@@ -32,12 +32,20 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        FirebaseDatabase mydb = FirebaseDatabase.getInstance();
+        DatabaseReference connectionRef;
+
+        connectionRef = mydb.getReference();
+        if(connectionRef.onDisconnect().equals(true) ){
+            Toast.makeText(this, "Not connected!", Toast.LENGTH_LONG).show();
+        }
+
         mAuth = FirebaseAuth.getInstance();
 
         if (mAuth.getInstance().getCurrentUser() == null || mAuth.getInstance().getCurrentUser().getPhoneNumber() == null) {
 
             //User is not signed in, send them back to verification page
-            Toast.makeText(this, "Not logged in!", Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, "Not logged in!", Toast.LENGTH_LONG).show();
             startActivity(new Intent(SplashActivity.this, WelcomeActivity.class)
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));//Load Main Activity and clear activity stack
         } else {
@@ -80,7 +88,7 @@ public class SplashActivity extends AppCompatActivity {
 
                         }
 
-                    if (verified == true) {
+                    else if (verified.toString().equals("true")) {
                         startActivity(new Intent(SplashActivity.this, MyAccount.class)
                                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                     } else {

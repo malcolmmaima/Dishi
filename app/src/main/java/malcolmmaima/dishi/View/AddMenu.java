@@ -30,6 +30,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -52,7 +53,7 @@ public class AddMenu extends AppCompatActivity {
     Uri FilePathUri;
 
     // Folder path for Firebase Storage.
-    String Storage_Path = "Users/mymenu/";
+    String Storage_Path = "Users";
 
     String ppicStatus;
 
@@ -80,6 +81,8 @@ public class AddMenu extends AppCompatActivity {
         setTitle("Add New Item");
 
 
+        // Assign FirebaseStorage instance to storageReference.
+        storageReference = FirebaseStorage.getInstance().getReference();
 
         //Back button on toolbar
         topToolBar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -127,46 +130,129 @@ public class AddMenu extends AppCompatActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(CheckFieldValidation()){
-                String name = productName.getText().toString();
-                String price = productPrice.getText().toString();
-                String description = productDescription.getText().toString();
+
+                // Checking whether FilePathUri Is empty or not.
+                if (FilePathUri != null) {
+
+                    ppicStatus = "set";
+                    // Setting progressDialog Title.
+                    //progressDialog.setTitle("Image is Uploading...");
+
+                    // Showing progressDialog.
+                    //progressDialog.show();
+
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    myPhone = user.getPhoneNumber(); //Current logged in user phone number
+
+                    // Creating second StorageReference.
+                    StorageReference storageReference2nd = storageReference.child(Storage_Path + "/" + myPhone + "/" + System.currentTimeMillis() + "." + GetFileExtension(FilePathUri));
+
+                    // Adding addOnSuccessListener to second StorageReference.
+                    storageReference2nd.putFile(FilePathUri)
+                            .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                                    String name = productName.getText().toString();
+                                    String price = productPrice.getText().toString();
+                                    String description = productDescription.getText().toString();
+                                    String imageURL = taskSnapshot.getUploadSessionUri().toString();
 
 
-                String key = menusRef.push().getKey();
-                ProductDetails productDetails = new ProductDetails();
+                                    String key = menusRef.push().getKey();
+                                    ProductDetails productDetails = new ProductDetails();
 
-                productDetails.setName(name);
-                productDetails.setPrice(price);
-                productDetails.setDescription(description);
+                                    productDetails.setName(name);
+                                    productDetails.setPrice(price);
+                                    productDetails.setDescription(description);
+                                    productDetails.setImageURL(imageURL);
 
-                menusRef.child(key).setValue(productDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        // Write was successful!
-                        // Hiding the progressDialog after done uploading.
-                        progressDialog.dismiss();
+                                    // Hiding the progressDialog after done uploading.
+                                    //progressDialog.dismiss();
 
-                        Snackbar snackbar = Snackbar
-                                .make((RelativeLayout) findViewById(R.id.parentlayout), "Added successfully!", Snackbar.LENGTH_LONG);
+                                    // Showing toast message after done uploading.
+                                    //Toast.makeText(getApplicationContext(), "Image Uploaded Successfully ", Toast.LENGTH_LONG).show();
 
-                        snackbar.show();
+                                    @SuppressWarnings("VisibleForTests") //final ImageUploadInfo imageUploadInfo = new ImageUploadInfo(TempImageName, taskSnapshot.getUploadSessionUri().toString());
 
-                    }
-                })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                // Write failed
-                                progressDialog.dismiss();
-                                Toast.makeText(AddMenu.this, "Failed: " + e.toString() + ". Try again!", Toast.LENGTH_LONG).show();
-                            }
-                        });
+                                    // Getting image upload ID.
+                                    //String ImageUploadId = databaseReference.push().getKey();
 
-                productName.setText("");
-                productPrice.setText("");
-                productDescription.setText("");
-            }
+                                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                    myPhone = user.getPhoneNumber(); //Current logged in user phone number
+
+                                    // Write image data to the database
+                                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                    final DatabaseReference myRef = database.getReference(myPhone + "/mymenu");
+                                    //menusRef.child("FoodPic").setValue(imageUploadInfo);
+
+                                    // Adding image upload id s child element into databaseReference.
+                                    //databaseReference.child(ImageUploadId).setValue(imageUploadInfo);
+
+                                    menusRef.child(key).setValue(productDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            // Write was successful!
+                                            // Hiding the progressDialog after done uploading.
+                                            progressDialog.dismiss();
+
+                                            Snackbar snackbar = Snackbar
+                                                    .make((RelativeLayout) findViewById(R.id.parentlayout), "Added successfully!", Snackbar.LENGTH_LONG);
+
+                                            snackbar.show();
+
+                                        }
+                                    })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    // Write failed
+                                                    progressDialog.dismiss();
+                                                    Toast.makeText(AddMenu.this, "Failed: " + e.toString() + ". Try again!", Toast.LENGTH_LONG).show();
+                                                }
+                                            });
+
+                                    productName.setText("");
+                                    productPrice.setText("");
+                                    productDescription.setText("");
+
+
+                                }
+                            })
+                            // If something goes wrong .
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception exception) {
+
+                                    // Hiding the progressDialog.
+                                    progressDialog.dismiss();
+
+                                    // Showing exception erro message.
+                                    Toast.makeText(AddMenu.this, exception.getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            })
+
+                            // On progress change upload time.
+                            .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+
+                                    // Setting progressDialog Title.
+                                    //progressDialog.setTitle("Image is Uploading...");
+
+                                }
+                            });
+                }
+                else {
+
+                    Toast.makeText(AddMenu.this, "Please Select Profile Image", Toast.LENGTH_LONG).show();
+                    ppicStatus = "empty";
+
+                }
+
+               /* if(CheckFieldValidation()){
+
+                } */
 
             }
         });
@@ -216,7 +302,7 @@ public class AddMenu extends AppCompatActivity {
                     progressDialog.dismiss();
 
 
-                    UploadImageFileToFirebaseStorage(); //Upload food pic image
+                    //UploadImageFileToFirebaseStorage(); //Upload food pic image
 
                     Snackbar snackbar = Snackbar
                             .make((RelativeLayout) findViewById(R.id.parentlayout), "Added successfully!", Snackbar.LENGTH_LONG);
@@ -300,7 +386,7 @@ public class AddMenu extends AppCompatActivity {
 
             // Creating second StorageReference.
             StorageReference storageReference2nd = storageReference.child(Storage_Path + "/" + myPhone + "/" + System.currentTimeMillis() + "." + GetFileExtension(FilePathUri));
-
+            Toast.makeText(this, "Storage ref: " + storageReference2nd.toString(), Toast.LENGTH_LONG).show();
             // Adding addOnSuccessListener to second StorageReference.
             storageReference2nd.putFile(FilePathUri)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -370,6 +456,10 @@ public class AddMenu extends AppCompatActivity {
     private boolean CheckFieldValidation() {
 
         boolean valid = true;
+        if(ppicStatus.equals("empty")){
+            Toast.makeText(this, "Select Food Image", Toast.LENGTH_SHORT).show();
+            valid = false;
+        }
 
         if (productName.getText().toString().equals("")) {
             productName.setError("Can't be Empty");

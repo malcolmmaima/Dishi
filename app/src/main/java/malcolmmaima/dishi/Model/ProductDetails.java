@@ -5,7 +5,7 @@ public class ProductDetails {
     public String name;
     public String price;
     public String description;
-    public String product_image;
+    public String imageURL;
 
     public String getName() {
         return name;
@@ -31,11 +31,13 @@ public class ProductDetails {
         this.description = description;
     }
 
-    public String getProduct_image(){
-        return product_image;
+    public void setImageURL(String imageURL){
+        this.imageURL = imageURL;
     }
 
-    public void setProduct_image(String product_image) {
-        this.product_image = product_image;
+    public String getImageURL() {
+        return imageURL;
     }
+
+
 }
