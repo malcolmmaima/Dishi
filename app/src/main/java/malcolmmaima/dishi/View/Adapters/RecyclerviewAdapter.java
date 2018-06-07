@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -30,9 +31,10 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
 
     public void onBindViewHolder(MyHolder holder, int position) {
         Listdata data = listdata.get(position);
-        holder.vname.setText(data.getName());
-        holder.vemail.setText(data.getPrice());
-        holder.vaddress.setText(data.getDescription());
+        holder.foodPrice.setText(data.getPrice());
+        holder.foodName.setText(data.getName());
+        holder.foodDescription.setText(data.getDescription());
+        //holder.foodPic.set
     }
 
     @Override
@@ -42,13 +44,15 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
 
 
     class MyHolder extends RecyclerView.ViewHolder{
-        TextView vname , vaddress,vemail;
+        TextView foodPrice , foodDescription, foodName;
+        ImageView foodPic;
 
         public MyHolder(View itemView) {
             super(itemView);
-            vname = (TextView) itemView.findViewById(R.id.vname);
-            vemail = (TextView) itemView.findViewById(R.id.vemail);
-            vaddress = (TextView) itemView.findViewById(R.id.vaddress);
+            foodPrice = itemView.findViewById(R.id.foodPrice);
+            foodName = itemView.findViewById(R.id.foodName);
+            foodDescription = itemView.findViewById(R.id.foodDescription);
+            //foodPic = itemView.findViewById(R.id.foodPic);
 
         }
     }
