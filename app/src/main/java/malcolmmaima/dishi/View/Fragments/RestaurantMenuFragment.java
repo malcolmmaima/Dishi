@@ -32,7 +32,7 @@ import malcolmmaima.dishi.View.Adapters.RecyclerviewAdapter;
 public class RestaurantMenuFragment extends Fragment {
 
     ProgressDialog progressDialog ;
-    List<Listdata> list;
+    List<ProductDetails> list;
     RecyclerView recyclerview;
     String myPhone;
 
@@ -79,18 +79,18 @@ public class RestaurantMenuFragment extends Fragment {
                 for(DataSnapshot dataSnapshot1 :dataSnapshot.getChildren()){
 
                     ProductDetails productDetails = dataSnapshot1.getValue(ProductDetails.class);
-                    Listdata listdata = new Listdata();
+                    //ProductDetails listdata = new ProductDetails();
                     String name= productDetails.getName();
                     String price= productDetails.getPrice();
                     String description= productDetails.getDescription();
-                    listdata.setName(name);
-                    listdata.setPrice(price);
-                    listdata.setDescription(description);
-                    list.add(listdata);
+                    //listdata.setName(name);
+                    //listdata.setPrice(price);
+                    //listdata.setDescription(description);
+                    list.add(productDetails);
                     progressDialog.dismiss();
                 }
                 if(!list.isEmpty()){
-                    RecyclerviewAdapter recycler = new RecyclerviewAdapter(list);
+                    RecyclerviewAdapter recycler = new RecyclerviewAdapter(getContext(),list);
                     RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
                     recyclerview.setLayoutManager(layoutmanager);
                     recyclerview.setItemAnimator( new DefaultItemAnimator());

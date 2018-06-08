@@ -26,6 +26,7 @@ import android.widget.Toast;
 import com.alexzh.circleimageview.CircleImageView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -144,7 +145,7 @@ public class AddMenu extends AppCompatActivity {
                     myPhone = user.getPhoneNumber(); //Current logged in user phone number
 
                     // Creating second StorageReference.
-                    StorageReference storageReference2nd = storageReference.child(Storage_Path + "/" + myPhone + "/" + System.currentTimeMillis() + "." + GetFileExtension(FilePathUri));
+                    final StorageReference storageReference2nd = storageReference.child(Storage_Path + "/" + myPhone + "/" + System.currentTimeMillis() + "." + GetFileExtension(FilePathUri));
 
                     // Adding addOnSuccessListener to second StorageReference.
                     storageReference2nd.putFile(FilePathUri)
@@ -155,15 +156,20 @@ public class AddMenu extends AppCompatActivity {
                                     String name = productName.getText().toString();
                                     String price = productPrice.getText().toString();
                                     String description = productDescription.getText().toString();
-                                    String imageURL = taskSnapshot.getUploadSessionUri().toString();
+
+                                    //Uri url = taskSnapshot.getDownLoadUrl(); //Deprecated
+                                    Task<Uri> url = taskSnapshot.getMetadata().getReference().getDownloadUrl();
+                                    String imageURL = url.toString();
 
                                     String key = menusRef.push().getKey(); //The child node in mymenu for storing menu items
-                                    ProductDetails productDetails = new ProductDetails();
+                                    final ProductDetails productDetails = new ProductDetails();
 
                                     productDetails.setName(name);
                                     productDetails.setPrice(price);
                                     productDetails.setDescription(description);
                                     productDetails.setImageURL(imageURL);
+
+                                    Log.d("uploadurl","image url: " + productDetails.getImageURL());
 
                                     // Getting image upload ID.
                                     //String ImageUploadId = databaseReference.push().getKey();
@@ -236,14 +242,10 @@ public class AddMenu extends AppCompatActivity {
                 }
                 else {
 
-                    Toast.makeText(AddMenu.this, "Please Select Profile Image", Toast.LENGTH_LONG).show();
+                    Toast.makeText(AddMenu.this, "Please Select Food Image", Toast.LENGTH_LONG).show();
                     ppicStatus = "empty";
 
                 }
-
-               /* if(CheckFieldValidation()){
-
-                } */
 
             }
         });
