@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -55,7 +54,7 @@ public class SplashActivity extends AppCompatActivity {
             FirebaseDatabase db = FirebaseDatabase.getInstance();
             final DatabaseReference dbRef = db.getReference(myPhone);
 
-            //Check whether user is verified, if true send them directly to MyAccount
+            //Check whether user is verified, if true send them directly to MyAccountRestaurant
             dbRef.child("Verified").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -88,8 +87,8 @@ public class SplashActivity extends AppCompatActivity {
 
                         }
 
-                    else if (verified.toString().equals("true")) {
-                        startActivity(new Intent(SplashActivity.this, MyAccount.class)
+                    else if (verified.toString().equals("true")) { //Will need to check account type as well, then redirect to account type
+                        startActivity(new Intent(SplashActivity.this, SetupProfile.class)
                                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                     } else {
                         //User is not verified so have them verify their profile details first

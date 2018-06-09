@@ -23,14 +23,16 @@
             </intent-filter>
         </activity>
         <activity android:name=".View.SetupProfile" />
-        <activity android:name=".View.MyAccount" />
-        <activity android:name=".View.Fragments.ItemTwoFragment" />
+        <activity android:name=".View.MyAccountRestaurant" />
+        <activity android:name=".View.Fragments.CustomerOrderFragment" />
         <activity android:name=".View.Fragments.ItemThreeFragment" />
         <activity android:name=".View.Fragments.ItemFourFragment" />
         <activity android:name=".View.Fragments.ItemFiveFragment" />
         <activity android:name=".View.Fragments.ItemSixFragment" />
         <activity android:name=".View.AddMenu" />
-        <activity android:name=".View.SettingsActivity"></activity>
+        <activity android:name=".View.SettingsActivity" />
+        <activity android:name=".View.MyAccountCustomer" />
+        <activity android:name=".View.MyAccountNduthi"></activity>
     </application>
 
 </manifest>

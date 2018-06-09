@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,20 +12,16 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -44,10 +39,6 @@ import com.google.firebase.storage.UploadTask;
 import com.rey.material.widget.Switch;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Map;
-import java.util.Set;
 
 import malcolmmaima.dishi.Model.ImageUploadInfo;
 import malcolmmaima.dishi.R;
@@ -119,7 +110,7 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         DatabaseReference dbRef = db.getReference(myPhone);
 
-        //Check whether user is verified, if true send them directly to MyAccount
+        //Check whether user is verified, if true send them directly to MyAccountRestaurant
         dbRef.child("Verified").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -132,7 +123,7 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
 
                 if(verified == true){
                     //Slide to new activity
-                    Intent slideactivity = new Intent(SetupProfile.this, MyAccount.class)
+                    Intent slideactivity = new Intent(SetupProfile.this, MyAccountRestaurant.class)
                             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     Bundle bndlanimation =
                             ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
@@ -250,13 +241,22 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
                         public void onSuccess(Void aVoid) {
                             // Write was successful!
                             if(account_type == 1){ // Cusomer account
-                                Toast.makeText(SetupProfile.this, "Customer account redirect", Toast.LENGTH_SHORT).show();
+                                //Slide to new activity
+                                Toast.makeText(SetupProfile.this, "Customer Account", Toast.LENGTH_LONG).show();
+                                Intent slideactivity = new Intent(SetupProfile.this, MyAccountCustomer.class)
+                                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                Bundle bndlanimation =
+                                        ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                                startActivity(slideactivity, bndlanimation);
+
+                                // Hiding the progressDialog after done uploading.
                                 progressDialog.dismiss();
                             }
 
                             else if(account_type == 2){ //Provider account
                                 //Slide to new activity
-                                Intent slideactivity = new Intent(SetupProfile.this, MyAccount.class)
+                                Toast.makeText(SetupProfile.this, "Provider Account", Toast.LENGTH_LONG).show();
+                                Intent slideactivity = new Intent(SetupProfile.this, MyAccountRestaurant.class)
                                         .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 Bundle bndlanimation =
                                         ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
@@ -267,12 +267,20 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
                             }
 
                             else if (account_type == 3){ //Nduthi account
-                                Toast.makeText(SetupProfile.this, "Nduthi account redirect", Toast.LENGTH_SHORT).show();
+                                //Slide to new activity
+                                Toast.makeText(SetupProfile.this, "Nduthi Account", Toast.LENGTH_LONG).show();
+                                Intent slideactivity = new Intent(SetupProfile.this, MyAccountNduthi.class)
+                                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                Bundle bndlanimation =
+                                        ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                                startActivity(slideactivity, bndlanimation);
+
+                                // Hiding the progressDialog after done uploading.
                                 progressDialog.dismiss();
                             }
 
                             else { // Others
-                                Toast.makeText(SetupProfile.this, "Others account redirection", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SetupProfile.this, "'Others' account still inn development", Toast.LENGTH_LONG).show();
                                 progressDialog.dismiss();
                             }
 
@@ -308,9 +316,6 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
 
                 // Setting up bitmap selected image into ImageView.
                 profile_pic.setImageBitmap(bitmap);
-
-                // After selecting image change choose button above text.
-                //ChooseButton.setText("Image Selected");
 
             }
             catch (IOException e) {

@@ -23,35 +23,21 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import malcolmmaima.dishi.Model.Listdata;
 import malcolmmaima.dishi.R;
-import malcolmmaima.dishi.View.Fragments.RestaurantMenuFragment;
+import malcolmmaima.dishi.View.Fragments.ItemFourFragment;
 import malcolmmaima.dishi.View.Fragments.ItemThreeFragment;
-import malcolmmaima.dishi.View.Fragments.ItemTwoFragment;
-
-import android.support.v7.widget.RecyclerView;
-import android.widget.Button;
-import android.widget.TextView;
-
-import java.util.List;
+import malcolmmaima.dishi.View.Fragments.CustomerOrderFragment;
 
 
-public class MyAccount extends AppCompatActivity {
-
-    String acc_name = "Dishi 1.0";
+public class MyAccountCustomer extends AppCompatActivity {
     String myPhone;
-
-    TextView ename,eemail,eaddress;
-    Button save,view;
-    List<Listdata> list;
-    RecyclerView recyclerview;
 
     private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my_account);
+        setContentView(R.layout.activity_my_account_customer);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -59,7 +45,7 @@ public class MyAccount extends AppCompatActivity {
 
             //User is not signed in, send them back to verification page
             Toast.makeText(this, "Not logged in!", Toast.LENGTH_LONG).show();
-            startActivity(new Intent(MyAccount.this, MainActivity.class)
+            startActivity(new Intent(MyAccountCustomer.this, MainActivity.class)
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));//Load Main Activity and clear activity stack
         }
 
@@ -69,12 +55,12 @@ public class MyAccount extends AppCompatActivity {
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         final DatabaseReference dbRef = db.getReference(myPhone);
 
-        //Check whether user is verified, if true send them directly to MyAccount
+        //Check whether user is verified, if true send them directly to MyAccountRestaurant
         dbRef.child("Name").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String account_name = dataSnapshot.getValue(String.class);
-                //Toast.makeText(MyAccount.this, "Welcome " + account_name, Toast.LENGTH_LONG).show();
+                //Toast.makeText(MyAccountRestaurant.this, "Welcome " + account_name, Toast.LENGTH_LONG).show();
                 setTitle(account_name);
             }
             @Override
@@ -100,13 +86,13 @@ public class MyAccount extends AppCompatActivity {
                         switch (item.getItemId()) {
 
                             case R.id.action_item1:
-                                selectedFragment = ItemTwoFragment.newInstance();
+                                selectedFragment = CustomerOrderFragment.newInstance();
                                 break;
                             case R.id.action_item2:
                                 selectedFragment = ItemThreeFragment.newInstance();
                                 break;
                             case R.id.action_item3:
-                                selectedFragment = RestaurantMenuFragment.newInstance();
+                                selectedFragment = ItemFourFragment.newInstance();
                                 break;
                         }
                         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -118,7 +104,7 @@ public class MyAccount extends AppCompatActivity {
 
         //Manually displaying the first fragment - one time only
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.frame_layout, ItemTwoFragment.newInstance());
+        transaction.replace(R.id.frame_layout, CustomerOrderFragment.newInstance());
         transaction.commit();
 
         //Used to select an item programmatically
@@ -141,28 +127,28 @@ public class MyAccount extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if(id == R.id.action_new){
-            //Toast.makeText(MyAccount.this, "Add Menu", Toast.LENGTH_LONG).show();
+            //Toast.makeText(MyAccountRestaurant.this, "Add Menu", Toast.LENGTH_LONG).show();
 
-            Intent slideactivity = new Intent(MyAccount.this, AddMenu.class);
+            Intent slideactivity = new Intent(MyAccountCustomer.this, AddMenu.class);
             Bundle bndlanimation =
                     ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
             startActivity(slideactivity, bndlanimation);
 
         }
         if (id == R.id.action_settings) {
-            //Toast.makeText(MyAccount.this, "Settings", Toast.LENGTH_LONG).show();
-            Intent slideactivity = new Intent(MyAccount.this, SettingsActivity.class);
+            //Toast.makeText(MyAccountRestaurant.this, "Settings", Toast.LENGTH_LONG).show();
+            Intent slideactivity = new Intent(MyAccountCustomer.this, SettingsActivity.class);
             Bundle bndlanimation =
                     ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
             startActivity(slideactivity, bndlanimation);
         }
         if(id == R.id.action_refresh){
-            Toast.makeText(MyAccount.this, "Refresh App", Toast.LENGTH_LONG).show();
+            Toast.makeText(MyAccountCustomer.this, "Refresh App", Toast.LENGTH_LONG).show();
         }
         if(id == R.id.action_logout){
-            //Toast.makeText(MyAccount.this, "Logout", Toast.LENGTH_LONG).show();
+            //Toast.makeText(MyAccountRestaurant.this, "Logout", Toast.LENGTH_LONG).show();
             FirebaseAuth.getInstance().signOut();
-            startActivity(new Intent(MyAccount.this,MainActivity.class)
+            startActivity(new Intent(MyAccountCustomer.this,MainActivity.class)
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             finish();
         }

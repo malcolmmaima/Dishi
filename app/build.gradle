@@ -52,6 +52,7 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-database:0.4.1'
     implementation 'com.google.android.gms:play-services-identity:15.0.1'
     implementation 'com.google.android.gms:play-services-auth:15.0.1'
+    implementation 'com.firebase:geofire-android:2.3.1'
 
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'me.relex:circleindicator:1.2.2@aar'

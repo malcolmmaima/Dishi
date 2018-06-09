@@ -3,7 +3,6 @@ package malcolmmaima.dishi.View;
 import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -73,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
             FirebaseDatabase db = FirebaseDatabase.getInstance();
             DatabaseReference dbRef = db.getReference(myPhone);
 
-            //Check whether user is verified, if true send them directly to MyAccount
+            //Check whether user is verified, if true send them directly to MyAccountRestaurant
             dbRef.child("Verified").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -81,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
 
                     Toast.makeText(MainActivity.this, "Verified: " + verified, Toast.LENGTH_LONG).show();
                     if(verified == true){
-                        startActivity(new Intent(MainActivity.this,MyAccount.class)
+                        startActivity(new Intent(MainActivity.this,MyAccountRestaurant.class)
                                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                     } else {
                         //User is not verified so have them verify their profile details first
@@ -208,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
                                 Toast.makeText(MainActivity.this, "Verified: " + verified, Toast.LENGTH_LONG).show();
                                 if(verified == true){
                                     //Slide to new activity
-                                    Intent slideactivity = new Intent(MainActivity.this, MyAccount.class)
+                                    Intent slideactivity = new Intent(MainActivity.this, MyAccountRestaurant.class)
                                             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     Bundle bndlanimation =
                                             ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
@@ -266,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
             FirebaseDatabase db = FirebaseDatabase.getInstance();
             DatabaseReference dbRef = db.getReference(myPhone);
 
-            //Check whether user is verified, if true send them directly to MyAccount
+            //Check whether user is verified, if true send them directly to MyAccountRestaurant
             dbRef.child("Verified").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -274,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
 
                     Toast.makeText(MainActivity.this, "Verified: " + verified, Toast.LENGTH_LONG).show();
                     if(verified == true){
-                        Intent slideactivity = new Intent(MainActivity.this, MyAccount.class)
+                        Intent slideactivity = new Intent(MainActivity.this, MyAccountRestaurant.class)
                                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         Bundle bndlanimation =
                                 ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();

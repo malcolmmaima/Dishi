@@ -31,7 +31,7 @@ public class SettingsActivity extends AppCompatActivity {
         topToolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent slideactivity = new Intent(getApplicationContext(), MyAccount.class)
+                Intent slideactivity = new Intent(getApplicationContext(), MyAccountRestaurant.class)
                         .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 Bundle bndlanimation = ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
                 startActivity(slideactivity, bndlanimation);
