@@ -104,7 +104,6 @@ public class AddMenu extends AppCompatActivity {
         user = FirebaseAuth.getInstance().getCurrentUser();
         myPhone = user.getPhoneNumber(); //Current logged in user phone number
 
-
         foodPic = findViewById(R.id.foodpic);
         productName = findViewById(R.id.productName);
         productPrice = findViewById(R.id.productPrice);
@@ -141,9 +140,13 @@ public class AddMenu extends AppCompatActivity {
 
                 }
                 else {
+                    if(CheckFieldValidation() == false){
+                        Toast.makeText(AddMenu.this, "Please enter all fields", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(AddMenu.this, "Please Select Food Image", Toast.LENGTH_LONG).show();
+                        ppicStatus = "empty";
+                    }
 
-                    Toast.makeText(AddMenu.this, "Please Select Food Image", Toast.LENGTH_LONG).show();
-                    ppicStatus = "empty";
                 }
             }
         });
