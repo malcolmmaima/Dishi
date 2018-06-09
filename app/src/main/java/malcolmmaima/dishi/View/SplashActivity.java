@@ -36,7 +36,7 @@ public class SplashActivity extends AppCompatActivity {
         DatabaseReference connectionRef;
 
         connectionRef = mydb.getReference();
-        if(connectionRef.onDisconnect().equals(true) ){
+        if(connectionRef.onDisconnect().equals(true)){
             Toast.makeText(this, "Not connected!", Toast.LENGTH_LONG).show();
         }
 

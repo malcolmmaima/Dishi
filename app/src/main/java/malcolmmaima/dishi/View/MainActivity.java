@@ -95,11 +95,11 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        phoneed = (EditText) findViewById(R.id.numbered);
-        codeed = (EditText) findViewById(R.id.verificationed);
-        fabbutton = (FloatingActionButton) findViewById(R.id.sendverifybt);
-        timertext = (TextView) findViewById(R.id.timertv);
-        verifiedimg = (ImageView) findViewById(R.id.verifiedsign);
+        phoneed = findViewById(R.id.numbered);
+        codeed = findViewById(R.id.verificationed);
+        fabbutton = findViewById(R.id.sendverifybt);
+        timertext = findViewById(R.id.timertv);
+        verifiedimg = findViewById(R.id.verifiedsign);
         mAuth = FirebaseAuth.getInstance();
 
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -169,6 +169,7 @@ public class MainActivity extends AppCompatActivity {
                         progressDialog.setMessage("A text message is being sent");
                         // Showing progressDialog.
                         progressDialog.show();
+                        progressDialog.setCancelable(false);
 
                         startPhoneNumberVerification(phoneed.getText().toString().trim());
                         mVerified = false;
@@ -321,6 +322,7 @@ public class MainActivity extends AppCompatActivity {
 
                         } else {
                             // Sign in failed, display a message and update the UI
+                            progressDialog.dismiss();
                             Log.w("TAG", "signInWithCredential:failure", task.getException());
                             if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
                                 // The verification code entered was invalid

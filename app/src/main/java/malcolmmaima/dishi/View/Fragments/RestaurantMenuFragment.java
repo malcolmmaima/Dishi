@@ -63,6 +63,7 @@ public class RestaurantMenuFragment extends Fragment {
         progressDialog.setTitle("Loading...");
         // Showing progressDialog.
         progressDialog.show();
+        progressDialog.setCancelable(false);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         myPhone = user.getPhoneNumber(); //Current logged in user phone number
@@ -79,13 +80,6 @@ public class RestaurantMenuFragment extends Fragment {
                 for(DataSnapshot dataSnapshot1 :dataSnapshot.getChildren()){
 
                     ProductDetails productDetails = dataSnapshot1.getValue(ProductDetails.class);
-                    //ProductDetails listdata = new ProductDetails();
-                    String name= productDetails.getName();
-                    String price= productDetails.getPrice();
-                    String description= productDetails.getDescription();
-                    //listdata.setName(name);
-                    //listdata.setPrice(price);
-                    //listdata.setDescription(description);
                     list.add(productDetails);
                     progressDialog.dismiss();
                 }

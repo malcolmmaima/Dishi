@@ -234,6 +234,7 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
 
                     // Showing progressDialog.
                     progressDialog.show();
+                    progressDialog.setCancelable(false);
 
                         // Write user data to the database
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -248,16 +249,32 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
                         @Override
                         public void onSuccess(Void aVoid) {
                             // Write was successful!
+                            if(account_type == 1){ // Cusomer account
+                                Toast.makeText(SetupProfile.this, "Customer account redirect", Toast.LENGTH_SHORT).show();
+                                progressDialog.dismiss();
+                            }
 
-                            //Slide to new activity
-                            Intent slideactivity = new Intent(SetupProfile.this, MyAccount.class)
-                                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            Bundle bndlanimation =
-                                    ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
-                            startActivity(slideactivity, bndlanimation);
+                            else if(account_type == 2){ //Provider account
+                                //Slide to new activity
+                                Intent slideactivity = new Intent(SetupProfile.this, MyAccount.class)
+                                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                Bundle bndlanimation =
+                                        ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                                startActivity(slideactivity, bndlanimation);
 
-                            // Hiding the progressDialog after done uploading.
-                            progressDialog.dismiss();
+                                // Hiding the progressDialog after done uploading.
+                                progressDialog.dismiss();
+                            }
+
+                            else if (account_type == 3){ //Nduthi account
+                                Toast.makeText(SetupProfile.this, "Nduthi account redirect", Toast.LENGTH_SHORT).show();
+                                progressDialog.dismiss();
+                            }
+
+                            else { // Others
+                                Toast.makeText(SetupProfile.this, "Others account redirection", Toast.LENGTH_SHORT).show();
+                                progressDialog.dismiss();
+                            }
 
                         }
                     })
@@ -422,7 +439,7 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Toast.makeText(this, "onDestroy", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "onDestroy", Toast.LENGTH_SHORT).show();
     }
 
     @Override

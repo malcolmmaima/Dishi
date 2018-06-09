@@ -136,6 +136,7 @@ public class AddMenu extends AppCompatActivity {
 
                     // Showing progressDialog.
                     progressDialog.show();
+                    progressDialog.setCancelable(false);
                     uploadMenu();
 
                 }
@@ -180,6 +181,7 @@ public class AddMenu extends AppCompatActivity {
 
                 // Showing progressDialog.
                 progressDialog.show();
+                progressDialog.setCancelable(false);
                 uploadMenu();
 
             }
