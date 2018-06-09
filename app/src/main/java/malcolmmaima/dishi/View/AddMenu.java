@@ -105,7 +105,7 @@ public class AddMenu extends AppCompatActivity {
         myPhone = user.getPhoneNumber(); //Current logged in user phone number
 
         db = FirebaseDatabase.getInstance();
-        menusRef = db.getReference(myPhone + "/mymenu");
+        menusRef = db.getReference(myPhone + "/mymenu"); //Under the user's node, place their menu items
 
         foodPic = findViewById(R.id.foodpic);
         productName = findViewById(R.id.productName);
@@ -132,9 +132,8 @@ public class AddMenu extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                // Checking whether FilePathUri Is empty or not.
+                // Checking whether FilePathUri Is empty or not and passes validation check.
                 if (FilePathUri != null && CheckFieldValidation()) {
-
                     // Setting progressDialog Title.
                     progressDialog.setTitle("Adding...");
 
@@ -153,23 +152,62 @@ public class AddMenu extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-                                    String name = productName.getText().toString();
-                                    String price = productPrice.getText().toString();
-                                    String description = productDescription.getText().toString();
+                                    //Get image URL: //Here we get the image url from the firebase storage
+                                    storageReference2nd.getDownloadUrl().addOnSuccessListener(new OnSuccessListener() {
 
-                                    //Uri url = taskSnapshot.getDownLoadUrl(); //Deprecated
-                                    Task<Uri> url = taskSnapshot.getMetadata().getReference().getDownloadUrl();
-                                    String imageURL = url.toString();
+                                        @Override
+                                        public void onSuccess(Object o) {
 
-                                    String key = menusRef.push().getKey(); //The child node in mymenu for storing menu items
-                                    final ProductDetails productDetails = new ProductDetails();
+                                            String name = productName.getText().toString();
+                                            String price = productPrice.getText().toString();
+                                            String description = productDescription.getText().toString();
 
-                                    productDetails.setName(name);
-                                    productDetails.setPrice(price);
-                                    productDetails.setDescription(description);
-                                    productDetails.setImageURL(imageURL);
+                                            String key = menusRef.push().getKey(); //The child node in mymenu for storing menu items
+                                            ProductDetails productDetails = new ProductDetails();
 
-                                    Log.d("uploadurl","image url: " + productDetails.getImageURL());
+                                            productDetails.setName(name);
+                                            productDetails.setPrice(price);
+                                            productDetails.setDescription(description);
+                                            productDetails.setImageURL(o.toString());
+
+                                            Log.d("myimage", "onSuccess: product image: " + productDetails.getImageURL());
+
+                                            menusRef.child(key).setValue(productDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    // Write was successful!
+                                                    // Hiding the progressDialog after done uploading.
+                                                    progressDialog.dismiss();
+
+                                                    Snackbar snackbar = Snackbar
+                                                            .make((RelativeLayout) findViewById(R.id.parentlayout), "Added successfully!", Snackbar.LENGTH_LONG);
+
+                                                    snackbar.show();
+
+                                                }
+                                            })
+                                                    .addOnFailureListener(new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception e) {
+                                                            // Write failed
+                                                            progressDialog.dismiss();
+                                                            Toast.makeText(AddMenu.this, "Failed: " + e.toString() + ". Try again!", Toast.LENGTH_LONG).show();
+                                                        }
+                                                    });
+
+                                            productName.setText("");
+                                            productPrice.setText("");
+                                            productDescription.setText("");
+                                            foodPic.setImageDrawable(getResources().getDrawable(R.drawable.ic_food_menu));
+                                        }
+
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception exception) {
+                                            // Handle any errors
+                                        }
+                                    });
+
 
                                     // Getting image upload ID.
                                     //String ImageUploadId = databaseReference.push().getKey();
@@ -185,33 +223,7 @@ public class AddMenu extends AppCompatActivity {
                                     // Adding image upload id s child element into databaseReference.
                                     //databaseReference.child(ImageUploadId).setValue(imageUploadInfo);
 
-                                    menusRef.child(key).setValue(productDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            // Write was successful!
-                                            // Hiding the progressDialog after done uploading.
-                                            progressDialog.dismiss();
 
-                                            Snackbar snackbar = Snackbar
-                                                    .make((RelativeLayout) findViewById(R.id.parentlayout), "Added successfully!", Snackbar.LENGTH_LONG);
-
-                                            snackbar.show();
-
-                                        }
-                                    })
-                                            .addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    // Write failed
-                                                    progressDialog.dismiss();
-                                                    Toast.makeText(AddMenu.this, "Failed: " + e.toString() + ". Try again!", Toast.LENGTH_LONG).show();
-                                                }
-                                            });
-
-                                    productName.setText("");
-                                    productPrice.setText("");
-                                    productDescription.setText("");
-                                    foodPic.setImageDrawable(getResources().getDrawable(R.drawable.ic_food_menu));
 
 
                                 }
@@ -239,6 +251,8 @@ public class AddMenu extends AppCompatActivity {
 
                                 }
                             });
+
+
                 }
                 else {
 
