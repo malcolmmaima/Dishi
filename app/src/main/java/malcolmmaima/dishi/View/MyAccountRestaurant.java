@@ -24,9 +24,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import malcolmmaima.dishi.R;
-import malcolmmaima.dishi.View.Fragments.ItemFourFragment;
+import malcolmmaima.dishi.View.Fragments.NearbyRestaurantsFragment;
+import malcolmmaima.dishi.View.Fragments.ReceivedOrdersFragment;
 import malcolmmaima.dishi.View.Fragments.RestaurantMenuFragment;
-import malcolmmaima.dishi.View.Fragments.ItemThreeFragment;
+import malcolmmaima.dishi.View.Fragments.UserProfileFragment;
 
 
 public class MyAccountRestaurant extends AppCompatActivity {
@@ -86,10 +87,10 @@ public class MyAccountRestaurant extends AppCompatActivity {
                         switch (item.getItemId()) {
 
                             case R.id.action_item1:
-                                selectedFragment = ItemFourFragment.newInstance();
+                                selectedFragment = ReceivedOrdersFragment.newInstance();
                                 break;
                             case R.id.action_item2:
-                                selectedFragment = ItemThreeFragment.newInstance();
+                                selectedFragment = UserProfileFragment.newInstance();
                                 break;
                             case R.id.action_item3:
                                 selectedFragment = RestaurantMenuFragment.newInstance();
@@ -104,7 +105,7 @@ public class MyAccountRestaurant extends AppCompatActivity {
 
         //Manually displaying the first fragment - one time only
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.frame_layout, ItemFourFragment.newInstance());
+        transaction.replace(R.id.frame_layout, ReceivedOrdersFragment.newInstance());
         transaction.commit();
 
         //Used to select an item programmatically

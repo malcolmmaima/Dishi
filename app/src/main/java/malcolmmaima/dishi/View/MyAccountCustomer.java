@@ -24,8 +24,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import malcolmmaima.dishi.R;
-import malcolmmaima.dishi.View.Fragments.ItemFourFragment;
-import malcolmmaima.dishi.View.Fragments.ItemThreeFragment;
+import malcolmmaima.dishi.View.Fragments.NearbyRestaurantsFragment;
+import malcolmmaima.dishi.View.Fragments.UserProfileFragment;
 import malcolmmaima.dishi.View.Fragments.CustomerOrderFragment;
 
 
@@ -65,6 +65,7 @@ public class MyAccountCustomer extends AppCompatActivity {
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(MyAccountCustomer.this, "Error: " + databaseError.toString() + ". Try again!", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -89,10 +90,10 @@ public class MyAccountCustomer extends AppCompatActivity {
                                 selectedFragment = CustomerOrderFragment.newInstance();
                                 break;
                             case R.id.action_item2:
-                                selectedFragment = ItemThreeFragment.newInstance();
+                                selectedFragment = UserProfileFragment.newInstance();
                                 break;
                             case R.id.action_item3:
-                                selectedFragment = ItemFourFragment.newInstance();
+                                selectedFragment = NearbyRestaurantsFragment.newInstance();
                                 break;
                         }
                         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

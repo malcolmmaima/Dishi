@@ -5,13 +5,16 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="150dp"
-    app:view_shadowDx="2dp"
+
+    android:background="#fff"
+    android:elevation="4dp"
+
+    app:view_shadowDx="20dp"
     app:view_shadowDy="0dp"
-    app:view_borderWidth="2dp"
-    app:view_borderColor="#cccccc">
+    app:view_borderWidth="8dp"
+    app:view_borderColor="#000000">
 
-
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout
         android:clickable="true"
         android:layout_width="match_parent"
         android:layout_height="140dp"

@@ -33,5 +33,5 @@ tools:context=".View.MyAccountRestaurant">
     android:background="@color/colorPrimary"
     app:itemIconTint="@color/cardview_light_background"
     app:itemTextColor="@color/common_google_signin_btn_text_light"
-    app:menu="@menu/bottom_navigation_items"/>
+    app:menu="@menu/bottom_navigation_restaurant"/>
 </RelativeLayout>

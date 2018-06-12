@@ -25,7 +25,7 @@ public class MyCart extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        setTitle("Settings");
+        setTitle("My Cart");
 
         //Back button on toolbar
         topToolBar.setNavigationOnClickListener(new View.OnClickListener() {

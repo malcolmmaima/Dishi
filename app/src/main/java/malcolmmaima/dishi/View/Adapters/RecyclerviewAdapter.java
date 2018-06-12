@@ -18,7 +18,6 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
-import malcolmmaima.dishi.Model.Listdata;
 import malcolmmaima.dishi.Model.ProductDetails;
 import malcolmmaima.dishi.R;
 

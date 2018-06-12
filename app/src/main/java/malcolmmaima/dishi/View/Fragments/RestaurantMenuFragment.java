@@ -24,7 +24,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import malcolmmaima.dishi.Model.Listdata;
 import malcolmmaima.dishi.Model.ProductDetails;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.Adapters.RecyclerviewAdapter;

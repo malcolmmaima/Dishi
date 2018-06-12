@@ -10,8 +10,8 @@ import android.view.ViewGroup;
 import malcolmmaima.dishi.R;
 
 public class ItemFiveFragment extends Fragment {
-    public static ItemThreeFragment newInstance() {
-        ItemThreeFragment fragment = new ItemThreeFragment();
+    public static UserProfileFragment newInstance() {
+        UserProfileFragment fragment = new UserProfileFragment();
         return fragment;
     }
 
