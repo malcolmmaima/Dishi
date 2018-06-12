@@ -107,39 +107,6 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
         // Assign FirebaseDatabase instance with root database name.
         databaseReference = FirebaseDatabase.getInstance().getReference(myPhone);
 
-        FirebaseDatabase db = FirebaseDatabase.getInstance();
-        DatabaseReference dbRef = db.getReference(myPhone);
-
-        //Check whether user is verified, if true send them directly to MyAccountRestaurant
-        dbRef.child("Verified").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Boolean verified = dataSnapshot.getValue(Boolean.class);
-
-                //Toast.makeText(SetupProfile.this, "Verified: " + verified, Toast.LENGTH_LONG).show();
-                if(verified == null){
-                    verified = false;
-                }
-
-                if(verified == true){
-                    //Slide to new activity
-                    Intent slideactivity = new Intent(SetupProfile.this, MyAccountRestaurant.class)
-                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    Bundle bndlanimation =
-                            ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
-                    startActivity(slideactivity, bndlanimation);
-
-                } else {
-                    //Remain on SetupProfile to verify profile details
-                }
-
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
-
-
         //Our EditText Boxes
         userName = findViewById(R.id.userName);
         userEmail = findViewById(R.id.emailAddress);

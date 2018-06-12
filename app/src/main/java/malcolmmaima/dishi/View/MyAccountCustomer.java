@@ -114,7 +114,7 @@ public class MyAccountCustomer extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_main_customer, menu);
         return true;
     }
 
@@ -126,10 +126,10 @@ public class MyAccountCustomer extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if(id == R.id.action_new){
+        if(id == R.id.action_cart){
             //Toast.makeText(MyAccountRestaurant.this, "Add Menu", Toast.LENGTH_LONG).show();
 
-            Intent slideactivity = new Intent(MyAccountCustomer.this, AddMenu.class);
+            Intent slideactivity = new Intent(MyAccountCustomer.this, MyCart.class);
             Bundle bndlanimation =
                     ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
             startActivity(slideactivity, bndlanimation);

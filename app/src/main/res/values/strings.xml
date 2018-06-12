@@ -38,6 +38,8 @@
     <string name="item_6">Restaurants</string>
     <string name="history">History</string>
 
+    <string name="action_cart">My basket</string>
+
     <!-- Toolbar-->
     <string name="action_settings">Settings</string>
     <string name="action_refresh">Refresh</string>

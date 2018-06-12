@@ -32,7 +32,8 @@
         <activity android:name=".View.AddMenu" />
         <activity android:name=".View.SettingsActivity" />
         <activity android:name=".View.MyAccountCustomer" />
-        <activity android:name=".View.MyAccountNduthi"></activity>
+        <activity android:name=".View.MyAccountNduthi" />
+        <activity android:name=".View.MyCart"></activity>
     </application>
 
 </manifest>

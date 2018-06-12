@@ -27,7 +27,6 @@ import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.Fragments.ItemFourFragment;
 import malcolmmaima.dishi.View.Fragments.RestaurantMenuFragment;
 import malcolmmaima.dishi.View.Fragments.ItemThreeFragment;
-import malcolmmaima.dishi.View.Fragments.CustomerOrderFragment;
 
 
 public class MyAccountRestaurant extends AppCompatActivity {
@@ -105,7 +104,7 @@ public class MyAccountRestaurant extends AppCompatActivity {
 
         //Manually displaying the first fragment - one time only
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.frame_layout, CustomerOrderFragment.newInstance());
+        transaction.replace(R.id.frame_layout, ItemFourFragment.newInstance());
         transaction.commit();
 
         //Used to select an item programmatically

@@ -1,5 +1,6 @@
 package malcolmmaima.dishi.View;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -67,7 +68,6 @@ public class SplashActivity extends AppCompatActivity {
                         dbRef.child("Verified").setValue(verified).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
-                                // Write was successful!
 
                                 Intent mainActivity = new Intent(SplashActivity.this, MainActivity.class);
                                 mainActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);//Load Main Activity and clear activity stack
@@ -88,8 +88,54 @@ public class SplashActivity extends AppCompatActivity {
                         }
 
                     else if (verified.toString().equals("true")) { //Will need to check account type as well, then redirect to account type
-                        startActivity(new Intent(SplashActivity.this, SetupProfile.class)
-                                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+
+                        //User is verified, so we need to check their account type and redirect accordingly
+                        dbRef.child("Account type").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override public void onDataChange(DataSnapshot dataSnapshot) {
+                                int account_type = dataSnapshot.getValue(Integer.class);
+
+                                if(account_type == 1){ //Customer account
+                                    Toast.makeText(SplashActivity.this, "Customer Account", Toast.LENGTH_LONG).show();
+                                    Intent slideactivity = new Intent(SplashActivity.this, MyAccountCustomer.class)
+                                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    Bundle bndlanimation =
+                                            ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                                    startActivity(slideactivity, bndlanimation);
+                                }
+
+                                else if (account_type == 2){ //Provider Restaurant account
+                                    Toast.makeText(SplashActivity.this, "Provider Account", Toast.LENGTH_LONG).show();
+                                    Intent slideactivity = new Intent(SplashActivity.this, MyAccountRestaurant.class)
+                                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    Bundle bndlanimation =
+                                            ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                                    startActivity(slideactivity, bndlanimation);
+                                }
+
+                                else if (account_type == 3){ //Nduthi account
+                                    //Slide to new activity
+                                    Toast.makeText(SplashActivity.this, "Nduthi Account", Toast.LENGTH_LONG).show();
+                                    Intent slideactivity = new Intent(SplashActivity.this, MyAccountNduthi.class)
+                                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    Bundle bndlanimation =
+                                            ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                                    startActivity(slideactivity, bndlanimation);
+                                }
+
+                                else { // Others
+                                    Toast.makeText(SplashActivity.this, "'Others' account still in development", Toast.LENGTH_LONG).show();
+                                }
+
+                                    //Debugging purposes
+                                     //Toast.makeText(SplashActivity.this, "Account type: " + account_type, Toast.LENGTH_LONG).show();
+                                }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                //DB error, try again...if fails login again
+                            }
+                        });
+
                     } else {
                         //User is not verified so have them verify their profile details first
                         startActivity(new Intent(SplashActivity.this, SetupProfile.class)
