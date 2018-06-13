@@ -86,10 +86,7 @@ public class AddMenu extends AppCompatActivity {
         topToolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent slideactivity = new Intent(getApplicationContext(), MyAccountRestaurant.class)
-                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                Bundle bndlanimation = ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
-                startActivity(slideactivity, bndlanimation);
+                finish(); // Go back to previous activity
             }
         });
         //topToolBar.setLogo(R.drawable.logo);

@@ -11,7 +11,9 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
@@ -20,6 +22,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -40,7 +43,9 @@ import com.rey.material.widget.Switch;
 
 import java.io.IOException;
 
+import malcolmmaima.dishi.Model.DishiUser;
 import malcolmmaima.dishi.Model.ImageUploadInfo;
+import malcolmmaima.dishi.Model.ProductDetails;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.customfonts.EditText_Roboto_Regular;
 
@@ -194,6 +199,15 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
                     progressDialog.show();
                     progressDialog.setCancelable(false);
 
+                    DishiUser dishiUser = new DishiUser();
+                    dishiUser.setName(name);
+                    dishiUser.setBio(userbio);
+                    dishiUser.setEmail(email);
+                    dishiUser.setGender(gender);
+                    dishiUser.setAccount_type(account_type); // int value
+                    dishiUser.setNotifications(switchState); // boolean value
+                    dishiUser.setVerified(true);
+
                         // Write user data to the database
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                     DatabaseReference myRef = database.getReference(myPhone);
@@ -321,7 +335,7 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
             myPhone = user.getPhoneNumber(); //Current logged in user phone number
 
             // Creating second StorageReference.
-            StorageReference storageReference2nd = storageReference.child(Storage_Path + "/" + myPhone + "/" + System.currentTimeMillis() + "." + GetFileExtension(FilePathUri));
+            final StorageReference storageReference2nd = storageReference.child(Storage_Path + "/" + myPhone + "/" + System.currentTimeMillis() + "." + GetFileExtension(FilePathUri));
 
             // Adding addOnSuccessListener to second StorageReference.
             storageReference2nd.putFile(FilePathUri)
@@ -329,31 +343,33 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-                            // Getting image name from EditText and store into string variable.
-                            String TempImageName = userName.getText().toString().trim();
+                            //Get image URL: //Here we get the image url from the firebase storage
+                            storageReference2nd.getDownloadUrl().addOnSuccessListener(new OnSuccessListener() {
 
-                            // Hiding the progressDialog after done uploading.
-                            //progressDialog.dismiss();
+                                @Override
+                                public void onSuccess(Object o) {
+                                    ImageUploadInfo imageUploadInfo = new ImageUploadInfo();
 
-                            // Showing toast message after done uploading.
-                            //Toast.makeText(getApplicationContext(), "Image Uploaded Successfully ", Toast.LENGTH_LONG).show();
+                                    imageUploadInfo.setImageURL(o.toString());
 
-                            @SuppressWarnings("VisibleForTests")
-                            ImageUploadInfo imageUploadInfo = new ImageUploadInfo(TempImageName, taskSnapshot.getUploadSessionUri().toString());
+                                    //Log.d("profile", "onSuccess: profile image: " + imageUploadInfo.getImageURL());
 
-                            // Getting image upload ID.
-                            String ImageUploadId = databaseReference.push().getKey();
+                                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                    myPhone = user.getPhoneNumber(); //Current logged in user phone number
 
-                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                            myPhone = user.getPhoneNumber(); //Current logged in user phone number
+                                    // Write image data to the database
+                                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                    DatabaseReference myRef = database.getReference(myPhone);
+                                    myRef.child("Profile pic").setValue(imageUploadInfo.getImageURL());
+                                }
 
-                            // Write image data to the database
-                            FirebaseDatabase database = FirebaseDatabase.getInstance();
-                            DatabaseReference myRef = database.getReference(myPhone);
-                            myRef.child("Profile").setValue(imageUploadInfo);
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception exception) {
+                                    // Handle any errors
+                                }
+                            });
 
-                            // Adding image upload id s child element into databaseReference.
-                            //databaseReference.child(ImageUploadId).setValue(imageUploadInfo);
                         }
                     })
                     // If something goes wrong .

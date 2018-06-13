@@ -24,4 +24,7 @@ public class ImageUploadInfo {
         return imageURL;
     }
 
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
+    }
 }
