@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
             DatabaseReference dbRef = db.getReference(myPhone);
 
             //Check whether user is verified, if true send them directly to MyAccountRestaurant
-            dbRef.child("Verified").addListenerForSingleValueEvent(new ValueEventListener() {
+            dbRef.child("verified").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     Boolean verified = dataSnapshot.getValue(Boolean.class);
@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
                         FirebaseDatabase db = FirebaseDatabase.getInstance();
                         DatabaseReference dbRef = db.getReference(myPhone);
 
-                        dbRef.child("Verified").addListenerForSingleValueEvent(new ValueEventListener() {
+                        dbRef.child("verified").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 Boolean verified = dataSnapshot.getValue(Boolean.class);
@@ -266,7 +266,7 @@ public class MainActivity extends AppCompatActivity {
             final DatabaseReference dbRef = db.getReference(myPhone);
 
             //Check whether user is verified, if true send them directly to MyAccountRestaurant
-            dbRef.child("Verified").addListenerForSingleValueEvent(new ValueEventListener() {
+            dbRef.child("verified").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     Boolean verified = dataSnapshot.getValue(Boolean.class);
@@ -274,7 +274,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Verified: " + verified, Toast.LENGTH_LONG).show();
                     if(verified == true){
                         //User is verified, so we need to check their account type and redirect accordingly
-                        dbRef.child("Account type").addListenerForSingleValueEvent(new ValueEventListener() {
+                        dbRef.child("account_type").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override public void onDataChange(DataSnapshot dataSnapshot) {
                                 int account_type = dataSnapshot.getValue(Integer.class);
 
@@ -360,7 +360,7 @@ public class MainActivity extends AppCompatActivity {
                             final DatabaseReference dbRef = db.getReference(myPhone);
 
                             //Check whether user is verified, if true send them directly to MyAccount_(n)
-                            dbRef.child("Verified").addListenerForSingleValueEvent(new ValueEventListener() {
+                            dbRef.child("verified").addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     Boolean verified = dataSnapshot.getValue(Boolean.class);
@@ -368,7 +368,7 @@ public class MainActivity extends AppCompatActivity {
                                     //Toast.makeText(MainActivity.this, "Verified: " + verified, Toast.LENGTH_LONG).show();
                                     if(verified == true){
                                         //User is verified, so we need to check their account type and redirect accordingly
-                                        dbRef.child("Account type").addListenerForSingleValueEvent(new ValueEventListener() {
+                                        dbRef.child("account_type").addListenerForSingleValueEvent(new ValueEventListener() {
                                             @Override public void onDataChange(DataSnapshot dataSnapshot) {
                                                 int account_type = dataSnapshot.getValue(Integer.class);
 

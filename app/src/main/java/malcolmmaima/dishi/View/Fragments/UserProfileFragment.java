@@ -3,6 +3,9 @@ package malcolmmaima.dishi.View.Fragments;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,9 +22,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import malcolmmaima.dishi.Model.DishiUser;
 import malcolmmaima.dishi.Model.ImageUploadInfo;
 
+import malcolmmaima.dishi.Model.ProductDetails;
 import malcolmmaima.dishi.R;
+import malcolmmaima.dishi.View.Adapters.RecyclerviewAdapter;
 
 public class UserProfileFragment extends Fragment {
 
@@ -32,6 +41,8 @@ public class UserProfileFragment extends Fragment {
 
     TextView userProfileName;
     ImageView profilePic;
+
+    List<DishiUser> userdata;
 
     public static UserProfileFragment newInstance() {
         UserProfileFragment fragment = new UserProfileFragment();
@@ -56,8 +67,39 @@ public class UserProfileFragment extends Fragment {
         db = FirebaseDatabase.getInstance();
         dbRef = db.getReference(myPhone);
 
-        //Works like a charm, in future remember to change use POJO and fetch all user data at once
-        dbRef.child("Profile pic").addListenerForSingleValueEvent(new ValueEventListener() {
+        /* Will work on this later. fetch all user data
+        dbRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                userdata = new ArrayList<>();
+                // StringBuffer stringbuffer = new StringBuffer();
+                for(DataSnapshot dataSnapshot1 :dataSnapshot.getChildren()){
+
+                    DishiUser dishiUser = dataSnapshot1.getValue(DishiUser.class);
+                    userdata.add(dishiUser);
+
+                }
+                if(!userdata.isEmpty()){
+                    Toast.makeText(getContext(), "User data=> " + userdata.toString(), Toast.LENGTH_LONG).show();
+                }
+
+                else {
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                //  Log.w(TAG, "Failed to read value.", error.toException());
+
+                Toast.makeText(getActivity(), "Failed, refresh!", Toast.LENGTH_SHORT).show();
+            }
+        }); */
+
+        //Works like a charm, in future remember to change, use dishiUer POJO and fetch all user data at once
+        dbRef.child("profilepic").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String ppic_url = dataSnapshot.getValue(String.class);
@@ -71,7 +113,7 @@ public class UserProfileFragment extends Fragment {
             }
         });
 
-        dbRef.child("Name").addListenerForSingleValueEvent(new ValueEventListener() {
+        dbRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String profilename = dataSnapshot.getValue(String.class);

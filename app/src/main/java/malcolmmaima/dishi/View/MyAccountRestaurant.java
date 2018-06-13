@@ -57,7 +57,7 @@ public class MyAccountRestaurant extends AppCompatActivity {
         final DatabaseReference dbRef = db.getReference(myPhone);
 
         //Check whether user is verified, if true send them directly to MyAccountRestaurant
-        dbRef.child("Name").addListenerForSingleValueEvent(new ValueEventListener() {
+        dbRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String account_name = dataSnapshot.getValue(String.class);

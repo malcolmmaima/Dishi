@@ -173,109 +173,7 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
             @Override
             public void onClick(View v) {
 
-                UploadImageFileToFirebaseStorage();
-
-                if(CheckFieldValidation()) {
-                    String name = userName.getText().toString();
-                    String email = userEmail.getText().toString();
-                    String userbio = userBio.getText().toString();
-
-                    int userGender = gender.getCheckedRadioButtonId();
-
-                    // find the radio button by returned id
-                    RadioButton radioButton = findViewById(userGender);
-
-                    String gender = radioButton.getText().toString();
-
-                    Boolean switchState = notifications.isChecked();
-
-
-                    //Toast.makeText(SetupProfile.this, "Phone: " + myPhone + " Name: " + name + " email: " + email + " Gender: " + gender + " Account Type:" + account_type + " Notification: " + switchState, Toast.LENGTH_LONG).show();
-
-                    // Setting progressDialog Title.
-                    progressDialog.setTitle("Saving...");
-
-                    // Showing progressDialog.
-                    progressDialog.show();
-                    progressDialog.setCancelable(false);
-
-                    DishiUser dishiUser = new DishiUser();
-                    dishiUser.setName(name);
-                    dishiUser.setBio(userbio);
-                    dishiUser.setEmail(email);
-                    dishiUser.setGender(gender);
-                    dishiUser.setAccount_type(account_type); // int value
-                    dishiUser.setNotifications(switchState); // boolean value
-                    dishiUser.setVerified(true);
-
-                        // Write user data to the database
-                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    DatabaseReference myRef = database.getReference(myPhone);
-                    myRef.child("Name").setValue(name);
-                    myRef.child("Bio").setValue(userbio);
-                    myRef.child("Email").setValue(email);
-                    myRef.child("Gender").setValue(gender);
-                    myRef.child("Account type").setValue(account_type);
-                    myRef.child("Notifications").setValue(switchState);
-                    myRef.child("Verified").setValue(true).addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            // Write was successful!
-                            if(account_type == 1){ // Cusomer account
-                                //Slide to new activity
-                                Toast.makeText(SetupProfile.this, "Customer Account", Toast.LENGTH_LONG).show();
-                                Intent slideactivity = new Intent(SetupProfile.this, MyAccountCustomer.class)
-                                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                Bundle bndlanimation =
-                                        ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
-                                startActivity(slideactivity, bndlanimation);
-
-                                // Hiding the progressDialog after done uploading.
-                                progressDialog.dismiss();
-                            }
-
-                            else if(account_type == 2){ //Provider account
-                                //Slide to new activity
-                                Toast.makeText(SetupProfile.this, "Provider Account", Toast.LENGTH_LONG).show();
-                                Intent slideactivity = new Intent(SetupProfile.this, MyAccountRestaurant.class)
-                                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                Bundle bndlanimation =
-                                        ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
-                                startActivity(slideactivity, bndlanimation);
-
-                                // Hiding the progressDialog after done uploading.
-                                progressDialog.dismiss();
-                            }
-
-                            else if (account_type == 3){ //Nduthi account
-                                //Slide to new activity
-                                Toast.makeText(SetupProfile.this, "Nduthi Account", Toast.LENGTH_LONG).show();
-                                Intent slideactivity = new Intent(SetupProfile.this, MyAccountNduthi.class)
-                                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                Bundle bndlanimation =
-                                        ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
-                                startActivity(slideactivity, bndlanimation);
-
-                                // Hiding the progressDialog after done uploading.
-                                progressDialog.dismiss();
-                            }
-
-                            else { // Others
-                                Toast.makeText(SetupProfile.this, "'Others' account still inn development", Toast.LENGTH_LONG).show();
-                                progressDialog.dismiss();
-                            }
-
-                        }
-                    })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    // Write failed
-
-                                    Toast.makeText(SetupProfile.this, "Failed: " + e.toString() + ". Try again!", Toast.LENGTH_LONG).show();
-                                }
-                            });
-                }
+                UploadUserData();
 
             }
         });
@@ -319,20 +217,19 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
     }
 
     // Creating UploadImageFileToFirebaseStorage method to upload image on storage.
-    public void UploadImageFileToFirebaseStorage() {
+    public void UploadUserData() {
 
-        // Checking whether FilePathUri Is empty or not.
-        if (FilePathUri != null) {
-
-            ppicStatus = "set";
-            // Setting progressDialog Title.
-            //progressDialog.setTitle("Image is Uploading...");
-
-            // Showing progressDialog.
-            //progressDialog.show();
+        // Checking whether FilePathUri Is empty or not and text fields are empty
+        if (FilePathUri != null && CheckFieldValidation()) {
 
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             myPhone = user.getPhoneNumber(); //Current logged in user phone number
+
+            // Setting progressDialog Title.
+            progressDialog.setTitle("Saving...");
+            // Showing progressDialog.
+            progressDialog.show();
+            progressDialog.setCancelable(false);
 
             // Creating second StorageReference.
             final StorageReference storageReference2nd = storageReference.child(Storage_Path + "/" + myPhone + "/" + System.currentTimeMillis() + "." + GetFileExtension(FilePathUri));
@@ -348,19 +245,104 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
 
                                 @Override
                                 public void onSuccess(Object o) {
-                                    ImageUploadInfo imageUploadInfo = new ImageUploadInfo();
+                                    DishiUser dishiUser = new DishiUser();
 
-                                    imageUploadInfo.setImageURL(o.toString());
+                                    dishiUser.setProfilepic(o.toString());
 
                                     //Log.d("profile", "onSuccess: profile image: " + imageUploadInfo.getImageURL());
 
                                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                                     myPhone = user.getPhoneNumber(); //Current logged in user phone number
 
-                                    // Write image data to the database
+                                    String name = userName.getText().toString();
+                                    String email = userEmail.getText().toString();
+                                    String userbio = userBio.getText().toString();
+
+                                    int userGender = gender.getCheckedRadioButtonId();
+
+                                    // find the radio button by returned id
+                                    RadioButton radioButton = findViewById(userGender);
+
+                                    String gender = radioButton.getText().toString();
+
+                                    Boolean switchState = notifications.isChecked();
+
+
+                                    //Toast.makeText(SetupProfile.this, "Phone: " + myPhone + " Name: " + name + " email: " + email + " Gender: " + gender + " Account Type:" + account_type + " Notification: " + switchState, Toast.LENGTH_LONG).show();
+
+                                    dishiUser.setName(name);
+                                    dishiUser.setBio(userbio);
+                                    dishiUser.setEmail(email);
+                                    dishiUser.setGender(gender);
+                                    dishiUser.setAccount_type(account_type); // int value
+                                    dishiUser.setNotifications(switchState); // boolean value
+                                    dishiUser.setVerified(true);
+
+                                    // Write user data to the database
                                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                                     DatabaseReference myRef = database.getReference(myPhone);
-                                    myRef.child("Profile pic").setValue(imageUploadInfo.getImageURL());
+
+                                    myRef.setValue(dishiUser).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+
+                                                progressDialog.dismiss();
+                                                // Write was successful!
+                                                if(account_type == 1){ // Cusomer account
+                                                    //Slide to new activity
+                                                    Toast.makeText(SetupProfile.this, "Customer Account", Toast.LENGTH_LONG).show();
+                                                    Intent slideactivity = new Intent(SetupProfile.this, MyAccountCustomer.class)
+                                                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                    Bundle bndlanimation =
+                                                            ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                                                    startActivity(slideactivity, bndlanimation);
+
+                                                    // Hiding the progressDialog after done uploading.
+                                                    progressDialog.dismiss();
+                                                }
+
+                                                else if(account_type == 2){ //Provider account
+                                                    //Slide to new activity
+                                                    Toast.makeText(SetupProfile.this, "Provider Account", Toast.LENGTH_LONG).show();
+                                                    Intent slideactivity = new Intent(SetupProfile.this, MyAccountRestaurant.class)
+                                                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                    Bundle bndlanimation =
+                                                            ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                                                    startActivity(slideactivity, bndlanimation);
+
+                                                    // Hiding the progressDialog after done uploading.
+                                                    progressDialog.dismiss();
+                                                }
+
+                                                else if (account_type == 3){ //Nduthi account
+                                                    //Slide to new activity
+                                                    Toast.makeText(SetupProfile.this, "Nduthi Account", Toast.LENGTH_LONG).show();
+                                                    Intent slideactivity = new Intent(SetupProfile.this, MyAccountNduthi.class)
+                                                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                    Bundle bndlanimation =
+                                                            ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                                                    startActivity(slideactivity, bndlanimation);
+
+                                                    // Hiding the progressDialog after done uploading.
+                                                    progressDialog.dismiss();
+                                                }
+
+                                                else { // Others
+                                                    Toast.makeText(SetupProfile.this, "'Others' account still inn development", Toast.LENGTH_LONG).show();
+                                                    progressDialog.dismiss();
+                                                }
+
+                                            }
+                                        })
+                                                .addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        // Write failed
+
+                                                        Toast.makeText(SetupProfile.this, "Failed: " + e.toString() + ". Try again!", Toast.LENGTH_LONG).show();
+                                                    }
+                                                });
+
                                 }
 
                             }).addOnFailureListener(new OnFailureListener() {
@@ -398,8 +380,7 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
         }
         else {
 
-            Toast.makeText(SetupProfile.this, "Please Select Profile Image", Toast.LENGTH_LONG).show();
-            ppicStatus = "empty";
+            Toast.makeText(SetupProfile.this, "Please enter all details", Toast.LENGTH_LONG).show();
 
         }
     }
@@ -451,11 +432,6 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
         String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
         boolean valid=true;
-
-        if(ppicStatus.equals("empty")){
-            Toast.makeText(SetupProfile.this, "You must select image", Toast.LENGTH_SHORT).show();
-            valid=false;
-        }
 
         if(userName.getText().toString().equals("")){
             userName.setError("Can't be Empty");
