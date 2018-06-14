@@ -7,9 +7,9 @@ public class DishiUser {
     public String bio;
     public String email;
     public String gender;
-    public int account_type;
-    public Boolean notifications;
-    public Boolean verified;
+    public String account_type;
+    public String notifications;
+    public String verified;
 
     public String getName() {
         return name;
@@ -51,27 +51,27 @@ public class DishiUser {
         this.gender = gender;
     }
 
-    public int getAccount_type() {
+    public String getAccount_type() {
         return account_type;
     }
 
-    public void setAccount_type(int account_type) {
+    public void setAccount_type(String account_type) {
         this.account_type = account_type;
     }
 
-    public Boolean getNotifications() {
+    public String getNotifications() {
         return notifications;
     }
 
-    public void setNotifications(Boolean notifications) {
+    public void setNotifications(String notifications) {
         this.notifications = notifications;
     }
 
-    public Boolean getVerified() {
+    public String getVerified() {
         return verified;
     }
 
-    public void setVerified(Boolean verified) {
+    public void setVerified(String verified) {
         this.verified = verified;
     }
 }

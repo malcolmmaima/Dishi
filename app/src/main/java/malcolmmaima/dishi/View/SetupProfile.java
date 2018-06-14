@@ -64,7 +64,7 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
     String ppicStatus;
 
     private FirebaseAuth mAuth;
-    int account_type;
+    String account_type;
 
     // Folder path for Firebase Storage.
     String Storage_Path = "Users/";
@@ -275,8 +275,8 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
                                     dishiUser.setEmail(email);
                                     dishiUser.setGender(gender);
                                     dishiUser.setAccount_type(account_type); // int value
-                                    dishiUser.setNotifications(switchState); // boolean value
-                                    dishiUser.setVerified(true);
+                                    dishiUser.setNotifications(switchState.toString()); // boolean value
+                                    dishiUser.setVerified("true");
 
                                     // Write user data to the database
                                     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -288,7 +288,7 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
 
                                                 progressDialog.dismiss();
                                                 // Write was successful!
-                                                if(account_type == 1){ // Cusomer account
+                                                if(account_type == "1"){ // Cusomer account
                                                     //Slide to new activity
                                                     Toast.makeText(SetupProfile.this, "Customer Account", Toast.LENGTH_LONG).show();
                                                     Intent slideactivity = new Intent(SetupProfile.this, MyAccountCustomer.class)
@@ -301,7 +301,7 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
                                                     progressDialog.dismiss();
                                                 }
 
-                                                else if(account_type == 2){ //Provider account
+                                                else if(account_type == "2"){ //Provider account
                                                     //Slide to new activity
                                                     Toast.makeText(SetupProfile.this, "Provider Account", Toast.LENGTH_LONG).show();
                                                     Intent slideactivity = new Intent(SetupProfile.this, MyAccountRestaurant.class)
@@ -314,7 +314,7 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
                                                     progressDialog.dismiss();
                                                 }
 
-                                                else if (account_type == 3){ //Nduthi account
+                                                else if (account_type == "3"){ //Nduthi account
                                                     //Slide to new activity
                                                     Toast.makeText(SetupProfile.this, "Nduthi Account", Toast.LENGTH_LONG).show();
                                                     Intent slideactivity = new Intent(SetupProfile.this, MyAccountNduthi.class)
@@ -413,12 +413,12 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        account_type = position;
+        account_type = Integer.toString(position);
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-        account_type = 0;
+        account_type = "0";
     }
 
     @Override
@@ -454,7 +454,7 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
             valid=false;
         }
 
-        if(account_type == 0){
+        if(account_type == "0"){
             Toast.makeText(this, "You must select account type", Toast.LENGTH_SHORT).show();
             valid=false;
         }

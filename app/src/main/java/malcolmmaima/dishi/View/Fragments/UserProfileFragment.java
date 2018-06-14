@@ -67,25 +67,50 @@ public class UserProfileFragment extends Fragment {
         db = FirebaseDatabase.getInstance();
         dbRef = db.getReference(myPhone);
 
-        /* Will work on this later. fetch all user data
+
+        // Fetch all user data (A bit old school but meeeh)
         dbRef.addValueEventListener(new ValueEventListener() {
+            String name, myemail, acctype, bio, gender, notification, profilepic, verifiedstat;
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+
                 userdata = new ArrayList<>();
-                // StringBuffer stringbuffer = new StringBuffer();
                 for(DataSnapshot dataSnapshot1 :dataSnapshot.getChildren()){
 
-                    DishiUser dishiUser = dataSnapshot1.getValue(DishiUser.class);
-                    userdata.add(dishiUser);
+                    if (dataSnapshot1.getKey().equals("name")) {
+                        name = dataSnapshot1.getValue().toString();
+                    }
+                    if (dataSnapshot1.getKey().equals("email")) {
+                        myemail = dataSnapshot1.getValue().toString();
 
-                }
-                if(!userdata.isEmpty()){
-                    Toast.makeText(getContext(), "User data=> " + userdata.toString(), Toast.LENGTH_LONG).show();
+                    }
+                    if (dataSnapshot1.getKey().equals("bio")) {
+                        bio = dataSnapshot1.getValue().toString();
+                    }
+
+                    if (dataSnapshot1.getKey().equals("gender")) {
+                        gender = dataSnapshot1.getValue().toString();
+                    }
+                    if (dataSnapshot1.getKey().equals("account_type")) {
+                        acctype = dataSnapshot1.getValue().toString();
+                    }
+                    if (dataSnapshot1.getKey().equals("verified")) {
+                        verifiedstat = dataSnapshot1.getValue().toString();
+                    }
+                    if (dataSnapshot1.getKey().equals("profilepic")) {
+                        profilepic = dataSnapshot1.getValue().toString();
+                    }
+
+                    if (dataSnapshot1.getKey().equals("notification")) {
+                        notification = dataSnapshot1.getValue().toString();
+                    }
+
+                    //DishiUser dishiUser = dataSnapshot1.getValue(DishiUser.class);
+                    //userdata.add(dishiUser);
                 }
 
-                else {
-
-                }
+                Toast.makeText(getContext(), "User data=> name: " + name + " email: "
+                        + myemail + " bio: " + bio + " gender: " + gender, Toast.LENGTH_LONG).show();
 
             }
 
@@ -96,15 +121,21 @@ public class UserProfileFragment extends Fragment {
 
                 Toast.makeText(getActivity(), "Failed, refresh!", Toast.LENGTH_SHORT).show();
             }
-        }); */
+        });
 
         //Works like a charm, in future remember to change, use dishiUer POJO and fetch all user data at once
         dbRef.child("profilepic").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String ppic_url = dataSnapshot.getValue(String.class);
-                //Loading image from Glide library.
-                Glide.with(getContext()).load(ppic_url).into(profilePic);
+
+                if(ppic_url.equals(null)){
+                    Toast.makeText(getContext(), "Failed Loading profile picture, refresh!", Toast.LENGTH_LONG).show();
+                }
+                else{
+                    //Loading image from Glide library.
+                    Glide.with(getContext()).load(ppic_url).into(profilePic);
+                }
             }
 
             @Override
