@@ -57,12 +57,12 @@ public class RestaurantMenuFragment extends Fragment {
                              Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.fragment_restaurant_menu, container, false);
         // Assigning Id to ProgressDialog.
-        progressDialog = new ProgressDialog(getContext());
+        //progressDialog = new ProgressDialog(getContext());
         // Setting progressDialog Title.
-        progressDialog.setTitle("Loading...");
+        //progressDialog.setTitle("Loading...");
         // Showing progressDialog.
-        progressDialog.show();
-        progressDialog.setCancelable(false);
+        //progressDialog.show();
+        //progressDialog.setCancelable(false);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         myPhone = user.getPhoneNumber(); //Current logged in user phone number
@@ -82,7 +82,7 @@ public class RestaurantMenuFragment extends Fragment {
                     ProductDetails productDetails = dataSnapshot1.getValue(ProductDetails.class); //Assign values to model
                     productDetails.key = dataSnapshot1.getKey(); //Get item keys, useful when performing delete operations
                     list.add(productDetails);
-                    progressDialog.dismiss();
+                    //progressDialog.dismiss();
                 }
 
                 if(!list.isEmpty()){
@@ -95,10 +95,6 @@ public class RestaurantMenuFragment extends Fragment {
                 }
 
                 else {
-                    if(progressDialog.isShowing()){
-                        progressDialog.dismiss();
-                    }
-
                     RestaurantMenuAdapter recycler = new RestaurantMenuAdapter(getContext(),list);
                     RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
                     recyclerview.setLayoutManager(layoutmanager);
@@ -117,7 +113,7 @@ public class RestaurantMenuFragment extends Fragment {
 
                 progressDialog.dismiss();
 
-                Toast.makeText(getActivity(), "Failed, refresh!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Failed, " + error, Toast.LENGTH_SHORT).show();
             }
         });
 
