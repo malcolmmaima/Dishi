@@ -9,8 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,7 +24,7 @@ import java.util.List;
 
 import malcolmmaima.dishi.Model.ProductDetails;
 import malcolmmaima.dishi.R;
-import malcolmmaima.dishi.View.Adapters.RecyclerviewAdapter;
+import malcolmmaima.dishi.View.Adapters.RestaurantMenuAdapter;
 
 public class RestaurantMenuFragment extends Fragment {
 
@@ -83,7 +81,7 @@ public class RestaurantMenuFragment extends Fragment {
                     progressDialog.dismiss();
                 }
                 if(!list.isEmpty()){
-                    RecyclerviewAdapter recycler = new RecyclerviewAdapter(getContext(),list);
+                    RestaurantMenuAdapter recycler = new RestaurantMenuAdapter(getContext(),list);
                     RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
                     recyclerview.setLayoutManager(layoutmanager);
                     recyclerview.setItemAnimator( new DefaultItemAnimator());

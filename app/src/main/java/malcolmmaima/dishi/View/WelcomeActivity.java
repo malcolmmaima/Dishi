@@ -40,11 +40,6 @@ public class WelcomeActivity extends AppCompatActivity {
     private Button btnSkip, btnNext;
     private PreferenceManager prefManager;
 
-
-    String myPhone;
-
-    private FirebaseAuth mAuth;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,17 +128,11 @@ public class WelcomeActivity extends AppCompatActivity {
 
     private void launchHomeScreen() {
         prefManager.setFirstTimeLaunch(false);
-
-
-        mAuth = FirebaseAuth.getInstance();
-
-        if(mAuth.getInstance().getCurrentUser() == null || mAuth.getInstance().getCurrentUser().getPhoneNumber() == null){
-
             //User is not signed in, send them to verification page
             //Toast.makeText(this, "Not logged in!", Toast.LENGTH_LONG).show();
             startActivity(new Intent(WelcomeActivity.this, MainActivity.class)
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));//Load Main Activity and clear activity stack
-        }
+
     }
 
     //  viewpager change listener

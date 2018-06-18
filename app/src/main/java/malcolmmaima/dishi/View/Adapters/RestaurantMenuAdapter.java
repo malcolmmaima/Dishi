@@ -9,7 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,13 +21,13 @@ import java.util.List;
 import malcolmmaima.dishi.Model.ProductDetails;
 import malcolmmaima.dishi.R;
 
-public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapter.MyHolder>{
+public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAdapter.MyHolder>{
 
     Context context;
     List<ProductDetails> listdata;
     ProgressDialog progressDialog;
 
-    public RecyclerviewAdapter(Context context, List<ProductDetails> listdata) {
+    public RestaurantMenuAdapter(Context context, List<ProductDetails> listdata) {
         this.listdata = listdata;
 
         this.context = context;
@@ -106,7 +106,7 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
     class MyHolder extends RecyclerView.ViewHolder{
         TextView foodPrice , foodDescription, foodName;
         ImageView foodPic;
-        Button editBtn, deleteBtn;
+        ImageButton deleteBtn, editBtn;
 
         public MyHolder(View itemView) {
             super(itemView);
