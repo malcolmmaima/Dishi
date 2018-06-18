@@ -34,6 +34,7 @@ import malcolmmaima.dishi.R;
 public class TrackingService extends Service {
 
     private static final String TAG = TrackingService.class.getSimpleName();
+    FirebaseAuth mAuth;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -44,6 +45,7 @@ public class TrackingService extends Service {
     public void onCreate() {
         super.onCreate();
         buildNotification();
+        mAuth = FirebaseAuth.getInstance();
         requestLocationUpdates();
     }
 
@@ -72,11 +74,11 @@ public class TrackingService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
 
-//Unregister the BroadcastReceiver when the notification is tapped//
+            //Unregister the BroadcastReceiver when the notification is tapped//
 
             unregisterReceiver(stopReceiver);
 
-//Stop the Service//
+            //Stop the Service//
 
             stopSelf();
         }
@@ -86,45 +88,46 @@ public class TrackingService extends Service {
 //Initiate the request to track the device's location//
 
     private void requestLocationUpdates() {
-        LocationRequest request = new LocationRequest();
+
+            LocationRequest request = new LocationRequest();
 
 //Specify how often your app should request the device’s location//
 
-        request.setInterval(10000);
+            request.setInterval(10000);
 
 //Get the most accurate location data available//
 
-        request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(this);
-        final String path = "location";
-        int permission = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION);
+            request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(this);
+            final String path = "location";
+            int permission = ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION);
 
 //If the app currently has access to the location permission...//
 
-        if (permission == PackageManager.PERMISSION_GRANTED) {
+            if (permission == PackageManager.PERMISSION_GRANTED) {
 
 //...then request location updates//
 
-            client.requestLocationUpdates(request, new LocationCallback() {
-                @Override
-                public void onLocationResult(LocationResult locationResult) {
+                client.requestLocationUpdates(request, new LocationCallback() {
+                    @Override
+                    public void onLocationResult(LocationResult locationResult) {
 
-                    //Get a reference to the database, so your app can perform read and write operations//
-                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                    String myPhone = user.getPhoneNumber(); //Current logged in user phone number
+                        Location location = locationResult.getLastLocation();
+                        if (location != null && mAuth.getInstance().getCurrentUser() != null ) {
 
-                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference(myPhone);
-                    Location location = locationResult.getLastLocation();
-                    if (location != null) {
+                            //Get a reference to the database, so your app can perform read and write operations//
+                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            String myPhone = user.getPhoneNumber(); //Current logged in user phone number
 
-                        //Save the location data to the database//
+                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference(myPhone);
+                            //Save the location data to the database//
 
-                        ref.child("location").setValue(location);
-                        Toast.makeText(getApplicationContext(), "Location data: " + location, Toast.LENGTH_LONG).show();
+                            ref.child("location").setValue(location);
+                            //Toast.makeText(getApplicationContext(), "Location data: " + location, Toast.LENGTH_LONG).show();
+                        }
                     }
-                }
-            }, null);
+                }, null);
+            }
         }
-    }
 }
