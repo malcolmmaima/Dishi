@@ -289,6 +289,7 @@ public class AddMenu extends AppCompatActivity {
                                 productDetails.setPrice(price);
                                 productDetails.setDescription(description);
                                 productDetails.setImageURL(o.toString());
+                                productDetails.setStorageLocation(storageReference2nd.getPath());
 
                                 Log.d("myimage", "onSuccess: product image: " + productDetails.getImageURL());
 
@@ -325,6 +326,8 @@ public class AddMenu extends AppCompatActivity {
                             @Override
                             public void onFailure(@NonNull Exception exception) {
                                 // Handle any errors
+                                progressDialog.dismiss();
+                                Toast.makeText(AddMenu.this, "Error: " + exception, Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -347,8 +350,7 @@ public class AddMenu extends AppCompatActivity {
                     @Override
                     public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
 
-                        // Setting progressDialog Title.
-                        //progressDialog.setTitle("Image is Uploading...");
+                        // will implement progress bar later on
 
                     }
                 });

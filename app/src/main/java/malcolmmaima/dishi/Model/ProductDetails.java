@@ -6,8 +6,8 @@ public class ProductDetails {
     public String price;
     public String description;
     public String imageURL;
-    public  String key;
-
+    public  String storageLocation;
+    public String key; //When deleting menu items from firebase, this key value will help delete individual items from the 'mymenu' node
 
     public String getName() {
         return name;
@@ -41,5 +41,11 @@ public class ProductDetails {
         return imageURL;
     }
 
+    public String getStorageLocation() {
+        return storageLocation;
+    }
 
+    public void setStorageLocation(String storageLocation) {
+        this.storageLocation = storageLocation;
+    }
 }

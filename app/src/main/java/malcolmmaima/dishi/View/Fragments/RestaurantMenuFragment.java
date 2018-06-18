@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,6 +33,7 @@ public class RestaurantMenuFragment extends Fragment {
     List<ProductDetails> list;
     RecyclerView recyclerview;
     String myPhone;
+    TextView emptyTag;
 
     DatabaseReference dbRef, menusRef;
     FirebaseDatabase db;
@@ -53,7 +55,7 @@ public class RestaurantMenuFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_restaurant_menu, container, false);
+        final View v = inflater.inflate(R.layout.fragment_restaurant_menu, container, false);
         // Assigning Id to ProgressDialog.
         progressDialog = new ProgressDialog(getContext());
         // Setting progressDialog Title.
@@ -68,6 +70,7 @@ public class RestaurantMenuFragment extends Fragment {
         dbRef = db.getReference(myPhone);
         menusRef = db.getReference(myPhone + "/mymenu");
         recyclerview = v.findViewById(R.id.rview);
+        emptyTag = v.findViewById(R.id.empty_tag);
 
         //Loop through the mymenu child node and get menu items, assign values to our ProductDetails model
         menusRef.addValueEventListener(new ValueEventListener() {
@@ -87,13 +90,16 @@ public class RestaurantMenuFragment extends Fragment {
                     recyclerview.setLayoutManager(layoutmanager);
                     recyclerview.setItemAnimator( new DefaultItemAnimator());
                     recyclerview.setAdapter(recycler);
+                    emptyTag.setVisibility(v.INVISIBLE);
                 }
 
                 else {
                     if(progressDialog.isShowing()){
                         progressDialog.dismiss();
                     }
-                    //Implement TextView in the middle written "Empty"
+
+                    emptyTag.setVisibility(v.VISIBLE);
+
                 }
 
             }

@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +25,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
@@ -34,6 +38,9 @@ public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAd
     Context context;
     List<ProductDetails> listdata;
     ProgressDialog progressDialog;
+
+    // Folder path for Firebase Storage.
+    String Storage_Path = "Users";
 
     public RestaurantMenuAdapter(Context context, List<ProductDetails> listdata) {
         this.listdata = listdata;
@@ -54,9 +61,15 @@ public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAd
 
         final DatabaseReference menusRef;
         FirebaseDatabase db;
+        StorageReference storageReference;
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String myPhone = user.getPhoneNumber(); //Current logged in user phone number
+        // Assign FirebaseStorage instance to storageReference.
+
+        storageReference = FirebaseStorage.getInstance().getReference();
+
+        final StorageReference storageReference2nd = storageReference.child(productDetails.getStorageLocation());
 
         db = FirebaseDatabase.getInstance();
         menusRef = db.getReference(myPhone + "/mymenu"); //Under the user's node, place their menu items
@@ -99,8 +112,25 @@ public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAd
                                 menusRef.child(productDetails.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        Toast.makeText(context, "deleted ", Toast.LENGTH_SHORT)
-                                                .show();
+                                        storageReference2nd.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                // File deleted successfully
+                                                Snackbar snackbar = Snackbar
+                                                        .make(view, "Deleted!", Snackbar.LENGTH_LONG);
+
+                                                snackbar.show();
+
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception exception) {
+                                                // Uh-oh, an error occurred!
+                                                Toast.makeText(context, "error: " + exception, Toast.LENGTH_SHORT)
+                                                        .show();
+
+                                            }
+                                        });
 
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
