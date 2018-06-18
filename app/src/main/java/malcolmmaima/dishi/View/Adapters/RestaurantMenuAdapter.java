@@ -37,10 +37,6 @@ public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAd
 
     Context context;
     List<ProductDetails> listdata;
-    ProgressDialog progressDialog;
-
-    // Folder path for Firebase Storage.
-    String Storage_Path = "Users";
 
     public RestaurantMenuAdapter(Context context, List<ProductDetails> listdata) {
         this.listdata = listdata;
@@ -56,7 +52,7 @@ public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAd
     }
 
 
-    public void onBindViewHolder(MyHolder holder, int position) {
+    public void onBindViewHolder(final MyHolder holder, int position) {
         final ProductDetails productDetails = listdata.get(position);
 
         final DatabaseReference menusRef;

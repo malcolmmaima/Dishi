@@ -84,6 +84,7 @@ public class RestaurantMenuFragment extends Fragment {
                     list.add(productDetails);
                     progressDialog.dismiss();
                 }
+
                 if(!list.isEmpty()){
                     RestaurantMenuAdapter recycler = new RestaurantMenuAdapter(getContext(),list);
                     RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
@@ -98,6 +99,11 @@ public class RestaurantMenuFragment extends Fragment {
                         progressDialog.dismiss();
                     }
 
+                    RestaurantMenuAdapter recycler = new RestaurantMenuAdapter(getContext(),list);
+                    RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
+                    recyclerview.setLayoutManager(layoutmanager);
+                    recyclerview.setItemAnimator( new DefaultItemAnimator());
+                    recyclerview.setAdapter(recycler);
                     emptyTag.setVisibility(v.VISIBLE);
 
                 }
