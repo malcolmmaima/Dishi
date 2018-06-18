@@ -103,8 +103,8 @@ public class UserProfileFragment extends Fragment {
                     //userdata.add(dishiUser);
                 }
 
-                Toast.makeText(getContext(), "User data=> name: " + name + " email: "
-                        + myemail + " bio: " + bio + " gender: " + gender, Toast.LENGTH_LONG).show();
+                //Toast.makeText(getContext(), "User data=> name: " + name + " email: "
+                        //+ myemail + " bio: " + bio + " gender: " + gender, Toast.LENGTH_LONG).show();
 
             }
 
