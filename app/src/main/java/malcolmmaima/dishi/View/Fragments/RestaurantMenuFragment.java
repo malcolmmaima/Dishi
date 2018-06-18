@@ -69,14 +69,15 @@ public class RestaurantMenuFragment extends Fragment {
         menusRef = db.getReference(myPhone + "/mymenu");
         recyclerview = v.findViewById(R.id.rview);
 
+        //Loop through the mymenu child node and get menu items, assign values to our ProductDetails model
         menusRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 list = new ArrayList<>();
                 // StringBuffer stringbuffer = new StringBuffer();
                 for(DataSnapshot dataSnapshot1 :dataSnapshot.getChildren()){
-
-                    ProductDetails productDetails = dataSnapshot1.getValue(ProductDetails.class);
+                    ProductDetails productDetails = dataSnapshot1.getValue(ProductDetails.class); //Assign values to model
+                    productDetails.key = dataSnapshot1.getKey(); //Get item keys, useful when performing delete operations
                     list.add(productDetails);
                     progressDialog.dismiss();
                 }

@@ -6,6 +6,8 @@ public class ProductDetails {
     public String price;
     public String description;
     public String imageURL;
+    public  String key;
+
 
     public String getName() {
         return name;

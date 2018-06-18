@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +16,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
 
@@ -29,7 +37,6 @@ public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAd
 
     public RestaurantMenuAdapter(Context context, List<ProductDetails> listdata) {
         this.listdata = listdata;
-
         this.context = context;
     }
 
@@ -44,6 +51,16 @@ public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAd
 
     public void onBindViewHolder(MyHolder holder, int position) {
         final ProductDetails productDetails = listdata.get(position);
+
+        final DatabaseReference menusRef;
+        FirebaseDatabase db;
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String myPhone = user.getPhoneNumber(); //Current logged in user phone number
+
+        db = FirebaseDatabase.getInstance();
+        menusRef = db.getReference(myPhone + "/mymenu"); //Under the user's node, place their menu items
+
         holder.foodPrice.setText("Ksh "+productDetails.getPrice());
         holder.foodName.setText(productDetails.getName());
         holder.foodDescription.setText(productDetails.getDescription());
@@ -56,6 +73,7 @@ public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAd
             @Override
             public  void onClick(final View view){
                 Toast.makeText(context, "Edit " + productDetails.getName(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(context, "(key): "+productDetails.key, Toast.LENGTH_LONG).show();
             }
         });
 
@@ -71,7 +89,6 @@ public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAd
                         //set three option buttons
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                Toast.makeText(context, "Yes", Toast.LENGTH_SHORT).show();
                                 /*
                                 progressDialog = new ProgressDialog(context);
                                 progressDialog.setCancelable(false);
@@ -79,6 +96,21 @@ public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAd
                                 progressDialog.setMessage("Please wait...");
                                 progressDialog.show();
                                 */
+                                menusRef.child(productDetails.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Toast.makeText(context, "deleted ", Toast.LENGTH_SHORT)
+                                                .show();
+
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception exception) {
+                                        // Uh-oh, an error occurred!
+                                        Toast.makeText(context, "error", Toast.LENGTH_SHORT)
+                                                .show();
+                                    }
+                                });
                             }
                         })//setPositiveButton
 
@@ -86,7 +118,7 @@ public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAd
                         .setNegativeButton("NO", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 //Do not delete
-                                Toast.makeText(context, "No", Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(context, "No", Toast.LENGTH_SHORT).show();
 
                             }
                         })//setNegativeButton
