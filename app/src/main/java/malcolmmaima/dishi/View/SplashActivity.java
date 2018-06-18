@@ -1,8 +1,13 @@
 package malcolmmaima.dishi.View;
 
+import android.Manifest;
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -18,6 +23,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import malcolmmaima.dishi.Controller.PreferenceManager;
+import malcolmmaima.dishi.Controller.TrackingService;
 import malcolmmaima.dishi.R;
 
 public class SplashActivity extends AppCompatActivity {
@@ -25,6 +31,8 @@ public class SplashActivity extends AppCompatActivity {
     private PreferenceManager prefManager;
     String myPhone;
     private FirebaseAuth mAuth;
+
+    private static final int PERMISSIONS_REQUEST = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,6 +152,7 @@ public class SplashActivity extends AppCompatActivity {
                     public void onCancelled(DatabaseError databaseError) {
                     }
                 });
+
             }
         }
 
@@ -151,5 +160,6 @@ public class SplashActivity extends AppCompatActivity {
             startActivity(new Intent(SplashActivity.this, WelcomeActivity.class)
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
         }
+
     }
 }
