@@ -23,8 +23,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -56,22 +59,32 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
     public void onBindViewHolder(final MyHolder holder, int position) {
         final OrderDetails orderDetails = listdata.get(position);
 
-        final DatabaseReference menusRef;
+        final DatabaseReference locationRef;
         FirebaseDatabase db;
-        StorageReference storageReference;
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String myPhone = user.getPhoneNumber(); //Current logged in user phone number
         // Assign FirebaseStorage instance to storageReference.
 
-        storageReference = FirebaseStorage.getInstance().getReference();
-
         db = FirebaseDatabase.getInstance();
-        menusRef = db.getReference(myPhone + "/mymenu"); //Under the user's node, place their menu items
+        locationRef = db.getReference("+254713397915" + "/location"); //under each user, there's a location node with location coordinates
+
+        locationRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         holder.foodPrice.setText("Ksh "+orderDetails.getPrice());
         holder.foodName.setText(orderDetails.getName());
         holder.foodDescription.setText(orderDetails.getDescription());
+        holder.providerName.setText("Provider: " + orderDetails.providerName);
 
         //Loading image from Glide library.
         Glide.with(context).load(orderDetails.getImageURL()).into(holder.foodPic);
@@ -80,8 +93,8 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
         holder.orderBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public  void onClick(final View view){
-                Toast.makeText(context, "Order " + orderDetails.getName(), Toast.LENGTH_LONG).show();
-                //Toast.makeText(context, "(key): "+productDetails.key, Toast.LENGTH_LONG).show();
+                //Toast.makeText(context, "Order " + orderDetails.getName(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(context, "(Name): " + orderDetails.providerName + " (Phone): "+orderDetails.providerNumber, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -93,7 +106,7 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
 
 
     class MyHolder extends RecyclerView.ViewHolder{
-        TextView foodPrice , foodDescription, foodName;
+        TextView foodPrice , foodDescription, foodName, providerName;
         ImageView foodPic;
         ImageButton orderBtn;
 
@@ -104,6 +117,7 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
             foodDescription = itemView.findViewById(R.id.foodDescription);
             foodPic = itemView.findViewById(R.id.foodPic);
             orderBtn = itemView.findViewById(R.id.orderBtn);
+            providerName = itemView.findViewById(R.id.providerName);
 
         }
     }

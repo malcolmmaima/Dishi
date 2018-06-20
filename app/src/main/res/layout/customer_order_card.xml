@@ -78,8 +78,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Something here"
-            android:id="@+id/textExtra"
+            android:text="Provider name"
+            android:id="@+id/providerName"
             android:layout_marginLeft="5dp"
             android:layout_below="@id/foodDescription"
             android:layout_toRightOf="@id/foodPic"
@@ -88,11 +88,38 @@
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/textExtra"
+            android:layout_below="@id/providerName"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_toRightOf="@id/foodPic"
             android:gravity="center|right">
+
+            <ImageButton
+                android:id="@+id/locationTag"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="20dp"
+                android:scaleType="centerCrop"
+                android:background="@drawable/ic_location_black_48dp"
+                android:layout_marginRight="10dp"
+
+                />
+
+            <TextView
+                android:layout_toRightOf="@id/locationTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text=" 0 km away"
+                android:layout_marginLeft="-10dp"
+                android:layout_marginRight="5dp"/>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:gravity="center|right">
 
             <ImageButton
                 android:id="@+id/orderBtn"
@@ -104,6 +131,7 @@
                 android:layout_marginRight="10dp"
 
                 />
+            </RelativeLayout>
 
         </RelativeLayout>
 

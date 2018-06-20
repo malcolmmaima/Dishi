@@ -1,5 +1,7 @@
 package malcolmmaima.dishi.View.Fragments;
 
+import android.app.ActivityOptions;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -25,6 +27,9 @@ import java.util.List;
 import malcolmmaima.dishi.Model.DishiUser;
 
 import malcolmmaima.dishi.R;
+import malcolmmaima.dishi.View.MyAccountCustomer;
+import malcolmmaima.dishi.View.SetupProfile;
+import malcolmmaima.dishi.View.SplashActivity;
 
 public class UserProfileFragment extends Fragment {
 
@@ -72,8 +77,13 @@ public class UserProfileFragment extends Fragment {
                     //Loading image from Glide library.
                     Glide.with(getContext()).load(ppic).into(profilePic);
                 } catch (Exception e){
-                    Toast.makeText(getContext(), "Failed Loading profile picture, refresh!", Toast.LENGTH_LONG).show();
-                    Glide.with(getContext()).load(R.drawable.default_profile).into(profilePic);
+                    Intent slideactivity = new Intent(getContext(), SplashActivity.class)
+                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    Bundle bndlanimation =
+                            ActivityOptions.makeCustomAnimation(getContext(), R.anim.animation,R.anim.animation2).toBundle();
+                    startActivity(slideactivity, bndlanimation);
+
+                    Toast.makeText(getContext(), "Error: " + e, Toast.LENGTH_LONG).show();
                 }
 
             }

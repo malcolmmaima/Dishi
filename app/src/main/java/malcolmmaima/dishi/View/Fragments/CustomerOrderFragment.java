@@ -90,6 +90,7 @@ public class CustomerOrderFragment extends Fragment {
                 try {
                     list = new ArrayList<>();
                     users = new ArrayList<>();
+                    String phoneNumber = "";
 
                     // StringBuffer stringbuffer = new StringBuffer();
 
@@ -103,8 +104,12 @@ public class CustomerOrderFragment extends Fragment {
                         for (DataSnapshot dataSnapshot2 : dataSnapshot1.child("mymenu").getChildren()) {
                             OrderDetails orderDetails = dataSnapshot2.getValue(OrderDetails.class);
                             //Toast.makeText(getContext(), "mymenu: " + dataSnapshot2.getKey(), Toast.LENGTH_SHORT).show();
+                            orderDetails.providerNumber = dataSnapshot1.getKey();
+                            orderDetails.providerName = dataSnapshot1.child("name").getValue().toString();
                             list.add(orderDetails);
                         }
+                        //Toast.makeText(getContext(), "Phone: " + dataSnapshot1.getKey(), Toast.LENGTH_SHORT).show(); //Phone numbers
+
                     }
 
                     if (!list.isEmpty()) {

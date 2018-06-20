@@ -41,12 +41,4 @@ public class OrderDetails {
     public String getImageURL() {
         return imageURL;
     }
-
-    public String getProviderName() {
-        return providerName;
-    }
-
-    public void setProviderName(String providerName) {
-        this.providerName = providerName;
-    }
 }
