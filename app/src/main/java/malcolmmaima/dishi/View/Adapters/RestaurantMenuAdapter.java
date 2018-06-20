@@ -89,7 +89,7 @@ public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAd
         holder.deleteBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public  void onClick(final View view){
-                //Order Button click event
+
                 final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(view.getContext())
                         //set message, title, and icon
                         .setTitle("Delete item")
