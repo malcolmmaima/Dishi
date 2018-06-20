@@ -77,6 +77,9 @@ public class RestaurantMenuFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 list = new ArrayList<>();
+                int listSize = list.size(); //Bug fix, kept on refreshing menu on data change due to realtime location data.
+                //Will use this to determine if the list of menu items has changed, only refresh then
+
                 // StringBuffer stringbuffer = new StringBuffer();
                 for(DataSnapshot dataSnapshot1 :dataSnapshot.getChildren()){
                     ProductDetails productDetails = dataSnapshot1.getValue(ProductDetails.class); //Assign values to model
@@ -85,7 +88,7 @@ public class RestaurantMenuFragment extends Fragment {
                     //progressDialog.dismiss();
                 }
 
-                if(!list.isEmpty()){
+                if(!list.isEmpty() && list.size() > listSize){
                     RestaurantMenuAdapter recycler = new RestaurantMenuAdapter(getContext(),list);
                     RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
                     recyclerview.setLayoutManager(layoutmanager);

@@ -33,7 +33,7 @@ public class UserProfileFragment extends Fragment {
     FirebaseDatabase db;
     FirebaseUser user;
 
-    TextView userProfileName;
+    TextView userProfileName, profileBio;
     ImageView profilePic;
 
     List<DishiUser> userdata;
@@ -55,100 +55,71 @@ public class UserProfileFragment extends Fragment {
 
         userProfileName = v.findViewById(R.id.user_profile_name);
         profilePic = v.findViewById(R.id.user_profile_photo);
+        profileBio = v.findViewById(R.id.user_profile_short_bio);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         myPhone = user.getPhoneNumber(); //Current logged in user phone number
         db = FirebaseDatabase.getInstance();
         dbRef = db.getReference(myPhone);
 
-
-        // Fetch all user data (A bit old school but meeeh)
-        dbRef.addValueEventListener(new ValueEventListener() {
-            String name, myemail, acctype, bio, gender, notification, profilepic, verifiedstat;
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                userdata = new ArrayList<>();
-                for(DataSnapshot dataSnapshot1 :dataSnapshot.getChildren()){
-
-                    if (dataSnapshot1.getKey().equals("name")) {
-                        name = dataSnapshot1.getValue().toString();
-                    }
-                    if (dataSnapshot1.getKey().equals("email")) {
-                        myemail = dataSnapshot1.getValue().toString();
-
-                    }
-                    if (dataSnapshot1.getKey().equals("bio")) {
-                        bio = dataSnapshot1.getValue().toString();
-                    }
-
-                    if (dataSnapshot1.getKey().equals("gender")) {
-                        gender = dataSnapshot1.getValue().toString();
-                    }
-                    if (dataSnapshot1.getKey().equals("account_type")) {
-                        acctype = dataSnapshot1.getValue().toString();
-                    }
-                    if (dataSnapshot1.getKey().equals("verified")) {
-                        verifiedstat = dataSnapshot1.getValue().toString();
-                    }
-                    if (dataSnapshot1.getKey().equals("profilepic")) {
-                        profilepic = dataSnapshot1.getValue().toString();
-                    }
-
-                    if (dataSnapshot1.getKey().equals("notification")) {
-                        notification = dataSnapshot1.getValue().toString();
-                    }
-
-                    //DishiUser dishiUser = dataSnapshot1.getValue(DishiUser.class);
-                    //userdata.add(dishiUser);
-                }
-
-                //Toast.makeText(getContext(), "User data=> name: " + name + " email: "
-                        //+ myemail + " bio: " + bio + " gender: " + gender, Toast.LENGTH_LONG).show();
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                //  Log.w(TAG, "Failed to read value.", error.toException());
-
-                Toast.makeText(getActivity(), "Failed, refresh!", Toast.LENGTH_SHORT).show();
-            }
-        });
-
         //Works like a charm, in future remember to change, use dishiUer POJO and fetch all user data at once
         dbRef.child("profilepic").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String ppic_url = dataSnapshot.getValue(String.class);
+                String ppic = dataSnapshot.getValue(String.class);
 
-                if(ppic_url.equals(null)){
-                    Toast.makeText(getContext(), "Failed Loading profile picture, refresh!", Toast.LENGTH_LONG).show();
-                }
-                else{
+                try {
                     //Loading image from Glide library.
-                    Glide.with(getContext()).load(ppic_url).into(profilePic);
+                    Glide.with(getContext()).load(ppic).into(profilePic);
+                } catch (Exception e){
+                    Toast.makeText(getContext(), "Failed Loading profile picture, refresh!", Toast.LENGTH_LONG).show();
+                    Glide.with(getContext()).load(R.drawable.default_profile).into(profilePic);
                 }
+
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                Toast.makeText(getContext(), "Database Error. Load failed!", Toast.LENGTH_SHORT).show();
+                Glide.with(getContext()).load(R.drawable.default_profile).into(profilePic);
             }
         });
 
         dbRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String profilename = dataSnapshot.getValue(String.class);
-                userProfileName.setText(profilename);
-                //Toast.makeText(getContext(), "Name: " + profilename, Toast.LENGTH_SHORT).show();
+
+                try {
+                    String profilename = dataSnapshot.getValue(String.class);
+                    userProfileName.setText(profilename);
+                    //Toast.makeText(getContext(), "Name: " + profilename, Toast.LENGTH_SHORT).show();
+                } catch (Exception e){
+                    Toast.makeText(getContext(), "Error: " + e, Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getContext(), "Error: " + databaseError, Toast.LENGTH_SHORT).show();
+            }
+        });
 
+        dbRef.child("bio").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                try {
+                    String bio = dataSnapshot.getValue(String.class);
+                    profileBio.setText(bio);
+                    //Toast.makeText(getContext(), "Name: " + profilename, Toast.LENGTH_SHORT).show();
+                } catch (Exception e){
+                    Toast.makeText(getContext(), "Error: " + e, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getContext(), "Error: " + databaseError, Toast.LENGTH_SHORT).show();
             }
         });
 

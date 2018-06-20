@@ -99,7 +99,7 @@ public class TrackingService extends Service {
 
             request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
             FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(this);
-            final String path = "location";
+
             int permission = ContextCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_FINE_LOCATION);
 
@@ -124,7 +124,8 @@ public class TrackingService extends Service {
                             //Save the location data to the database//
 
                             ref.child("location").setValue(location);
-                            //Toast.makeText(getApplicationContext(), "Location data: " + location, Toast.LENGTH_LONG).show();
+                            //Toast.makeText(getApplicationContext(), "Location data: lat(" +
+                                    //location.getLatitude() + ") long(" + location.getLongitude() + ")", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }, null);
