@@ -1,14 +1,19 @@
 package malcolmmaima.dishi.View.Fragments;
 
+import android.app.ActivityOptions;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,9 +30,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import malcolmmaima.dishi.Model.DishiUser;
+import malcolmmaima.dishi.Model.MyCartDetails;
 import malcolmmaima.dishi.Model.OrderDetails;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.Adapters.CustomerOrderAdapter;
+import malcolmmaima.dishi.View.MyCart;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -41,10 +48,12 @@ public class CustomerOrderFragment extends Fragment {
 
     ProgressDialog progressDialog ;
     List<OrderDetails> list;
+    List<MyCartDetails> myBasket;
     List<DishiUser> users;
     RecyclerView recyclerview;
     String myPhone;
-    TextView emptyTag;
+    TextView emptyTag, totalItems, totalFee;
+    Button checkoutBtn;
 
     DatabaseReference dbRef, menusRef;
     FirebaseDatabase db;
@@ -82,6 +91,11 @@ public class CustomerOrderFragment extends Fragment {
         menusRef = db.getReference();
         recyclerview = v.findViewById(R.id.rview);
         emptyTag = v.findViewById(R.id.empty_tag);
+        totalItems = v.findViewById(R.id.totalItems);
+        totalFee = v.findViewById(R.id.totalFee);
+        checkoutBtn = v.findViewById(R.id.checkoutBtn);
+
+        checkoutBtn.setEnabled(false);
 
         //Loop through the mymenu child node and get menu items, assign values to our ProductDetails model
         menusRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -90,7 +104,6 @@ public class CustomerOrderFragment extends Fragment {
                 try {
                     list = new ArrayList<>();
                     users = new ArrayList<>();
-                    String phoneNumber = "";
 
                     // StringBuffer stringbuffer = new StringBuffer();
 
@@ -99,7 +112,7 @@ public class CustomerOrderFragment extends Fragment {
                         //DishiUser dishiUser = dataSnapshot1.getValue(DishiUser.class); //Assign values to model
                         //Toast.makeText(getContext(), "User: " + dishiUser.getName(), Toast.LENGTH_SHORT).show();
 
-                        //after which we check if that user has a 'mymenu' child node, if so loop through it and show the products
+                        //afterwards which we check if that user has a 'mymenu' child node, if so loop through it and show the products
                         //NOTE: only restaurant/provider accounts have the 'mymenu', so essentially we are fetching restaurant menus into our customers fragment via the adapter
                         for (DataSnapshot dataSnapshot2 : dataSnapshot1.child("mymenu").getChildren()) {
                             OrderDetails orderDetails = dataSnapshot2.getValue(OrderDetails.class);
@@ -143,6 +156,62 @@ public class CustomerOrderFragment extends Fragment {
                 progressDialog.dismiss();
 
                 Toast.makeText(getActivity(), "Failed, " + error, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        DatabaseReference myCartRef;
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String myPhone = user.getPhoneNumber(); //Current logged in user phone number
+        myCartRef = db.getReference(myPhone + "/mycart");
+
+        //Check if theres anything in my cart
+        myCartRef.addValueEventListener(new ValueEventListener() {
+            //If there is, loop through the items found and add to myBasket list
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                myBasket = new ArrayList<>();
+                int temp = 0;
+
+                for (DataSnapshot mycart : dataSnapshot.getChildren()) {
+                    MyCartDetails myCartDetails = mycart.getValue(MyCartDetails.class);
+                    String prices = myCartDetails.getPrice();
+                    temp = Integer.parseInt(prices) + temp;
+                    myBasket.add(myCartDetails);
+                }
+
+                //Toast.makeText(getContext(), "TOTAL: " + temp, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(), "Items: " + myBasket.size(), Toast.LENGTH_SHORT).show();
+                if(myBasket.size() == 0) {
+                    checkoutBtn.setEnabled(false);
+
+                    Toast toast = Toast.makeText(getContext(),"Please add items to your cart!", Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.show();
+                }
+                else {
+                    checkoutBtn.setEnabled(true);
+                }
+                totalFee.setText("Ksh: " + temp);
+                totalItems.setText("Items: " + myBasket.size());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        checkoutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "Cart in Development!", Toast.LENGTH_LONG).show();
+                Intent slideactivity = new Intent(getContext(), MyCart.class);
+                Bundle bndlanimation =
+                    ActivityOptions.makeCustomAnimation(getContext(), R.anim.animation,R.anim.animation2).toBundle();
+                startActivity(slideactivity, bndlanimation);
+
             }
         });
 

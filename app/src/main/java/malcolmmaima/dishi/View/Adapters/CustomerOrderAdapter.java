@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,8 +28,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import java.util.List;
 
+import malcolmmaima.dishi.Model.MyCartDetails;
 import malcolmmaima.dishi.Model.OrderDetails;
+import malcolmmaima.dishi.Model.ProductDetails;
 import malcolmmaima.dishi.R;
+import malcolmmaima.dishi.View.AddMenu;
+import malcolmmaima.dishi.View.MyCart;
 
 public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdapter.MyHolder>{
 
@@ -52,7 +57,7 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
     public void onBindViewHolder(final MyHolder holder, final int position) {
         final OrderDetails orderDetails = listdata.get(position);
 
-        final DatabaseReference mylocationRef, providerRef;
+        final DatabaseReference mylocationRef, providerRef, myCartRef;
         FirebaseDatabase db;
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -63,6 +68,7 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
         db = FirebaseDatabase.getInstance();
         mylocationRef = db.getReference(myPhone + "/location"); //loggedin user location reference
         providerRef = db.getReference(orderDetails.providerNumber + "/location"); //food item provider location reference
+        myCartRef = db.getReference(myPhone + "/mycart");
 
         final Double[] dist = new Double[listdata.size()];
 
@@ -187,10 +193,35 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
 
-                                Snackbar snackbar = Snackbar
-                                        .make(view, "Add logic!", Snackbar.LENGTH_LONG);
+                                String key = myCartRef.push().getKey(); //The child node in mycart for storing menu items
+                                MyCartDetails myCart = new MyCartDetails();
 
-                                snackbar.show();
+                                myCart.setName(orderDetails.getName());
+                                myCart.setPrice(orderDetails.getPrice());
+                                myCart.setDescription(orderDetails.getDescription());
+                                myCart.setImageURL(orderDetails.getImageURL());
+                                myCart.setProvider(orderDetails.providerName);
+
+                                myCartRef.child(key).setValue(myCart).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        // Write was successful!
+
+                                        Snackbar snackbar = Snackbar
+                                                .make(view, "Added!", Snackbar.LENGTH_LONG);
+
+                                        snackbar.show();
+
+                                    }
+                                })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                // Write failed
+                                                Toast.makeText(context, "Failed: " + e.toString() + ". Try again!", Toast.LENGTH_LONG).show();
+                                            }
+                                        });
+
                             }
                         })//setPositiveButton
 

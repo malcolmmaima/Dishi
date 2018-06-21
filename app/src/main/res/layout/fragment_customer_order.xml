@@ -18,7 +18,7 @@
 
         <TextView
             android:id="@+id/totalFee"
-            android:text="Total: 0 /="
+            android:text="Ksh: 0"
             android:textSize="20dp"
             android:layout_marginTop="10dp"
             android:layout_width="wrap_content"
@@ -41,6 +41,7 @@
             android:layout_alignParentEnd="true"
             android:gravity="center|right">
         <Button
+            android:id="@+id/checkoutBtn"
             android:text="Checkout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
