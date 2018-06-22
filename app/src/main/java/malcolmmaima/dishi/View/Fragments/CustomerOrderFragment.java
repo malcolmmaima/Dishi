@@ -185,10 +185,11 @@ public class CustomerOrderFragment extends Fragment {
                 //Toast.makeText(getContext(), "Items: " + myBasket.size(), Toast.LENGTH_SHORT).show();
                 if(myBasket.size() == 0) {
                     checkoutBtn.setEnabled(false);
-
+                    /*
                     Toast toast = Toast.makeText(getContext(),"Please add items to your cart!", Toast.LENGTH_LONG);
                     toast.setGravity(Gravity.CENTER, 0, 0);
                     toast.show();
+                    */
                 }
                 else {
                     checkoutBtn.setEnabled(true);
@@ -206,7 +207,6 @@ public class CustomerOrderFragment extends Fragment {
         checkoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(), "Cart in Development!", Toast.LENGTH_LONG).show();
                 Intent slideactivity = new Intent(getContext(), MyCart.class);
                 Bundle bndlanimation =
                     ActivityOptions.makeCustomAnimation(getContext(), R.anim.animation,R.anim.animation2).toBundle();

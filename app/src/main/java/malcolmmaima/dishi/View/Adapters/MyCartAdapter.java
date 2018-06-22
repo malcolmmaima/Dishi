@@ -35,19 +35,21 @@ import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.AddMenu;
 import malcolmmaima.dishi.View.MyCart;
 
-public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdapter.MyHolder>{
+import static malcolmmaima.dishi.R.drawable.ic_highlight_off_white_48dp;
+
+public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.MyHolder>{
 
     Context context;
-    List<OrderDetails> listdata;
+    List<MyCartDetails> listdata;
 
-    public CustomerOrderAdapter(Context context, List<OrderDetails> listdata) {
+    public MyCartAdapter(Context context, List<MyCartDetails> listdata) {
         this.listdata = listdata;
         this.context = context;
     }
 
     @Override
     public MyHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_order_card,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.mycart_card,parent,false);
 
         MyHolder myHolder = new MyHolder(view);
         return myHolder;
@@ -55,9 +57,8 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
 
 
     public void onBindViewHolder(final MyHolder holder, final int position) {
-        final OrderDetails orderDetails = listdata.get(position);
-
-        final DatabaseReference mylocationRef, providerRef, myCartRef;
+        final MyCartDetails myCartDetails = listdata.get(position);
+        final DatabaseReference mylocationRef, providerRef;
         FirebaseDatabase db;
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -67,8 +68,7 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
 
         db = FirebaseDatabase.getInstance();
         mylocationRef = db.getReference(myPhone + "/location"); //loggedin user location reference
-        providerRef = db.getReference(orderDetails.providerNumber + "/location"); //food item provider location reference
-        myCartRef = db.getReference(myPhone + "/mycart");
+        providerRef = db.getReference(myCartDetails.getProviderNumber() + "/location"); //food item provider location reference
 
         final Double[] dist = new Double[listdata.size()];
 
@@ -170,58 +170,32 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
 
         //Toast.makeText(context, "provider" + (" x:" + provlat[0] +" y:"+ provlon[0]) , Toast.LENGTH_SHORT).show();
 
-        holder.foodPrice.setText("Ksh "+orderDetails.getPrice());
-        holder.foodName.setText(orderDetails.getName());
-        holder.foodDescription.setText(orderDetails.getDescription());
-        holder.providerName.setText("Provider: " + orderDetails.providerName);
+        holder.foodPrice.setText("Ksh "+myCartDetails.getPrice());
+        holder.foodName.setText(myCartDetails.getName());
+        holder.foodDescription.setText(myCartDetails.getDescription());
+        holder.providerName.setText("Provider: " + myCartDetails.getProvider());
 
 
         //Loading image from Glide library.
-        Glide.with(context).load(orderDetails.getImageURL()).into(holder.foodPic);
-        Log.d("glide", "onBindViewHolder: imageUrl: " + orderDetails.getImageURL());
+        Glide.with(context).load(myCartDetails.getImageURL()).into(holder.foodPic);
+        Log.d("glide", "onBindViewHolder: imageUrl: " + myCartDetails.getImageURL());
 
-        holder.orderBtn.setOnClickListener(new View.OnClickListener(){
+        holder.removeBtn.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public  void onClick(final View view){
                 final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(view.getContext())
                         //set message, title, and icon
-                        .setTitle("Add to cart")
-                        .setMessage("Add "+ orderDetails.getName() + " to cart?")
+                        .setTitle("Remove from cart")
+                        .setMessage("Remove "+ myCartDetails.getName() + " from cart?")
                         //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
                         //set three option buttons
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
+                                Snackbar snackbar = Snackbar
+                                        .make(view, "Removed!", Snackbar.LENGTH_LONG);
 
-                                String key = myCartRef.push().getKey(); //The child node in mycart for storing menu items
-                                MyCartDetails myCart = new MyCartDetails();
-
-                                myCart.setName(orderDetails.getName());
-                                myCart.setPrice(orderDetails.getPrice());
-                                myCart.setDescription(orderDetails.getDescription());
-                                myCart.setImageURL(orderDetails.getImageURL());
-                                myCart.setProvider(orderDetails.providerName);
-                                myCart.setProviderNumber((orderDetails.providerNumber));
-
-                                myCartRef.child(key).setValue(myCart).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        // Write was successful!
-
-                                        Snackbar snackbar = Snackbar
-                                                .make(view, "Added!", Snackbar.LENGTH_LONG);
-
-                                        snackbar.show();
-
-                                    }
-                                })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                // Write failed
-                                                Toast.makeText(context, "Failed: " + e.toString() + ". Try again!", Toast.LENGTH_LONG).show();
-                                            }
-                                        });
+                                snackbar.show();
 
                             }
                         })//setPositiveButton
@@ -237,7 +211,7 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
 
                         .create();
                 myQuittingDialogBox.show();
-                }
+            }
         });
     }
 
@@ -279,7 +253,7 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
     class MyHolder extends RecyclerView.ViewHolder{
         TextView foodPrice , foodDescription, foodName, providerName, distAway;
         ImageView foodPic;
-        ImageButton orderBtn;
+        ImageButton removeBtn;
 
         public MyHolder(View itemView) {
             super(itemView);
@@ -287,7 +261,7 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
             foodName = itemView.findViewById(R.id.foodName);
             foodDescription = itemView.findViewById(R.id.foodDescription);
             foodPic = itemView.findViewById(R.id.foodPic);
-            orderBtn = itemView.findViewById(R.id.orderBtn);
+            removeBtn = itemView.findViewById(R.id.removeBtn);
             providerName = itemView.findViewById(R.id.providerName);
             distAway = itemView.findViewById(R.id.distanceAway);
 

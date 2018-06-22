@@ -6,6 +6,7 @@ public class MyCartDetails {
     public String price;
     public String description;
     public String provider;
+    public String providerNumber;
     public String imageURL;
     public String key; //When deleting menu items from firebase, this key value will help delete individual items from the 'mymenu' node
 
@@ -47,5 +48,13 @@ public class MyCartDetails {
 
     public String getProvider() {
         return provider;
+    }
+
+    public void setProviderNumber(String providerNumber) {
+        this.providerNumber = providerNumber;
+    }
+
+    public String getProviderNumber() {
+        return providerNumber;
     }
 }

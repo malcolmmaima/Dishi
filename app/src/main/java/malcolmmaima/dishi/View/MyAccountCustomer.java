@@ -226,7 +226,7 @@ public class MyAccountCustomer extends AppCompatActivity implements GoogleApiCli
         startService(new Intent(this, TrackingService.class));
         //Notify the user that tracking has been enabled//
 
-        Toast.makeText(this, "GPS tracking enabled", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "GPS tracking enabled", Toast.LENGTH_SHORT).show();
 
         //////////////////////////////////
     }

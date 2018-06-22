@@ -1,20 +1,11 @@
 package malcolmmaima.dishi.View;
 
-import android.Manifest;
 import android.app.ActivityOptions;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.LocationManager;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
-
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,9 +15,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import malcolmmaima.dishi.Controller.PreferenceManager;
-import malcolmmaima.dishi.Controller.TrackingService;
 import malcolmmaima.dishi.R;
 
 public class SplashActivity extends AppCompatActivity {
@@ -103,7 +92,7 @@ public class SplashActivity extends AppCompatActivity {
                                     //String account_type = Integer.toString(acc_type);
 
                                     if(account_type.equals("1")){ //Customer account
-                                        Toast.makeText(SplashActivity.this, "Customer Account", Toast.LENGTH_LONG).show();
+                                        //Toast.makeText(SplashActivity.this, "Customer Account", Toast.LENGTH_LONG).show();
                                         Intent slideactivity = new Intent(SplashActivity.this, MyAccountCustomer.class)
                                                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                         Bundle bndlanimation =
@@ -112,7 +101,7 @@ public class SplashActivity extends AppCompatActivity {
                                     }
 
                                     else if (account_type.equals("2")){ //Provider Restaurant account
-                                        Toast.makeText(SplashActivity.this, "Provider Account", Toast.LENGTH_LONG).show();
+                                        //Toast.makeText(SplashActivity.this, "Provider Account", Toast.LENGTH_LONG).show();
                                         Intent slideactivity = new Intent(SplashActivity.this, MyAccountRestaurant.class)
                                                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                         Bundle bndlanimation =
