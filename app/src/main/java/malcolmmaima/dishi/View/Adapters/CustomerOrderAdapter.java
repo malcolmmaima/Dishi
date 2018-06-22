@@ -194,7 +194,7 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
                             public void onClick(DialogInterface dialog, int whichButton) {
 
                                 String key = myCartRef.push().getKey(); //The child node in mycart for storing menu items
-                                MyCartDetails myCart = new MyCartDetails();
+                                final MyCartDetails myCart = new MyCartDetails();
 
                                 myCart.setName(orderDetails.getName());
                                 myCart.setPrice(orderDetails.getPrice());

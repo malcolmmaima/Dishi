@@ -58,7 +58,7 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.MyHolder>{
 
     public void onBindViewHolder(final MyHolder holder, final int position) {
         final MyCartDetails myCartDetails = listdata.get(position);
-        final DatabaseReference mylocationRef, providerRef;
+        final DatabaseReference mylocationRef, providerRef, myCartRef;
         FirebaseDatabase db;
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -69,7 +69,7 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.MyHolder>{
         db = FirebaseDatabase.getInstance();
         mylocationRef = db.getReference(myPhone + "/location"); //loggedin user location reference
         providerRef = db.getReference(myCartDetails.getProviderNumber() + "/location"); //food item provider location reference
-
+        myCartRef = db.getReference(myPhone + "/mycart");
         final Double[] dist = new Double[listdata.size()];
 
         //Lets create a Double[] array containing my lat/lon
@@ -184,6 +184,7 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.MyHolder>{
 
             @Override
             public  void onClick(final View view){
+                //Toast.makeText(context, "key: " + myCartDetails.key, Toast.LENGTH_SHORT).show();
                 final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(view.getContext())
                         //set message, title, and icon
                         .setTitle("Remove from cart")
@@ -192,10 +193,23 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.MyHolder>{
                         //set three option buttons
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                Snackbar snackbar = Snackbar
-                                        .make(view, "Removed!", Snackbar.LENGTH_LONG);
 
-                                snackbar.show();
+                                myCartRef.child(myCartDetails.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Snackbar snackbar = Snackbar
+                                                .make(view, "Removed!", Snackbar.LENGTH_LONG);
+
+                                        snackbar.show();
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception exception) {
+                                        // Uh-oh, an error occurred!
+                                        Toast.makeText(context, "Error: " + exception, Toast.LENGTH_SHORT)
+                                                .show();
+                                    }
+                                });
 
                             }
                         })//setPositiveButton

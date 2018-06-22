@@ -4,6 +4,7 @@ import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -17,6 +18,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -46,7 +49,7 @@ public class MyCart extends AppCompatActivity {
     TextView emptyTag, totalItems, totalFee;
     Button checkoutBtn;
 
-    DatabaseReference myCartRef;
+    DatabaseReference myCartRef, providerRef;
     FirebaseDatabase db;
     FirebaseUser user;
 
@@ -84,7 +87,7 @@ public class MyCart extends AppCompatActivity {
         checkoutBtn = findViewById(R.id.checkoutBtn);
 
         //Check if theres anything in my cart
-        myCartRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        myCartRef.addValueEventListener(new ValueEventListener() {
             //If there is, loop through the items found and add to myBasket list
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -94,6 +97,7 @@ public class MyCart extends AppCompatActivity {
 
                 for (DataSnapshot mycart : dataSnapshot.getChildren()) {
                     MyCartDetails myCartDetails = mycart.getValue(MyCartDetails.class);
+                    myCartDetails.key = mycart.getKey();
                     //myCartDetails.providerNumber = mycart.;
                     String prices = myCartDetails.getPrice();
                     temp = Integer.parseInt(prices) + temp;
@@ -148,7 +152,55 @@ public class MyCart extends AppCompatActivity {
         checkoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MyCart.this, "Send order to db!", Toast.LENGTH_LONG).show();
+                //Toast.makeText(MyCart.this, "Send order to db!", Toast.LENGTH_LONG).show();
+
+                String key = myCartRef.push().getKey(); //The child node in mycart for storing menu items
+                final MyCartDetails myCart = new MyCartDetails();
+
+
+                //Check if theres anything in my cart
+                myCartRef.addValueEventListener(new ValueEventListener() {
+                    //If there is, loop through the items found and add to myBasket list
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        try {
+
+                            for (DataSnapshot mycart : dataSnapshot.getChildren()) {
+                                final MyCartDetails myCartDetails = mycart.getValue(MyCartDetails.class);
+                                myCartDetails.key = mycart.getKey();
+                                //myCartDetails.providerNumber = mycart.;
+
+                                providerRef = db.getReference(myCartDetails.getProviderNumber() + "/Orders");
+
+                                providerRef.child(myCartDetails.key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        // Write was successful!
+                                        Toast.makeText(MyCart.this, "Order sent to: " + myCartDetails.getProvider(), Toast.LENGTH_SHORT).show();
+
+                                    }
+                                })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                // Write failed
+                                                Toast.makeText(MyCart.this, "Failed: " + e.toString() + ". Try again!", Toast.LENGTH_LONG).show();
+                                            }
+                                        });
+                            }
+
+
+                        } catch (Exception e){
+                            emptyTag.setText("Failed");
+                            emptyTag.setVisibility(VISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Toast.makeText(MyCart.this, "Error: " + databaseError, Toast.LENGTH_SHORT).show();
+                    }
+                });
 
             }
         });
