@@ -11,10 +11,13 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,7 +52,7 @@ public class MyCart extends AppCompatActivity {
     TextView emptyTag, totalItems, totalFee;
     Button checkoutBtn;
 
-    DatabaseReference myCartRef, providerRef;
+    DatabaseReference myCartRef, providerRef, myPendingOrders;
     FirebaseDatabase db;
     FirebaseUser user;
 
@@ -79,7 +82,9 @@ public class MyCart extends AppCompatActivity {
         user = FirebaseAuth.getInstance().getCurrentUser();
         myPhone = user.getPhoneNumber(); //Current logged in user phone number
         db = FirebaseDatabase.getInstance();
+
         myCartRef = db.getReference(myPhone + "/mycart");
+        myPendingOrders = db.getReference(myPhone + "/pending");
         recyclerview = findViewById(R.id.rview);
         emptyTag = findViewById(R.id.empty_tag);
         totalItems = findViewById(R.id.totalItems);
@@ -159,24 +164,67 @@ public class MyCart extends AppCompatActivity {
 
 
                 //Check if theres anything in my cart
-                myCartRef.addValueEventListener(new ValueEventListener() {
-                    //If there is, loop through the items found and add to myBasket list
+                myCartRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    //If there is, loop through the items found and start sending the orders
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
+                    public void onDataChange(final DataSnapshot dataSnapshot) {
                         try {
 
-                            for (DataSnapshot mycart : dataSnapshot.getChildren()) {
+                            final int[] remainingOrders = {(int) dataSnapshot.getChildrenCount()}; //Need to keep track of each order successfully sent
+                            //Toast.makeText(MyCart.this, "Items: " + remainingOrders[0], Toast.LENGTH_SHORT).show();
+
+                            for (final DataSnapshot mycart : dataSnapshot.getChildren()) {
                                 final MyCartDetails myCartDetails = mycart.getValue(MyCartDetails.class);
                                 myCartDetails.key = mycart.getKey();
-                                //myCartDetails.providerNumber = mycart.;
 
-                                providerRef = db.getReference(myCartDetails.getProviderNumber() + "/Orders");
+                                //Post the orders to the respective providers and have them confirm orders
+                                providerRef = db.getReference(myCartDetails.getProviderNumber() + "/orders");
 
+                                //add order to respective provider nodes
                                 providerRef.child(myCartDetails.key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        // Write was successful!
-                                        Toast.makeText(MyCart.this, "Order sent to: " + myCartDetails.getProvider(), Toast.LENGTH_SHORT).show();
+                                        remainingOrders[0] = remainingOrders[0] - 1;
+                                        //After successfully sending the order to each provider, add it to my pending orders node
+                                        myPendingOrders.child(myCartDetails.key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                // After successfully appending my orders to the pending node, remove it from mycart
+                                                myCartRef.child(myCartDetails.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+
+                                                        //Toast.makeText(MyCart.this, "Items: " + remainingOrders[0], Toast.LENGTH_SHORT).show();
+                                                        if(remainingOrders[0] == 0){
+                                                            //Redirect to track orders map
+                                                            Toast toast = Toast.makeText(MyCart.this,"Redirect to realtime track order map", Toast.LENGTH_LONG);
+                                                            toast.setGravity(Gravity.CENTER, 0, 1);
+                                                            toast.show();
+
+                                                            Snackbar snackbar = Snackbar
+                                                                    .make(findViewById(R.id.parentlayout), "Orders sent", Snackbar.LENGTH_LONG);
+
+                                                            snackbar.show();
+                                                        }
+
+                                                    }
+                                                }).addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception exception) {
+                                                        // Uh-oh, an error occurred!
+                                                        Toast.makeText(MyCart.this, "Error: " + exception, Toast.LENGTH_SHORT)
+                                                                .show();
+                                                    }
+                                                });
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception exception) {
+                                                // Uh-oh, an error occurred!
+                                                Toast.makeText(MyCart.this, "Error: " + exception, Toast.LENGTH_SHORT)
+                                                        .show();
+                                            }
+                                        });
 
                                     }
                                 })
@@ -184,7 +232,7 @@ public class MyCart extends AppCompatActivity {
                                             @Override
                                             public void onFailure(@NonNull Exception e) {
                                                 // Write failed
-                                                Toast.makeText(MyCart.this, "Failed: " + e.toString() + ". Try again!", Toast.LENGTH_LONG).show();
+                                                Toast.makeText(MyCart.this, "Error: " + e.toString(), Toast.LENGTH_LONG).show();
                                             }
                                         });
                             }
