@@ -80,6 +80,7 @@ public class ReceivedOrdersFragment extends Fragment {
                     //progressDialog.dismiss();
                 }
 
+                //Refresh list
                 if(!list.isEmpty() && list.size() > listSize){
                     ReceivedOrdersAdapter recycler = new ReceivedOrdersAdapter(getContext(),list);
                     RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());

@@ -186,6 +186,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
 
         final String[] status = new String[listdata.size()];
 
+        //Check order status of each item
         orderStatus.child("status").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -209,7 +210,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
             }
         });
 
-
+        //accept or cancel order
         holder.acceptBtn.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -247,7 +248,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                                             // Write was successful!
                                             Toast.makeText(context, "Cancellation sent to: " + receivedOrders.getCustomerNumber(), Toast.LENGTH_LONG).show();
 
-                                            //Then delete the menu item from my orders
+                                            //Then delete the menu item from my orders (implement below)
                                         }
                                     })
                                             .addOnFailureListener(new OnFailureListener() {
@@ -264,7 +265,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                             .setNegativeButton("NO", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
                                     //Do not delete
-                                    Toast.makeText(context, "reject order", Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(context, "reject order", Toast.LENGTH_SHORT).show();
 
                                 }
                             })//setNegativeButton
@@ -272,6 +273,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                             .create();
                     myQuittingDialogBox.show();
                 } else {
+
                 final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(view.getContext())
                         //set message, title, and icon
                         .setTitle("Confirm Order")
@@ -302,7 +304,6 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                                     public void onSuccess(Void aVoid) {
                                         // Write was successful!
                                         Toast.makeText(context, "Confirmation sent to: " + receivedOrders.getCustomerNumber(), Toast.LENGTH_LONG).show();
-                                        status[0] = "cancelled";
                                     }
                                 })
                                         .addOnFailureListener(new OnFailureListener() {
@@ -331,15 +332,18 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
         });
     }
 
+    //Needs a bit more tuning to factor in elevation of the two points
     public static double distance(double lat1, double lon1, double lat2, double lon2, String unit) {
         double theta = lon1 - lon2;
         double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
         dist = Math.acos(dist);
         dist = rad2deg(dist);
         dist = dist * 60 * 1.1515;
-        if (unit == "K") {
+        if (unit == "K") { //Kilometers
             dist = dist * 1.609344;
-        } else if (unit == "N") {
+        }
+
+        else if (unit == "N") { //Nautical miles
             dist = dist * 0.8684;
         }
 
