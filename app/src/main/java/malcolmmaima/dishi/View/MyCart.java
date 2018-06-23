@@ -52,7 +52,7 @@ public class MyCart extends AppCompatActivity {
     TextView emptyTag, totalItems, totalFee;
     Button checkoutBtn;
 
-    DatabaseReference myCartRef, providerRef, myPendingOrders;
+    DatabaseReference myCartRef, providerRef, myPendingOrders, myRef;
     FirebaseDatabase db;
     FirebaseUser user;
 
@@ -84,6 +84,7 @@ public class MyCart extends AppCompatActivity {
         db = FirebaseDatabase.getInstance();
 
         myCartRef = db.getReference(myPhone + "/mycart");
+        myRef = db.getReference(myPhone);
         myPendingOrders = db.getReference(myPhone + "/pending");
         recyclerview = findViewById(R.id.rview);
         emptyTag = findViewById(R.id.empty_tag);
@@ -170,12 +171,28 @@ public class MyCart extends AppCompatActivity {
                     public void onDataChange(final DataSnapshot dataSnapshot) {
                         try {
 
+                            final String[] customerName = {""};
+
                             final int[] remainingOrders = {(int) dataSnapshot.getChildrenCount()}; //Need to keep track of each order successfully sent
                             //Toast.makeText(MyCart.this, "Items: " + remainingOrders[0], Toast.LENGTH_SHORT).show();
+
+                            myRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    customerName[0] = dataSnapshot.getValue(String.class); //My name will be sent to provider with my order
+                                    //Toast.makeText(MyAccountRestaurant.this, "Welcome " + account_name, Toast.LENGTH_LONG).show();
+                                }
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                    Toast.makeText(MyCart.this, "Error: " + databaseError.toString() + ". Try again!", Toast.LENGTH_LONG).show();
+                                }
+                            });
 
                             for (final DataSnapshot mycart : dataSnapshot.getChildren()) {
                                 final MyCartDetails myCartDetails = mycart.getValue(MyCartDetails.class);
                                 myCartDetails.key = mycart.getKey();
+                                myCartDetails.customerNumber = myPhone;
+                                myCartDetails.status = "pending";
 
                                 //Post the orders to the respective providers and have them confirm orders
                                 providerRef = db.getReference(myCartDetails.getProviderNumber() + "/orders");

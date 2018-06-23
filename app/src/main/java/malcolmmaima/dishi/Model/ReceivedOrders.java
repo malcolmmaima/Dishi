@@ -8,6 +8,8 @@ public class ReceivedOrders {
     public String imageURL;
     public String customerName;
     public String customerNumber;
+    public String providerNumber;
+    public String status;
     public String key;
 
     public String getName() {
@@ -56,5 +58,13 @@ public class ReceivedOrders {
 
     public String getCustomerNumber() {
         return customerNumber;
+    }
+
+    public void setProviderNumber(String providerNumber) {
+        this.providerNumber = providerNumber;
+    }
+
+    public String getProviderNumber() {
+        return providerNumber;
     }
 }

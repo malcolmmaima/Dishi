@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +33,8 @@ import java.util.List;
 import malcolmmaima.dishi.Model.MyCartDetails;
 import malcolmmaima.dishi.Model.ReceivedOrders;
 import malcolmmaima.dishi.R;
+import malcolmmaima.dishi.View.AddMenu;
+import malcolmmaima.dishi.View.MyCart;
 
 public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAdapter.MyHolder>{
 
@@ -55,7 +58,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
     public void onBindViewHolder(final MyHolder holder, final int position) {
         final ReceivedOrders receivedOrders = listdata.get(position);
 
-        final DatabaseReference mylocationRef, myOrdersRef, customerLocationRef;
+        final DatabaseReference mylocationRef, myOrdersRef, customerOrder, customerLocationRef, orderStatus;
         FirebaseDatabase db;
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -67,6 +70,9 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
         mylocationRef = db.getReference(myPhone + "/location"); //loggedin user location reference
         myOrdersRef = db.getReference(myPhone + "/orders"); //food item provider location reference
         customerLocationRef = db.getReference(receivedOrders.getCustomerNumber() + "/location");
+        customerOrder = db.getReference(receivedOrders.getCustomerNumber() + "/pending");
+        orderStatus = db.getReference(receivedOrders.getCustomerNumber() + "/pending/" + receivedOrders.key);
+
 
         final Double[] dist = new Double[listdata.size()];
 
@@ -171,26 +177,141 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
         holder.foodPrice.setText("Ksh "+receivedOrders.getPrice());
         holder.foodName.setText(receivedOrders.getName());
         holder.foodDescription.setText(receivedOrders.getDescription());
-        holder.providerName.setText("Customer: " + receivedOrders.getCustomerName());
+        holder.providerName.setText("Customer: " + receivedOrders.getCustomerNumber());
 
 
         //Loading image from Glide library.
         Glide.with(context).load(receivedOrders.getImageURL()).into(holder.foodPic);
         //Log.d("glide", "onBindViewHolder: imageUrl: " + receivedOrders.getImageURL());
 
+        final String[] status = new String[listdata.size()];
+
+        orderStatus.child("status").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                status[position] = dataSnapshot.getValue(String.class); //Order status
+                //Toast.makeText(context, "Order status: " + status, Toast.LENGTH_SHORT).show();
+                if(status[position].equals("confirmed")){
+                    holder.acceptBtn.setText("Cancel");
+                }
+
+                if(status[position].equals("cancelled")){
+                    holder.acceptBtn.setText("Confirm");
+                }
+
+                if(status[position].equals("pending")){
+                    holder.acceptBtn.setText("Confirm");
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(context, "Error: " + databaseError.toString() + ". Try again!", Toast.LENGTH_LONG).show();
+            }
+        });
+
+
         holder.acceptBtn.setOnClickListener(new View.OnClickListener(){
 
             @Override
-            public  void onClick(final View view){
+            public  void onClick(final View view) {
+
+                if (status[position].equals("confirmed")) {
+                    //Do something if order cancelled
+                    final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(view.getContext())
+                            //set message, title, and icon
+                            .setTitle("Cancel Order")
+                            .setMessage("Cancel order of " + receivedOrders.getName() + "?")
+                            //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
+                            //set three option buttons
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+
+                                    receivedOrders.status = "cancelled";
+                                    myOrdersRef.child(receivedOrders.key).setValue(receivedOrders).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            // Write was successful!
+                                        }
+                                    })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    // Write failed
+                                                    Toast.makeText(context, "Failed: " + e.toString() + ". Try again!", Toast.LENGTH_LONG).show();
+                                                }
+                                            });
+
+                                    customerOrder.child(receivedOrders.key).setValue(receivedOrders).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            // Write was successful!
+                                            Toast.makeText(context, "Cancellation sent to: " + receivedOrders.getCustomerNumber(), Toast.LENGTH_LONG).show();
+
+                                            //Then delete the menu item from my orders
+                                        }
+                                    })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    // Write failed
+                                                    Toast.makeText(context, "Failed: " + e.toString() + ". Try again!", Toast.LENGTH_LONG).show();
+                                                }
+                                            });
+                                }
+                            })//setPositiveButton
+
+
+                            .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    //Do not delete
+                                    Toast.makeText(context, "reject order", Toast.LENGTH_SHORT).show();
+
+                                }
+                            })//setNegativeButton
+
+                            .create();
+                    myQuittingDialogBox.show();
+                } else {
                 final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(view.getContext())
                         //set message, title, and icon
                         .setTitle("Confirm Order")
-                        .setMessage("Accept order of "+ receivedOrders.getName() + "?")
+                        .setMessage("Accept order of " + receivedOrders.getName() + "?")
                         //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
                         //set three option buttons
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                Toast.makeText(context, "send confirmation to customer", Toast.LENGTH_SHORT).show();
+
+                                receivedOrders.status = "confirmed";
+                                myOrdersRef.child(receivedOrders.key).setValue(receivedOrders).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        // Write was successful!
+                                        //Toast.makeText(context, "Confirmation sent to: " + receivedOrders.getCustomerNumber(), Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                // Write failed
+                                                Toast.makeText(context, "Failed: " + e.toString() + ". Try again!", Toast.LENGTH_LONG).show();
+                                            }
+                                        });
+
+                                customerOrder.child(receivedOrders.key).setValue(receivedOrders).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        // Write was successful!
+                                        Toast.makeText(context, "Confirmation sent to: " + receivedOrders.getCustomerNumber(), Toast.LENGTH_LONG).show();
+                                        status[0] = "cancelled";
+                                    }
+                                })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                // Write failed
+                                                Toast.makeText(context, "Failed: " + e.toString() + ". Try again!", Toast.LENGTH_LONG).show();
+                                            }
+                                        });
                             }
                         })//setPositiveButton
 
@@ -205,6 +326,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
 
                         .create();
                 myQuittingDialogBox.show();
+            }
             }
         });
     }
