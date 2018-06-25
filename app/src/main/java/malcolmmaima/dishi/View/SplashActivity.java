@@ -52,7 +52,7 @@ public class SplashActivity extends AppCompatActivity {
                 final DatabaseReference dbRef = db.getReference(myPhone);
 
                 //Check whether user is verified, if true send them directly to MyAccountRestaurant
-                dbRef.child("verified").addListenerForSingleValueEvent(new ValueEventListener() {
+                dbRef.child("verified").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         String verified = dataSnapshot.getValue(String.class);
@@ -130,6 +130,7 @@ public class SplashActivity extends AppCompatActivity {
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError databaseError) {
                                     //DB error, try again...if fails login again
+                                    Toast.makeText(SplashActivity.this, "Error: " + databaseError, Toast.LENGTH_SHORT).show();
                                 }
                             });
 

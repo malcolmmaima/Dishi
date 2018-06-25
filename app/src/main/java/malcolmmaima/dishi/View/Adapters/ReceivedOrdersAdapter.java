@@ -1,6 +1,7 @@
 package malcolmmaima.dishi.View.Adapters;
 
 import android.app.AlertDialog;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
@@ -58,7 +59,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
     public void onBindViewHolder(final MyHolder holder, final int position) {
         final ReceivedOrders receivedOrders = listdata.get(position);
 
-        final DatabaseReference mylocationRef, myOrdersRef, customerOrder, customerLocationRef, orderStatus;
+        final DatabaseReference mylocationRef, myOrdersRef, customerOrder, customerLocationRef, orderStatus, deliveriesRef, pendingNode;
         FirebaseDatabase db;
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -72,6 +73,8 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
         customerLocationRef = db.getReference(receivedOrders.getCustomerNumber() + "/location");
         customerOrder = db.getReference(receivedOrders.getCustomerNumber() + "/pending");
         orderStatus = db.getReference(receivedOrders.getCustomerNumber() + "/pending/" + receivedOrders.key);
+        deliveriesRef = db.getReference(myPhone + "/deliveries");
+        pendingNode = db.getReference(myPhone + "/pending");
 
 
         final Double[] dist = new Double[listdata.size()];
@@ -96,7 +99,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                     dist[position] = distance(custlat[position], custlon[position], mylat[position], mylon[position], "K");
                     //Toast.makeText(context,  "dist: (" + dist[position] + ")m to " + orderDetails.providerName, Toast.LENGTH_SHORT).show();
 
-                    holder.distAway.setText(Math.floor(dist[position]) + " km away");
+                    holder.distAway.setText(dist[position] + " km away");
                 } catch (Exception e){
 
                 }
@@ -117,7 +120,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                     dist[position] = distance(custlat[position], custlon[position], mylat[position], mylon[position], "K");
                     //Toast.makeText(context,  "dist: (" + dist[position] + ")m to " + orderDetails.providerName, Toast.LENGTH_SHORT).show();
 
-                    holder.distAway.setText(Math.floor(dist[position]) + " km away");
+                    holder.distAway.setText(dist[position] + " km away");
                 } catch (Exception e){
 
                 }
@@ -139,7 +142,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                     dist[position] = distance(custlat[position], custlon[position], mylat[position], mylon[position], "K");
                     //Toast.makeText(context,  "dist: (" + dist[position] + ")m to " + orderDetails.providerName, Toast.LENGTH_SHORT).show();
 
-                    holder.distAway.setText(Math.floor(dist[position]) + " km away");
+                    holder.distAway.setText(dist[position] + " km away");
                 } catch (Exception e){
 
                 }
@@ -160,7 +163,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                     dist[position] = distance(custlat[position], custlon[position], mylat[position], mylon[position], "K");
                     //Toast.makeText(context,  "dist: (" + dist[position] + ")m to " + orderDetails.providerName, Toast.LENGTH_SHORT).show();
 
-                    holder.distAway.setText(Math.floor(dist[position]) + " km away");
+                    holder.distAway.setText(dist[position] + " km away");
                 } catch (Exception e){
 
                 }
@@ -190,6 +193,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
         orderStatus.child("status").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                try {
                 status[position] = dataSnapshot.getValue(String.class); //Order status
                 //Toast.makeText(context, "Order status: " + status, Toast.LENGTH_SHORT).show();
                 if(status[position].equals("confirmed")){
@@ -202,6 +206,9 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
 
                 if(status[position].equals("pending")){
                     holder.acceptBtn.setText("Confirm");
+                }
+                } catch (Exception e){
+                    Toast.makeText(context, "Error: " + e, Toast.LENGTH_SHORT).show();
                 }
             }
             @Override
@@ -247,7 +254,6 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                                         public void onSuccess(Void aVoid) {
                                             // Write was successful!
                                             Toast.makeText(context, "Cancellation sent to: " + receivedOrders.getCustomerNumber(), Toast.LENGTH_LONG).show();
-
                                             //Then delete the menu item from my orders (implement below)
                                         }
                                     })
@@ -284,11 +290,48 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                             public void onClick(DialogInterface dialog, int whichButton) {
 
                                 receivedOrders.status = "confirmed";
+                                //Change my order status to confirmed
                                 myOrdersRef.child(receivedOrders.key).setValue(receivedOrders).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        // Write was successful!
-                                        //Toast.makeText(context, "Confirmation sent to: " + receivedOrders.getCustomerNumber(), Toast.LENGTH_SHORT).show();
+
+                                        //Then update customer's order status as well
+                                        customerOrder.child(receivedOrders.key).setValue(receivedOrders).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                // Write was successful!
+                                                Toast.makeText(context, "Confirmation sent to: " + receivedOrders.getCustomerNumber(), Toast.LENGTH_LONG).show();
+
+                                                //Add it to deliveries node
+                                                deliveriesRef.child(receivedOrders.key).setValue(receivedOrders).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        //then delete it from orders node
+                                                        myOrdersRef.child(receivedOrders.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void aVoid) {
+                                                                Toast.makeText(context, "Deleted from pending node", Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        }).addOnFailureListener(new OnFailureListener() {
+                                                            @Override
+                                                            public void onFailure(@NonNull Exception exception) {
+                                                                // Uh-oh, an error occurred!
+                                                                Toast.makeText(context, "Error: " + exception, Toast.LENGTH_SHORT)
+                                                                        .show();
+                                                            }
+                                                        });
+
+                                                    }
+                                                });
+                                            }
+                                        })
+                                                .addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        // Write failed
+                                                        Toast.makeText(context, "Failed: " + e.toString() + ". Try again!", Toast.LENGTH_LONG).show();
+                                                    }
+                                                });
                                     }
                                 })
                                         .addOnFailureListener(new OnFailureListener() {
@@ -299,20 +342,6 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                                             }
                                         });
 
-                                customerOrder.child(receivedOrders.key).setValue(receivedOrders).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        // Write was successful!
-                                        Toast.makeText(context, "Confirmation sent to: " + receivedOrders.getCustomerNumber(), Toast.LENGTH_LONG).show();
-                                    }
-                                })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                // Write failed
-                                                Toast.makeText(context, "Failed: " + e.toString() + ". Try again!", Toast.LENGTH_LONG).show();
-                                            }
-                                        });
                             }
                         })//setPositiveButton
 
@@ -320,7 +349,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                         .setNegativeButton("NO", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 //Do not delete
-                                Toast.makeText(context, "reject order", Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(context, "reject order", Toast.LENGTH_SHORT).show();
 
                             }
                         })//setNegativeButton
@@ -387,6 +416,8 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
 
         }
     }
+
+
 
 
 }
