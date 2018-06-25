@@ -1,6 +1,9 @@
 package malcolmmaima.dishi.View.Fragments;
 
+import android.app.ActivityOptions;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -9,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,11 +27,13 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import malcolmmaima.dishi.Model.MyCartDetails;
 import malcolmmaima.dishi.Model.ProductDetails;
 import malcolmmaima.dishi.Model.ReceivedOrders;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.Adapters.ReceivedOrdersAdapter;
 import malcolmmaima.dishi.View.Adapters.RestaurantMenuAdapter;
+import malcolmmaima.dishi.View.MyCart;
 
 public class ConfirmedDeliveriesFragment extends Fragment {
 
@@ -35,7 +41,8 @@ public class ConfirmedDeliveriesFragment extends Fragment {
     List<ReceivedOrders> list;
     RecyclerView recyclerview;
     String myPhone;
-    TextView emptyTag;
+    TextView emptyTag,totalItems, totalFee;
+    Button confirmBtn;
 
     DatabaseReference dbRef, myDeliveries;
     FirebaseDatabase db;
@@ -63,6 +70,9 @@ public class ConfirmedDeliveriesFragment extends Fragment {
         myDeliveries = db.getReference(myPhone + "/deliveries");
         recyclerview = v.findViewById(R.id.rview);
         emptyTag = v.findViewById(R.id.empty_tag);
+        confirmBtn = v.findViewById(R.id.confirmBtn);
+        totalFee = v.findViewById(R.id.totalFee);
+        totalItems = v.findViewById(R.id.totalItems);
 
         //Loop through the deliveries child node and get menu items, assign values to our POJO model
         myDeliveries.addValueEventListener(new ValueEventListener() {
@@ -110,6 +120,48 @@ public class ConfirmedDeliveriesFragment extends Fragment {
                 progressDialog.dismiss();
 
                 Toast.makeText(getActivity(), "Failed, " + error, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        //Check if theres anything in my cart
+        myDeliveries.addValueEventListener(new ValueEventListener() {
+            //If there is, loop through the items found and add to myBasket list
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                list = new ArrayList<>();
+                int temp = 0;
+
+                for (DataSnapshot mydel : dataSnapshot.getChildren()) {
+                    ReceivedOrders receivedOrders = mydel.getValue(ReceivedOrders.class);
+                    String prices = receivedOrders.getPrice();
+                    temp = Integer.parseInt(prices) + temp;
+                    list.add(receivedOrders);
+                }
+
+                //Toast.makeText(getContext(), "TOTAL: " + temp, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(), "Items: " + myBasket.size(), Toast.LENGTH_SHORT).show();
+                if(list.size() == 0) {
+                    confirmBtn.setEnabled(false);
+                }
+                else {
+                    confirmBtn.setEnabled(true);
+                }
+                totalFee.setText("Ksh: " + temp);
+                totalItems.setText("Items: " + list.size());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        confirmBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "Confirm payment on successful delivery", Toast.LENGTH_LONG).show();
+
             }
         });
 

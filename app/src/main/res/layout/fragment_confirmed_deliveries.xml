@@ -7,6 +7,48 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="malcolmmaima.dishi.View.Fragments.ConfirmedDeliveriesFragment">
 
+    <RelativeLayout
+        android:id="@+id/checkoutInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:background="@color/colorBackroundWhite"
+        android:paddingHorizontal="10dp"
+        >
+
+        <TextView
+            android:id="@+id/totalFee"
+            android:text="Ksh: 0"
+            android:textSize="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/totalItems"
+            android:text="Items: 0"
+            android:textSize="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/totalFee"/>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:gravity="center|right">
+            <Button
+                android:id="@+id/confirmBtn"
+                android:text="Track Customer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+
     <TextView
         android:id="@+id/empty_tag"
         android:layout_width="wrap_content"
@@ -18,6 +60,7 @@
         android:visibility="invisible"/>
 
     <android.support.v7.widget.RecyclerView
+        android:layout_below="@id/checkoutInfo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/rview">
