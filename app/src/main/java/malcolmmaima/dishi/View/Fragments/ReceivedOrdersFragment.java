@@ -23,6 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import malcolmmaima.dishi.Model.ProductDetails;
 import malcolmmaima.dishi.Model.ReceivedOrders;
 import malcolmmaima.dishi.R;
@@ -85,7 +86,7 @@ public class ReceivedOrdersFragment extends Fragment {
                     ReceivedOrdersAdapter recycler = new ReceivedOrdersAdapter(getContext(),list);
                     RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
                     recyclerview.setLayoutManager(layoutmanager);
-                    recyclerview.setItemAnimator( new DefaultItemAnimator());
+                    recyclerview.setItemAnimator(new SlideInLeftAnimator());
                     recyclerview.setAdapter(recycler);
                     emptyTag.setVisibility(v.INVISIBLE);
                 }

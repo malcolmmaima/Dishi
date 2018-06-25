@@ -44,6 +44,7 @@
                 app:view_shadowDy="0dp"
                 app:view_borderWidth="2dp"
                 app:view_borderColor="#cccccc"
+                android:scaleType="fitXY"
                 />
 
             <LinearLayout
@@ -65,7 +66,7 @@
                         android:textSize="16dp"
                         android:textColor="#fff"
                         android:layout_marginTop="30dp"
-                        android:padding="10dp"
+                        android:padding="0dp"
                         />
 
                     <malcolmmaima.dishi.customfonts.EditText_Roboto_Regular
@@ -76,6 +77,7 @@
                         android:inputType="text"
                         android:textSize="20dp"
                         android:textColor="#fff"
+                        android:cursorVisible="true"
                         android:background="#00000000"
                         android:layout_marginTop="30dp"
                         android:textColorHint="#fff"
@@ -104,8 +106,7 @@
                         android:layout_weight="0.6"
                         android:textColor="#fff"
                         android:textSize="18dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginLeft="10dp"/>
+                        android:layout_marginTop="20dp"/>
                     <malcolmmaima.dishi.customfonts.EditText_Roboto_Regular
                         android:id="@+id/userBio"
                         android:inputType="text"
@@ -119,7 +120,6 @@
                         android:textColor="#fff"
                         android:textSize="20dp"
                         android:layout_marginTop="10dp"
-                        android:layout_marginLeft="10dp"
                         />
 
                 </LinearLayout>
@@ -146,7 +146,7 @@
             android:layout_height="wrap_content"
             android:text="Email"
             android:textSize="16dp"
-            android:layout_marginLeft="15dp"
+            android:layout_marginLeft="5dp"
             android:padding="20dp"/>
         <malcolmmaima.dishi.customfonts.EditText_Roboto_Regular
             android:id="@+id/emailAddress"
@@ -173,7 +173,7 @@
         <malcolmmaima.dishi.customfonts.MyTextView_Roboto_Medium
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
+            android:layout_marginLeft="5dp"
             android:layout_weight="0.5"
             android:padding="20dp"
             android:text="Gender"
@@ -231,7 +231,7 @@
         <malcolmmaima.dishi.customfonts.MyTextView_Roboto_Medium
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
+            android:layout_marginLeft="5dp"
             android:layout_weight="0.5"
             android:padding="20dp"
             android:text="Account Type"
@@ -263,10 +263,10 @@
         <malcolmmaima.dishi.customfonts.MyTextView_Roboto_Medium
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
+            android:layout_marginLeft="5dp"
             android:layout_weight="1"
             android:padding="20dp"
-            android:text="Notifications &amp; Updates"
+            android:text="Notifications and Updates"
             android:textSize="14dp" />
 
         <com.rey.material.widget.Switch

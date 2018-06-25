@@ -26,6 +26,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import malcolmmaima.dishi.Model.MyCartDetails;
@@ -91,8 +94,11 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.MyHolder>{
                 try {
                     dist[position] = distance(provlat[position], provlon[position], mylat[position], mylon[position], "K");
                     //Toast.makeText(context,  "dist: (" + dist[position] + ")m to " + orderDetails.providerName, Toast.LENGTH_SHORT).show();
-
-                    holder.distAway.setText(Math.floor(dist[position]) + " km away");
+                    if(dist[position] < 1.0){
+                        holder.distAway.setText(dist[position]*1000 + " m away");
+                    } else {
+                        holder.distAway.setText(dist[position] + " km away");
+                    }
                 } catch (Exception e){
 
                 }
@@ -112,8 +118,11 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.MyHolder>{
                 try {
                     dist[position] = distance(provlat[position], provlon[position], mylat[position], mylon[position], "K");
                     //Toast.makeText(context,  "dist: (" + dist[position] + ")m to " + orderDetails.providerName, Toast.LENGTH_SHORT).show();
-
-                    holder.distAway.setText(Math.floor(dist[position]) + " km away");
+                    if(dist[position] < 1.0){
+                        holder.distAway.setText(dist[position]*1000 + " m away");
+                    } else {
+                        holder.distAway.setText(dist[position] + " km away");
+                    }
                 } catch (Exception e){
 
                 }
@@ -134,8 +143,11 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.MyHolder>{
                 try {
                     dist[position] = distance(provlat[position], provlon[position], mylat[position], mylon[position], "K");
                     //Toast.makeText(context,  "dist: (" + dist[position] + ")m to " + orderDetails.providerName, Toast.LENGTH_SHORT).show();
-
-                    holder.distAway.setText(Math.floor(dist[position]) + " km away");
+                    if(dist[position] < 1.0){
+                        holder.distAway.setText(dist[position]*1000 + " m away");
+                    } else {
+                        holder.distAway.setText(dist[position] + " km away");
+                    }
                 } catch (Exception e){
 
                 }
@@ -156,7 +168,11 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.MyHolder>{
                     dist[position] = distance(provlat[position], provlon[position], mylat[position], mylon[position], "K");
                     //Toast.makeText(context,  "dist: (" + dist[position] + ")m to " + orderDetails.providerName, Toast.LENGTH_SHORT).show();
 
-                    holder.distAway.setText(Math.floor(dist[position]) + " km away");
+                    if(dist[position] < 1.0){
+                        holder.distAway.setText(dist[position]*1000 + " m away");
+                    } else {
+                        holder.distAway.setText(dist[position] + " km away");
+                    }
                 } catch (Exception e){
 
                 }
@@ -241,7 +257,7 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.MyHolder>{
             dist = dist * 0.8684;
         }
 
-        return (dist);
+        return round(dist, 2);
     }
 
     /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
@@ -256,6 +272,17 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.MyHolder>{
     /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
     public static double rad2deg(double rad) {
         return (rad * 180 / Math.PI);
+    }
+
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    /*::	This function converts a double to N places					 :*/
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    private static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(Double.toString(value));
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 
     @Override

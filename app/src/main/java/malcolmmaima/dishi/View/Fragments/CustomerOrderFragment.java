@@ -13,6 +13,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +30,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import malcolmmaima.dishi.Model.DishiUser;
 import malcolmmaima.dishi.Model.MyCartDetails;
 import malcolmmaima.dishi.Model.OrderDetails;
@@ -39,6 +41,7 @@ import malcolmmaima.dishi.View.MyCart;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -129,9 +132,17 @@ public class CustomerOrderFragment extends Fragment {
                         CustomerOrderAdapter recycler = new CustomerOrderAdapter(getContext(), list);
                         RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
                         recyclerview.setLayoutManager(layoutmanager);
-                        recyclerview.setItemAnimator(new DefaultItemAnimator());
+                        recyclerview.setItemAnimator(new SlideInLeftAnimator());
+                        recycler.notifyDataSetChanged();
+
+                        recyclerview.getItemAnimator().setAddDuration(1000);
+                        recyclerview.getItemAnimator().setRemoveDuration(1000);
+                        recyclerview.getItemAnimator().setMoveDuration(1000);
+                        recyclerview.getItemAnimator().setChangeDuration(1000);
+
                         recyclerview.setAdapter(recycler);
                         emptyTag.setVisibility(v.INVISIBLE);
+
                     } else {
                         CustomerOrderAdapter recycler = new CustomerOrderAdapter(getContext(), list);
                         RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
