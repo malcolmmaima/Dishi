@@ -45,7 +45,25 @@
             android:text="Checkout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+
+
         </RelativeLayout>
+
+        <TextView
+            android:layout_marginTop="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Filter distance"/>
+
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="60dp"
+            android:layout_marginBottom="10dp"
+            android:max="10" />
 
     </RelativeLayout>
     <TextView

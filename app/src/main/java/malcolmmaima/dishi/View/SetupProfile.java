@@ -49,7 +49,7 @@ import malcolmmaima.dishi.Model.ProductDetails;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.customfonts.EditText_Roboto_Regular;
 
-@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+//@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class SetupProfile extends AppCompatActivity implements com.rey.material.widget.Spinner.OnItemSelectedListener, AdapterView.OnItemSelectedListener {
 
     Button logoutbutton, continueBtn, backButton;

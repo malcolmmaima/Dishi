@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,9 +16,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -36,6 +41,7 @@ import malcolmmaima.dishi.Model.MyCartDetails;
 import malcolmmaima.dishi.Model.OrderDetails;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.Adapters.CustomerOrderAdapter;
+import malcolmmaima.dishi.View.AddMenu;
 import malcolmmaima.dishi.View.MyCart;
 
 import java.io.BufferedReader;
@@ -57,6 +63,7 @@ public class CustomerOrderFragment extends Fragment {
     String myPhone;
     TextView emptyTag, totalItems, totalFee;
     Button checkoutBtn;
+    SeekBar seekBar;
 
     DatabaseReference dbRef, menusRef;
     FirebaseDatabase db;
@@ -90,15 +97,48 @@ public class CustomerOrderFragment extends Fragment {
         user = FirebaseAuth.getInstance().getCurrentUser();
         myPhone = user.getPhoneNumber(); //Current logged in user phone number
         db = FirebaseDatabase.getInstance();
+
         dbRef = db.getReference(myPhone);
         menusRef = db.getReference();
+
         recyclerview = v.findViewById(R.id.rview);
         emptyTag = v.findViewById(R.id.empty_tag);
         totalItems = v.findViewById(R.id.totalItems);
         totalFee = v.findViewById(R.id.totalFee);
         checkoutBtn = v.findViewById(R.id.checkoutBtn);
+        seekBar = v.findViewById(R.id.seekBar);
 
         checkoutBtn.setEnabled(false);
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                Toast.makeText(getContext(), progress + " km", Toast.LENGTH_SHORT).show();
+
+                dbRef.child("location-filter").setValue(progress).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        //Toast.makeText(getContext(), "filter posted", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                // Write failed
+                                Toast.makeText(getContext(), "Error: " + e, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
 
         //Loop through the mymenu child node and get menu items, assign values to our ProductDetails model
         menusRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -115,7 +155,7 @@ public class CustomerOrderFragment extends Fragment {
                         //DishiUser dishiUser = dataSnapshot1.getValue(DishiUser.class); //Assign values to model
                         //Toast.makeText(getContext(), "User: " + dishiUser.getName(), Toast.LENGTH_SHORT).show();
 
-                        //afterwards which we check if that user has a 'mymenu' child node, if so loop through it and show the products
+                        //afterwards we check if that user has a 'mymenu' child node, if so loop through it and show the products
                         //NOTE: only restaurant/provider accounts have the 'mymenu', so essentially we are fetching restaurant menus into our customers fragment via the adapter
                         for (DataSnapshot dataSnapshot2 : dataSnapshot1.child("mymenu").getChildren()) {
                             OrderDetails orderDetails = dataSnapshot2.getValue(OrderDetails.class);

@@ -60,7 +60,7 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
     public void onBindViewHolder(final MyHolder holder, final int position) {
         final OrderDetails orderDetails = listdata.get(position);
 
-        final DatabaseReference mylocationRef, providerRef, myCartRef;
+        final DatabaseReference mylocationRef, providerRef, myCartRef, dbRef;
         FirebaseDatabase db;
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -72,6 +72,7 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
         mylocationRef = db.getReference(myPhone + "/location"); //loggedin user location reference
         providerRef = db.getReference(orderDetails.providerNumber + "/location"); //food item provider location reference
         myCartRef = db.getReference(myPhone + "/mycart");
+        dbRef = db.getReference(myPhone);
 
         final Double[] dist = new Double[listdata.size()];
 
@@ -83,6 +84,20 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
         final Double[] provlat = new Double[listdata.size()];
         final Double[] provlon = new Double[listdata.size()];
 
+        final int[] location_filter = new int[1];
+
+        dbRef.child("location-filter").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                location_filter[0] = dataSnapshot.getValue(Integer.class);
+                //Toast.makeText(context, "Fetch: " + location_filter, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         //My latitude longitude coordinates
         mylocationRef.child("latitude").addValueEventListener(new ValueEventListener() {
@@ -98,6 +113,18 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
                         holder.distAway.setText(dist[position]*1000 + " m away");
                     } else {
                         holder.distAway.setText(dist[position] + " km away");
+
+                        //filter
+                        try {
+                            if (dist[position] > location_filter[0]) {
+                                //listdata.remove(position);
+                                //listdata.remove(position);
+                                listdata.remove(orderDetails);
+                            }
+                        } catch(Exception e){
+                            //Toast.makeText(context, "Error: " + e, Toast.LENGTH_SHORT).show();
+                        }
+                        //filter
                     }
                 } catch (Exception e){
 
@@ -123,6 +150,17 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
                         holder.distAway.setText(dist[position]*1000 + " m away");
                     } else {
                         holder.distAway.setText(dist[position] + " km away");
+
+                        //filter
+                        try {
+                            if (dist[position] > location_filter[0]) {
+                                //listdata.remove(position);
+                                listdata.remove(orderDetails);
+                            }
+                        } catch(Exception e){
+                            //Toast.makeText(context, "Error: " + e, Toast.LENGTH_SHORT).show();
+                        }
+                        //filter
                     }
                 } catch (Exception e){
 
@@ -149,6 +187,17 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
                         holder.distAway.setText(dist[position]*1000 + " m away");
                     } else {
                         holder.distAway.setText(dist[position] + " km away");
+
+                        //filter
+                        try {
+                            if (dist[position] > location_filter[0]) {
+                                //listdata.remove(position);
+                                listdata.remove(orderDetails);
+                            }
+                        } catch(Exception e){
+                            //Toast.makeText(context, "Error: " + e, Toast.LENGTH_SHORT).show();
+                        }
+                        //filter
                     }
                 } catch (Exception e){
 
@@ -174,6 +223,17 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
                         holder.distAway.setText(dist[position]*1000 + " m away");
                     } else {
                         holder.distAway.setText(dist[position] + " km away");
+
+                        //filter
+                        try {
+                            if (dist[position] > location_filter[0]) {
+                                //listdata.remove(position);
+                                listdata.remove(orderDetails);
+                            }
+                        } catch(Exception e){
+                            //Toast.makeText(context, "Error: " + e, Toast.LENGTH_SHORT).show();
+                        }
+                        //filter
                     }
                 } catch (Exception e){
 
