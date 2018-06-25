@@ -29,7 +29,7 @@ import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.Adapters.ReceivedOrdersAdapter;
 import malcolmmaima.dishi.View.Adapters.RestaurantMenuAdapter;
 
-public class ReceivedOrdersFragment extends Fragment {
+public class ConfirmedDeliveriesFragment extends Fragment {
 
     ProgressDialog progressDialog ;
     List<ReceivedOrders> list;
@@ -37,12 +37,12 @@ public class ReceivedOrdersFragment extends Fragment {
     String myPhone;
     TextView emptyTag;
 
-    DatabaseReference dbRef, myOrdersRef;
+    DatabaseReference dbRef, myDeliveries;
     FirebaseDatabase db;
     FirebaseUser user;
 
-    public static ReceivedOrdersFragment newInstance() {
-        ReceivedOrdersFragment fragment = new ReceivedOrdersFragment();
+    public static ConfirmedDeliveriesFragment newInstance() {
+        ConfirmedDeliveriesFragment fragment = new ConfirmedDeliveriesFragment();
         return fragment;
     }
 
@@ -54,18 +54,18 @@ public class ReceivedOrdersFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View v =  inflater.inflate(R.layout.fragment_received_orders, container, false);
+        final View v =  inflater.inflate(R.layout.fragment_confirmed_deliveries, container, false);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         myPhone = user.getPhoneNumber(); //Current logged in user phone number
         db = FirebaseDatabase.getInstance();
         dbRef = db.getReference(myPhone);
-        myOrdersRef = db.getReference(myPhone + "/orders");
+        myDeliveries = db.getReference(myPhone + "/deliveries");
         recyclerview = v.findViewById(R.id.rview);
         emptyTag = v.findViewById(R.id.empty_tag);
 
-        //Loop through the mymenu child node and get menu items, assign values to our ProductDetails model
-        myOrdersRef.addValueEventListener(new ValueEventListener() {
+        //Loop through the deliveries child node and get menu items, assign values to our POJO model
+        myDeliveries.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 list = new ArrayList<>();

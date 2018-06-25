@@ -31,6 +31,7 @@
     <string name="item_1">Orders</string>
     <string name="item_2">Profile</string>
     <string name="item_3">Menu</string>
+    <string name="deliveries">Deliveries</string>
 
     <!-- Customer Bottom Nav-->
     <string name="item_4">Order</string>

@@ -24,8 +24,8 @@
 
         <com.alexzh.circleimageview.CircleImageView
             android:id="@+id/foodPic"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:src="@drawable/ic_food_menu"
             app:view_shadowRadius="2dp"
             app:view_shadowDx="2dp"
@@ -98,7 +98,7 @@
                 android:id="@+id/locationTag"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="5dp"
                 android:scaleType="centerCrop"
                 android:background="@drawable/ic_location_black_48dp"
                 android:layout_marginRight="10dp"
@@ -110,28 +110,46 @@
                 android:layout_toRightOf="@id/locationTag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="5dp"
                 android:text=" 0 km away"
                 android:layout_marginLeft="-10dp"
                 android:layout_marginRight="5dp"/>
 
             <RelativeLayout
+                android:layout_below="@+id/distanceAway"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
-                android:gravity="center|right">
+                android:gravity="center"
+                android:layout_marginRight="20dp">
 
-                <Button
-                    android:id="@+id/acceptBtn"
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="10dp"
-                    android:scaleType="centerCrop"
-                    android:layout_marginRight="10dp"
-                    android:text="Confirm"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
-                    />
+                    <Button
+                        android:id="@+id/callBtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:scaleType="centerCrop"
+                        android:layout_marginRight="5dp"
+                        android:text="Call"
+                        />
+
+                    <Button
+                        android:id="@+id/acceptBtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="10dp"
+                        android:scaleType="centerCrop"
+                        android:text="Confirm"
+
+                        />
+                </LinearLayout>
+
             </RelativeLayout>
 
         </RelativeLayout>

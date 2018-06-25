@@ -1,11 +1,16 @@
 package malcolmmaima.dishi.View.Adapters;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -59,7 +64,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
     public void onBindViewHolder(final MyHolder holder, final int position) {
         final ReceivedOrders receivedOrders = listdata.get(position);
 
-        final DatabaseReference mylocationRef, myOrdersRef, customerOrder, customerLocationRef, orderStatus, deliveriesRef, pendingNode;
+        final DatabaseReference mylocationRef, myOrdersRef, customerOrder, customerLocationRef, orderStatus, deliveriesRef, customerName;
         FirebaseDatabase db;
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -74,7 +79,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
         customerOrder = db.getReference(receivedOrders.getCustomerNumber() + "/pending");
         orderStatus = db.getReference(receivedOrders.getCustomerNumber() + "/pending/" + receivedOrders.key);
         deliveriesRef = db.getReference(myPhone + "/deliveries");
-        pendingNode = db.getReference(myPhone + "/pending");
+        customerName = db.getReference(receivedOrders.getCustomerNumber());
 
 
         final Double[] dist = new Double[listdata.size()];
@@ -175,12 +180,28 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
             }
         });
 
-        //Toast.makeText(context, "provider" + (" x:" + provlat[0] +" y:"+ provlon[0]) , Toast.LENGTH_SHORT).show();
+        final String[] customername = new String[listdata.size()];
+        customerName.child("name").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    customername[position] = dataSnapshot.getValue(String.class);
+                    holder.providerName.setText("Customer: " + customername[position]);
+
+                } catch (Exception e){
+                    Toast.makeText(context, "Error: " + e, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         holder.foodPrice.setText("Ksh "+receivedOrders.getPrice());
         holder.foodName.setText(receivedOrders.getName());
         holder.foodDescription.setText(receivedOrders.getDescription());
-        holder.providerName.setText("Customer: " + receivedOrders.getCustomerNumber());
 
 
         //Loading image from Glide library.
@@ -217,6 +238,34 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
             }
         });
 
+        holder.callBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(v.getContext())
+                        //set message, title, and icon
+                        .setTitle("Call Customer")
+                        .setMessage("Call " + customername[position] + "?")
+                        //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
+                        //set three option buttons
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                String phone = receivedOrders.getCustomerNumber();
+                                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null));
+                                context.startActivity(intent);
+                            }
+                        }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                //do nothing
+
+                            }
+                        })//setNegativeButton
+
+                        .create();
+                myQuittingDialogBox.show();
+            }
+        });
+
         //accept or cancel order
         holder.acceptBtn.setOnClickListener(new View.OnClickListener(){
 
@@ -238,7 +287,38 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                                     myOrdersRef.child(receivedOrders.key).setValue(receivedOrders).addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
-                                            // Write was successful!
+                                            // Notify customer of cancelled order
+
+                                            customerOrder.child(receivedOrders.key).setValue(receivedOrders).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    // Write was successful!
+                                                    Toast.makeText(context, "Cancellation sent to: " + customername[position], Toast.LENGTH_LONG).show();
+
+                                                    //Then delete the order item from my deliveries node
+
+                                                    deliveriesRef.child(receivedOrders.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+
+                                                        }
+                                                    }).addOnFailureListener(new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception exception) {
+                                                            // Uh-oh, an error occurred!
+                                                            Toast.makeText(context, "Error: " + exception, Toast.LENGTH_SHORT)
+                                                                    .show();
+                                                        }
+                                                    });
+                                                }
+                                            })
+                                                    .addOnFailureListener(new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception e) {
+                                                            // Write failed
+                                                            Toast.makeText(context, "Failed: " + e.toString() + ". Try again!", Toast.LENGTH_LONG).show();
+                                                        }
+                                                    });
                                         }
                                     })
                                             .addOnFailureListener(new OnFailureListener() {
@@ -249,21 +329,6 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                                                 }
                                             });
 
-                                    customerOrder.child(receivedOrders.key).setValue(receivedOrders).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            // Write was successful!
-                                            Toast.makeText(context, "Cancellation sent to: " + receivedOrders.getCustomerNumber(), Toast.LENGTH_LONG).show();
-                                            //Then delete the menu item from my orders (implement below)
-                                        }
-                                    })
-                                            .addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    // Write failed
-                                                    Toast.makeText(context, "Failed: " + e.toString() + ". Try again!", Toast.LENGTH_LONG).show();
-                                                }
-                                            });
                                 }
                             })//setPositiveButton
 
@@ -300,7 +365,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                                             @Override
                                             public void onSuccess(Void aVoid) {
                                                 // Write was successful!
-                                                Toast.makeText(context, "Confirmation sent to: " + receivedOrders.getCustomerNumber(), Toast.LENGTH_LONG).show();
+                                                Toast.makeText(context, "Confirmation sent to: " + customername[position], Toast.LENGTH_LONG).show();
 
                                                 //Add it to deliveries node
                                                 deliveriesRef.child(receivedOrders.key).setValue(receivedOrders).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -310,7 +375,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                                                         myOrdersRef.child(receivedOrders.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                                                             @Override
                                                             public void onSuccess(Void aVoid) {
-                                                                Toast.makeText(context, "Deleted from pending node", Toast.LENGTH_SHORT).show();
+
                                                             }
                                                         }).addOnFailureListener(new OnFailureListener() {
                                                             @Override
@@ -402,7 +467,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
     class MyHolder extends RecyclerView.ViewHolder{
         TextView foodPrice , foodDescription, foodName, providerName, distAway;
         ImageView foodPic;
-        Button acceptBtn;
+        Button acceptBtn, callBtn;
 
         public MyHolder(View itemView) {
             super(itemView);
@@ -411,6 +476,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
             foodDescription = itemView.findViewById(R.id.foodDescription);
             foodPic = itemView.findViewById(R.id.foodPic);
             acceptBtn = itemView.findViewById(R.id.acceptBtn);
+            callBtn = itemView.findViewById(R.id.callBtn);
             providerName = itemView.findViewById(R.id.providerName);
             distAway = itemView.findViewById(R.id.distanceAway);
 

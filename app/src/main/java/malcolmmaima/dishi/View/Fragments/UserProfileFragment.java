@@ -68,22 +68,15 @@ public class UserProfileFragment extends Fragment {
         dbRef = db.getReference(myPhone);
 
         //Works like a charm, in future remember to change, use dishiUer POJO and fetch all user data at once
-        dbRef.child("profilepic").addListenerForSingleValueEvent(new ValueEventListener() {
+        dbRef.child("profilepic").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String ppic = dataSnapshot.getValue(String.class);
-
                 try {
+                    String ppic = dataSnapshot.getValue(String.class);
                     //Loading image from Glide library.
                     Glide.with(getContext()).load(ppic).into(profilePic);
                 } catch (Exception e){
-                    Intent slideactivity = new Intent(getContext(), SplashActivity.class)
-                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    Bundle bndlanimation =
-                            ActivityOptions.makeCustomAnimation(getContext(), R.anim.animation,R.anim.animation2).toBundle();
-                    startActivity(slideactivity, bndlanimation);
-
-                    Toast.makeText(getContext(), "Error: " + e, Toast.LENGTH_LONG).show();
+                    //Error
                 }
 
             }

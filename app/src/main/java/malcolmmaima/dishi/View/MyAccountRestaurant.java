@@ -1,7 +1,6 @@
 package malcolmmaima.dishi.View;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
@@ -44,7 +43,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import malcolmmaima.dishi.Controller.TrackingService;
 import malcolmmaima.dishi.R;
-import malcolmmaima.dishi.View.Fragments.NearbyRestaurantsFragment;
+import malcolmmaima.dishi.View.Fragments.ConfirmedDeliveriesFragment;
 import malcolmmaima.dishi.View.Fragments.ReceivedOrdersFragment;
 import malcolmmaima.dishi.View.Fragments.RestaurantMenuFragment;
 import malcolmmaima.dishi.View.Fragments.UserProfileFragment;
@@ -116,6 +115,9 @@ public class MyAccountRestaurant extends AppCompatActivity implements GoogleApiC
                             case R.id.action_item3:
                                 selectedFragment = RestaurantMenuFragment.newInstance();
                                 break;
+                            case R.id.action_deliveries:
+                                selectedFragment = ConfirmedDeliveriesFragment.newInstance();
+                                break;
                         }
                         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                         transaction.replace(R.id.frame_layout, selectedFragment);
@@ -186,7 +188,7 @@ public class MyAccountRestaurant extends AppCompatActivity implements GoogleApiC
             });
         }
 
-        //Check whether this app has access to the location permission//
+        //Check whether dshi app has access to the location permission//
 
         int permission = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
