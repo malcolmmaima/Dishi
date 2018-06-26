@@ -61,7 +61,7 @@ public class CustomerOrderFragment extends Fragment {
     List<DishiUser> users;
     RecyclerView recyclerview;
     String myPhone;
-    TextView emptyTag, totalItems, totalFee;
+    TextView emptyTag, totalItems, totalFee, filterDistance;
     Button checkoutBtn;
     SeekBar seekBar;
 
@@ -83,7 +83,7 @@ public class CustomerOrderFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.fragment_customer_order, container, false);
         // Assigning Id to ProgressDialog.
@@ -107,13 +107,32 @@ public class CustomerOrderFragment extends Fragment {
         totalFee = v.findViewById(R.id.totalFee);
         checkoutBtn = v.findViewById(R.id.checkoutBtn);
         seekBar = v.findViewById(R.id.seekBar);
+        filterDistance = v.findViewById(R.id.filterDistance);
 
         checkoutBtn.setEnabled(false);
+
+        final int[] initial_filter = new int[1];
+
+        dbRef.child("location-filter").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                int location_filter = dataSnapshot.getValue(Integer.class);
+                initial_filter[0] = location_filter;
+                //Toast.makeText(context, "Fetch: " + location_filter, Toast.LENGTH_SHORT).show();
+                seekBar.setProgress(location_filter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                Toast.makeText(getContext(), progress + " km", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(), progress + " km", Toast.LENGTH_SHORT).show();
+                filterDistance.setText("Filter distance: " + progress + " km");
 
                 dbRef.child("location-filter").setValue(progress).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -147,6 +166,7 @@ public class CustomerOrderFragment extends Fragment {
                 try {
                     list = new ArrayList<>();
                     users = new ArrayList<>();
+                    int listSize = list.size();
 
                     // StringBuffer stringbuffer = new StringBuffer();
 
@@ -168,7 +188,25 @@ public class CustomerOrderFragment extends Fragment {
 
                     }
 
-                    if (!list.isEmpty()) {
+                    final int[] location_filter = new int[1];
+                    dbRef.child("location-filter").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            location_filter[0] = dataSnapshot.getValue(Integer.class);
+
+                            //if(initial_filter[0] != location_filter[0]){
+                              //  Toast.makeText(getContext(), "initial: "+initial_filter[0] + " current: "+ location_filter[0], Toast.LENGTH_SHORT).show();
+                            //}
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+                    if (!list.isEmpty() && initial_filter[0] != location_filter[0]) {
                         CustomerOrderAdapter recycler = new CustomerOrderAdapter(getContext(), list);
                         RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
                         recyclerview.setLayoutManager(layoutmanager);

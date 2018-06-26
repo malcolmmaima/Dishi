@@ -84,12 +84,12 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
         final Double[] provlat = new Double[listdata.size()];
         final Double[] provlon = new Double[listdata.size()];
 
-        final int[] location_filter = new int[1];
+        final int[] location_filter = new int[listdata.size()];
 
         dbRef.child("location-filter").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                location_filter[0] = dataSnapshot.getValue(Integer.class);
+                location_filter[position] = dataSnapshot.getValue(Integer.class);
                 //Toast.makeText(context, "Fetch: " + location_filter, Toast.LENGTH_SHORT).show();
             }
 
@@ -116,10 +116,12 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
 
                         //filter
                         try {
-                            if (dist[position] > location_filter[0]) {
-                                //listdata.remove(position);
-                                //listdata.remove(position);
-                                listdata.remove(orderDetails);
+                            if (dist[position] > location_filter[position]) {
+                                listdata.remove(position);
+                                //listdata.remove(orderDetails);
+
+                                notifyItemRemoved(position);
+                                notifyItemRangeChanged(position,listdata.size());
                             }
                         } catch(Exception e){
                             //Toast.makeText(context, "Error: " + e, Toast.LENGTH_SHORT).show();
@@ -153,9 +155,12 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
 
                         //filter
                         try {
-                            if (dist[position] > location_filter[0]) {
-                                //listdata.remove(position);
-                                listdata.remove(orderDetails);
+                            if (dist[position] > location_filter[position]) {
+                                listdata.remove(position);
+                                //listdata.remove(orderDetails);
+
+                                notifyItemRemoved(position);
+                                notifyItemRangeChanged(position,listdata.size());
                             }
                         } catch(Exception e){
                             //Toast.makeText(context, "Error: " + e, Toast.LENGTH_SHORT).show();
@@ -190,9 +195,12 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
 
                         //filter
                         try {
-                            if (dist[position] > location_filter[0]) {
-                                //listdata.remove(position);
-                                listdata.remove(orderDetails);
+                            if (dist[position] > location_filter[position]) {
+                                listdata.remove(position);
+                                //listdata.remove(orderDetails);
+
+                                notifyItemRemoved(position);
+                                notifyItemRangeChanged(position,listdata.size());
                             }
                         } catch(Exception e){
                             //Toast.makeText(context, "Error: " + e, Toast.LENGTH_SHORT).show();
@@ -226,9 +234,12 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
 
                         //filter
                         try {
-                            if (dist[position] > location_filter[0]) {
-                                //listdata.remove(position);
-                                listdata.remove(orderDetails);
+                            if (dist[position] > location_filter[position]) {
+                                listdata.remove(position);
+                                //listdata.remove(orderDetails);
+
+                                notifyItemRemoved(position);
+                                notifyItemRangeChanged(position,listdata.size());
                             }
                         } catch(Exception e){
                             //Toast.makeText(context, "Error: " + e, Toast.LENGTH_SHORT).show();
