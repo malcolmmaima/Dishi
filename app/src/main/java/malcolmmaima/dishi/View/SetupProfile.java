@@ -289,7 +289,7 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
                                                 // Write was successful!
                                                 if(account_type.equals("1")){ // Cusomer account
                                                     //Slide to new activity
-                                                    myRef.child("location-filter").setValue(1).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    myRef.child("location-filter").setValue(10).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                         @Override
                                                         public void onSuccess(Void aVoid) {
                                                             Toast.makeText(SetupProfile.this, "Customer Account", Toast.LENGTH_LONG).show();

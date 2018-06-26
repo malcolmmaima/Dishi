@@ -166,7 +166,6 @@ public class CustomerOrderFragment extends Fragment {
                 try {
                     list = new ArrayList<>();
                     users = new ArrayList<>();
-                    int listSize = list.size();
 
                     // StringBuffer stringbuffer = new StringBuffer();
 
@@ -211,6 +210,7 @@ public class CustomerOrderFragment extends Fragment {
                         RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
                         recyclerview.setLayoutManager(layoutmanager);
                         recyclerview.setItemAnimator(new SlideInLeftAnimator());
+
                         recycler.notifyDataSetChanged();
 
                         recyclerview.getItemAnimator().setAddDuration(1000);
@@ -306,6 +306,7 @@ public class CustomerOrderFragment extends Fragment {
 
         return  v;
     }
+
 
     private void saveData(String key, String value) {
         String data = key + ":" + value;

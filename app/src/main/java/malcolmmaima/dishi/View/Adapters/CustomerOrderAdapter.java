@@ -117,11 +117,11 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
                         //filter
                         try {
                             if (dist[position] > location_filter[position]) {
-                                listdata.remove(position);
-                                //listdata.remove(orderDetails);
+                                deleteItem(position, listdata);
+                            } else {
+                                listdata.add(orderDetails);
+                                notifyItemInserted(position);
 
-                                notifyItemRemoved(position);
-                                notifyItemRangeChanged(position,listdata.size());
                             }
                         } catch(Exception e){
                             //Toast.makeText(context, "Error: " + e, Toast.LENGTH_SHORT).show();
@@ -156,11 +156,10 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
                         //filter
                         try {
                             if (dist[position] > location_filter[position]) {
-                                listdata.remove(position);
-                                //listdata.remove(orderDetails);
-
-                                notifyItemRemoved(position);
-                                notifyItemRangeChanged(position,listdata.size());
+                                deleteItem(position, listdata);
+                            } else {
+                                listdata.add(orderDetails);
+                                notifyItemInserted(position);
                             }
                         } catch(Exception e){
                             //Toast.makeText(context, "Error: " + e, Toast.LENGTH_SHORT).show();
@@ -196,11 +195,10 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
                         //filter
                         try {
                             if (dist[position] > location_filter[position]) {
-                                listdata.remove(position);
-                                //listdata.remove(orderDetails);
-
-                                notifyItemRemoved(position);
-                                notifyItemRangeChanged(position,listdata.size());
+                                deleteItem(position, listdata);
+                            } else {
+                                listdata.add(orderDetails);
+                                notifyItemInserted(position);
                             }
                         } catch(Exception e){
                             //Toast.makeText(context, "Error: " + e, Toast.LENGTH_SHORT).show();
@@ -235,11 +233,10 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
                         //filter
                         try {
                             if (dist[position] > location_filter[position]) {
-                                listdata.remove(position);
-                                //listdata.remove(orderDetails);
-
-                                notifyItemRemoved(position);
-                                notifyItemRangeChanged(position,listdata.size());
+                                deleteItem(position, listdata);
+                            } else {
+                                listdata.add(orderDetails);
+                                notifyItemInserted(position);
                             }
                         } catch(Exception e){
                             //Toast.makeText(context, "Error: " + e, Toast.LENGTH_SHORT).show();
@@ -329,6 +326,13 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
                 myQuittingDialogBox.show();
                 }
         });
+    }
+
+    //Delete adapter item and notify recycler view which later animates :-)
+    private void deleteItem(int position, List<OrderDetails> mDataSet) {
+        mDataSet.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, mDataSet.size());
     }
 
     public static double distance(double lat1, double lon1, double lat2, double lon2, String unit) {
