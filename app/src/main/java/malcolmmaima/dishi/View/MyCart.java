@@ -15,9 +15,12 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,13 +47,14 @@ import malcolmmaima.dishi.View.Adapters.MyCartAdapter;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
-public class MyCart extends AppCompatActivity {
+public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     List<MyCartDetails> myBasket;
     RecyclerView recyclerview;
-    String myPhone;
+    String myPhone, paymentType;
     TextView emptyTag, totalItems, totalFee;
     Button checkoutBtn;
+    Spinner payMethod;
 
     DatabaseReference myCartRef, providerRef, myPendingOrders, myRef;
     FirebaseDatabase db;
@@ -91,6 +95,16 @@ public class MyCart extends AppCompatActivity {
         totalItems = findViewById(R.id.totalItems);
         totalFee = findViewById(R.id.totalFee);
         checkoutBtn = findViewById(R.id.checkoutBtn);
+        payMethod = findViewById(R.id.payType);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.pay_via, android.R.layout.simple_spinner_item);
+
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        payMethod.setAdapter(adapter);
+        payMethod.setOnItemSelectedListener(this);
 
         //Check if theres anything in my cart
         myCartRef.addValueEventListener(new ValueEventListener() {
@@ -158,8 +172,12 @@ public class MyCart extends AppCompatActivity {
         checkoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Toast.makeText(MyCart.this, "Send order to db!", Toast.LENGTH_LONG).show();
 
+                if (paymentType.equals("empty")) {
+                    Toast.makeText(MyCart.this, "You must select payment method", Toast.LENGTH_SHORT).show();
+                }
+
+                else {
                 String key = myCartRef.push().getKey(); //The child node in mycart for storing menu items
                 final MyCartDetails myCart = new MyCartDetails();
 
@@ -182,6 +200,7 @@ public class MyCart extends AppCompatActivity {
                                     customerName[0] = dataSnapshot.getValue(String.class); //My name will be sent to provider with my order
                                     //Toast.makeText(MyAccountRestaurant.this, "Welcome " + account_name, Toast.LENGTH_LONG).show();
                                 }
+
                                 @Override
                                 public void onCancelled(DatabaseError databaseError) {
                                     Toast.makeText(MyCart.this, "Error: " + databaseError.toString() + ". Try again!", Toast.LENGTH_LONG).show();
@@ -193,6 +212,7 @@ public class MyCart extends AppCompatActivity {
                                 myCartDetails.key = mycart.getKey();
                                 myCartDetails.customerNumber = myPhone;
                                 myCartDetails.status = "pending";
+                                myCartDetails.payType = paymentType;
 
                                 //Post the orders to the respective providers and have them confirm orders
                                 providerRef = db.getReference(myCartDetails.getProviderNumber() + "/orders");
@@ -202,19 +222,21 @@ public class MyCart extends AppCompatActivity {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         remainingOrders[0] = remainingOrders[0] - 1;
+
                                         //After successfully sending the order to each provider, add it to my pending orders node
                                         myPendingOrders.child(myCartDetails.key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void aVoid) {
+
                                                 // After successfully appending my orders to the pending node, remove it from mycart
                                                 myCartRef.child(myCartDetails.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
 
                                                         //Toast.makeText(MyCart.this, "Items: " + remainingOrders[0], Toast.LENGTH_SHORT).show();
-                                                        if(remainingOrders[0] == 0){
+                                                        if (remainingOrders[0] == 0) {
                                                             //Redirect to track orders map
-                                                            Toast toast = Toast.makeText(MyCart.this,"Redirect to realtime track order map", Toast.LENGTH_LONG);
+                                                            Toast toast = Toast.makeText(MyCart.this, "Redirect to realtime track order map", Toast.LENGTH_LONG);
                                                             toast.setGravity(Gravity.CENTER, 0, 1);
                                                             toast.show();
 
@@ -255,7 +277,7 @@ public class MyCart extends AppCompatActivity {
                             }
 
 
-                        } catch (Exception e){
+                        } catch (Exception e) {
                             emptyTag.setText("Failed");
                             emptyTag.setVisibility(VISIBLE);
                         }
@@ -268,6 +290,7 @@ public class MyCart extends AppCompatActivity {
                 });
 
             }
+        }
         });
 
     }
@@ -291,6 +314,25 @@ public class MyCart extends AppCompatActivity {
             Toast.makeText(MyCart.this, "Save Cart", Toast.LENGTH_LONG).show();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        if(position == 0){
+            paymentType = "empty";
+        }
+        if(position == 1){
+            paymentType = "mpesa";
+        }
+
+        if(position == 2){
+            paymentType = "cash";
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 }
 

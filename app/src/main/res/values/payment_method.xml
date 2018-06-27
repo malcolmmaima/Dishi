@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_prompt">Choose account type</string>
+
+    <string-array name="pay_via">
+        <item> </item>
+        <item>Mpesa</item>
+        <item>Cash</item>
+    </string-array>
+</resources>

@@ -266,17 +266,6 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
         });
     }
 
-    //Remove duplicates on filtering orders
-    public static void removeDuplicates(List<?> al) {
-        for(int i = 0; i < al.size(); i++) {
-            for(int j = i + 1; j < al.size(); j++) {
-                if(al.get(i).equals(al.get(j))){
-                    al.remove(j);
-                    j--;
-                }
-            }
-        }
-    }
 
     //Delete adapter item and notify recycler view which later animates :-)
     private void deleteItem(int position, List<OrderDetails> mDataSet) {
