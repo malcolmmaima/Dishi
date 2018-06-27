@@ -29,6 +29,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import malcolmmaima.dishi.Model.MyCartDetails;
@@ -105,32 +107,36 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 mylat[position] = dataSnapshot.getValue(Double.class);
-                //Toast.makeText(context, "(my lat): " + mylat[position], Toast.LENGTH_SHORT).show();
-                try {
-                    dist[position] = distance(provlat[position], provlon[position], mylat[position], mylon[position], "K");
-                    //Toast.makeText(context,  "dist: (" + dist[position] + ")m to " + orderDetails.providerName, Toast.LENGTH_SHORT).show();
-                    if(dist[position] < 1.0){
-                        holder.distAway.setText(dist[position]*1000 + " m away");
-                    } else {
-                        holder.distAway.setText(dist[position] + " km away");
-
-                        //filter
+                ////////
+                mylocationRef.child("longitude").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        mylon[position] = dataSnapshot.getValue(Double.class);
+                        //Toast.makeText(context, "(my lat): " + mylat[position], Toast.LENGTH_SHORT).show();
                         try {
-                            if (dist[position] > location_filter[position]) {
-                                deleteItem(position, listdata);
+                            dist[position] = distance(provlat[position], provlon[position], mylat[position], mylon[position], "K");
+                            //Toast.makeText(context,  "dist: (" + dist[position] + ")m to " + orderDetails.providerName, Toast.LENGTH_SHORT).show();
+
+                            if(dist[position] < 1.0){
+                                holder.distAway.setText(dist[position]*1000 + " m away");
                             } else {
-                                listdata.add(orderDetails);
-                                notifyItemInserted(position);
+                                notifyDataSetChanged();
+                                //notifyItemInserted(position);
+                                holder.distAway.setText(dist[position] + " km away");
 
                             }
-                        } catch(Exception e){
-                            //Toast.makeText(context, "Error: " + e, Toast.LENGTH_SHORT).show();
-                        }
-                        //filter
-                    }
-                } catch (Exception e){
+                        } catch (Exception e){
 
-                }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+                ///////
+                //Toast.makeText(context, "(my lat): " + mylat[position], Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -139,43 +145,7 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
             }
         });
 
-        mylocationRef.child("longitude").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                mylon[position] = dataSnapshot.getValue(Double.class);
-                //Toast.makeText(context, "(my lat): " + mylat[position], Toast.LENGTH_SHORT).show();
-                try {
-                    dist[position] = distance(provlat[position], provlon[position], mylat[position], mylon[position], "K");
-                    //Toast.makeText(context,  "dist: (" + dist[position] + ")m to " + orderDetails.providerName, Toast.LENGTH_SHORT).show();
 
-                    if(dist[position] < 1.0){
-                        holder.distAway.setText(dist[position]*1000 + " m away");
-                    } else {
-                        holder.distAway.setText(dist[position] + " km away");
-
-                        //filter
-                        try {
-                            if (dist[position] > location_filter[position]) {
-                                deleteItem(position, listdata);
-                            } else {
-                                listdata.add(orderDetails);
-                                notifyItemInserted(position);
-                            }
-                        } catch(Exception e){
-                            //Toast.makeText(context, "Error: " + e, Toast.LENGTH_SHORT).show();
-                        }
-                        //filter
-                    }
-                } catch (Exception e){
-
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
 
         //Item provider latitude longitude coordinates
         providerRef.child("latitude").addValueEventListener(new ValueEventListener() {
@@ -183,31 +153,35 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
             public void onDataChange(DataSnapshot dataSnapshot) {
                 provlat[position] = dataSnapshot.getValue(Double.class);
                 //Toast.makeText(context, "(my lat): " + mylat[position], Toast.LENGTH_SHORT).show();
-                try {
-                    dist[position] = distance(provlat[position], provlon[position], mylat[position], mylon[position], "K");
-                    //Toast.makeText(context,  "dist: (" + dist[position] + ")m to " + orderDetails.providerName, Toast.LENGTH_SHORT).show();
 
-                    if(dist[position] < 1.0){
-                        holder.distAway.setText(dist[position]*1000 + " m away");
-                    } else {
-                        holder.distAway.setText(dist[position] + " km away");
-
-                        //filter
+                ////////
+                providerRef.child("longitude").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        provlon[position] = dataSnapshot.getValue(Double.class);
+                        //Toast.makeText(context, "(my lat): " + mylat[position], Toast.LENGTH_SHORT).show();
                         try {
-                            if (dist[position] > location_filter[position]) {
-                                deleteItem(position, listdata);
-                            } else {
-                                listdata.add(orderDetails);
-                                notifyItemInserted(position);
-                            }
-                        } catch(Exception e){
-                            //Toast.makeText(context, "Error: " + e, Toast.LENGTH_SHORT).show();
-                        }
-                        //filter
-                    }
-                } catch (Exception e){
+                            dist[position] = distance(provlat[position], provlon[position], mylat[position], mylon[position], "K");
+                            //Toast.makeText(context,  "dist: (" + dist[position] + ")m to " + orderDetails.providerName, Toast.LENGTH_SHORT).show();
 
-                }
+                            if(dist[position] < 1.0){
+                                holder.distAway.setText(dist[position]*1000 + " m away");
+                            } else {
+                                //notifyItemInserted(position);
+                                holder.distAway.setText(dist[position] + " km away");
+
+                            }
+                        } catch (Exception e){
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+                ///////
             }
 
             @Override
@@ -216,43 +190,7 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
             }
         });
 
-        providerRef.child("longitude").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                provlon[position] = dataSnapshot.getValue(Double.class);
-                //Toast.makeText(context, "(my lat): " + mylat[position], Toast.LENGTH_SHORT).show();
-                try {
-                    dist[position] = distance(provlat[position], provlon[position], mylat[position], mylon[position], "K");
-                    //Toast.makeText(context,  "dist: (" + dist[position] + ")m to " + orderDetails.providerName, Toast.LENGTH_SHORT).show();
 
-                    if(dist[position] < 1.0){
-                        holder.distAway.setText(dist[position]*1000 + " m away");
-                    } else {
-                        holder.distAway.setText(dist[position] + " km away");
-
-                        //filter
-                        try {
-                            if (dist[position] > location_filter[position]) {
-                                deleteItem(position, listdata);
-                            } else {
-                                listdata.add(orderDetails);
-                                notifyItemInserted(position);
-                            }
-                        } catch(Exception e){
-                            //Toast.makeText(context, "Error: " + e, Toast.LENGTH_SHORT).show();
-                        }
-                        //filter
-                    }
-                } catch (Exception e){
-
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
 
         //Toast.makeText(context, "provider" + (" x:" + provlat[0] +" y:"+ provlon[0]) , Toast.LENGTH_SHORT).show();
 
@@ -328,10 +266,23 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
         });
     }
 
+    //Remove duplicates on filtering orders
+    public static void removeDuplicates(List<?> al) {
+        for(int i = 0; i < al.size(); i++) {
+            for(int j = i + 1; j < al.size(); j++) {
+                if(al.get(i).equals(al.get(j))){
+                    al.remove(j);
+                    j--;
+                }
+            }
+        }
+    }
+
     //Delete adapter item and notify recycler view which later animates :-)
     private void deleteItem(int position, List<OrderDetails> mDataSet) {
+
         mDataSet.remove(position);
-        notifyItemRemoved(position);
+        //notifyItemRemoved(position);
         notifyItemRangeChanged(position, mDataSet.size());
     }
 
