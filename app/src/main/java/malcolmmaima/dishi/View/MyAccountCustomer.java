@@ -249,7 +249,7 @@ public class MyAccountCustomer extends AppCompatActivity implements GoogleApiCli
         if(id == R.id.action_cart){
             //Toast.makeText(MyAccountRestaurant.this, "Add Menu", Toast.LENGTH_LONG).show();
 
-            Intent slideactivity = new Intent(MyAccountCustomer.this, MyCart.class);
+            Intent slideactivity = new Intent(MyAccountCustomer.this, OrderStatus.class);
             Bundle bndlanimation =
                     ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
             startActivity(slideactivity, bndlanimation);

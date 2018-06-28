@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:id="@+id/parentlayout"
-    tools:context=".View.MyCart">
+    tools:context=".View.OrderStatus">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -57,8 +57,8 @@
                 android:layout_alignParentEnd="true"
                 android:gravity="center|right">
                 <Button
-                    android:id="@+id/checkoutBtn"
-                    android:text="Complete"
+                    android:id="@+id/trackOrder"
+                    android:text="Track"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </RelativeLayout>
@@ -83,41 +83,5 @@
         </android.support.v7.widget.RecyclerView>
 
     </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/checkoutInf"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginBottom="5dp"
-        android:background="@color/colorBackroundWhite"
-        android:paddingHorizontal="10dp"
-        android:layout_alignParentBottom="true"
-        >
-
-        <TextView
-            android:id="@+id/paymentDesc"
-            android:text="Payment method"
-            android:textSize="20dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <Spinner
-            android:entries="@array/pay_via"
-            android:prompt="@string/payment_prompt"
-            android:layout_width="200dp"
-            android:id="@+id/payType"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="15dp"
-            android:layout_toRightOf="@id/paymentDesc"/>
-
-
-    </RelativeLayout>
-
-
 
 </RelativeLayout>

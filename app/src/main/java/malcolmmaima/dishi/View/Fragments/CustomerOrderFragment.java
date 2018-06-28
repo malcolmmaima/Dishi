@@ -35,6 +35,7 @@ import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
@@ -72,6 +73,8 @@ public class CustomerOrderFragment extends Fragment {
 
     FirebaseUser user;
 
+    boolean loaded;
+
 
     public static CustomerOrderFragment newInstance() {
         CustomerOrderFragment fragment = new CustomerOrderFragment();
@@ -105,8 +108,7 @@ public class CustomerOrderFragment extends Fragment {
         filterDistance = v.findViewById(R.id.filterDistance);
 
         checkoutBtn.setEnabled(false);
-
-        final boolean[] loaded = {false};
+        loaded = false;
 
         final int[] initial_filter = new int[1];
         final int[] distanceThreshold = {0};
@@ -222,7 +224,17 @@ public class CustomerOrderFragment extends Fragment {
                                     //dont add it to the recycler view list else add it
                                     try {
                                     if(distanceThreshold[0] > distance(myLat[0], myLong[0], provlat[0], provlon[0], "K")){
-                                        list.add(orderDetails);
+
+                                        if(orderDetails.providerNumber != myPhone){
+                                            //Don't add my menu to order list (if user switches account type)
+                                            list.add(orderDetails);
+
+                                            if(list.size() < 1){
+                                                loaded = false;
+                                                //Toast.makeText(getContext(), "Loaded" + loaded, Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+
                                     } } catch (Exception e){
                                         //Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
                                     }
@@ -242,23 +254,25 @@ public class CustomerOrderFragment extends Fragment {
 
                     try {
 
-                        if (!loaded[0] && !list.isEmpty()) {
-                            //Toast.makeText(getContext(), "Loaded", Toast.LENGTH_SHORT).show();
-                            CustomerOrderAdapter recycler = new CustomerOrderAdapter(getContext(), list);
-                            RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
-                            recyclerview.setLayoutManager(layoutmanager);
-                            recyclerview.setItemAnimator(new SlideInLeftAnimator());
+                        if (loaded == false) {
 
-                            recycler.notifyDataSetChanged();
+                                Toast.makeText(getContext(), "Loaded = " + loaded, Toast.LENGTH_SHORT).show();
+                                CustomerOrderAdapter recycler = new CustomerOrderAdapter(getContext(), list);
+                                RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
+                                recyclerview.setLayoutManager(layoutmanager);
+                                recyclerview.setItemAnimator(new SlideInLeftAnimator());
 
-                            recyclerview.getItemAnimator().setAddDuration(1000);
-                            recyclerview.getItemAnimator().setRemoveDuration(1000);
-                            recyclerview.getItemAnimator().setMoveDuration(1000);
-                            recyclerview.getItemAnimator().setChangeDuration(1000);
+                                recycler.notifyDataSetChanged();
 
-                            recyclerview.setAdapter(recycler);
-                            emptyTag.setVisibility(v.INVISIBLE);
-                            loaded[0] = true;
+                                recyclerview.getItemAnimator().setAddDuration(1000);
+                                recyclerview.getItemAnimator().setRemoveDuration(1000);
+                                recyclerview.getItemAnimator().setMoveDuration(1000);
+                                recyclerview.getItemAnimator().setChangeDuration(1000);
+
+                                recyclerview.setAdapter(recycler);
+                                emptyTag.setVisibility(v.INVISIBLE);
+
+                                loaded = true;
 
                         }
 
@@ -334,32 +348,13 @@ public class CustomerOrderFragment extends Fragment {
                 //Toast.makeText(getContext(), progress + " km", Toast.LENGTH_SHORT).show();
                 filterDistance.setText("Filter distance: " + progress + " km");
 
+                //Synchronize the filter settings in realtime to firebase for a more personalized feel
                 dbRef.child("location-filter").setValue(progress).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         //Toast.makeText(getContext(), "filter posted", Toast.LENGTH_SHORT).show();
 
-                        if(list.isEmpty()){
-                            emptyTag.setVisibility(v.VISIBLE);
-                        }
 
-                        else {
-                            emptyTag.setVisibility(v.INVISIBLE);
-                        }
-
-                        CustomerOrderAdapter recycler = new CustomerOrderAdapter(getContext(), list);
-                        RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
-                        recyclerview.setLayoutManager(layoutmanager);
-                        recyclerview.setItemAnimator(new SlideInLeftAnimator());
-
-                        recycler.notifyDataSetChanged();
-
-                        recyclerview.getItemAnimator().setAddDuration(1000);
-                        recyclerview.getItemAnimator().setRemoveDuration(1000);
-                        recyclerview.getItemAnimator().setMoveDuration(1000);
-                        recyclerview.getItemAnimator().setChangeDuration(1000);
-
-                        recyclerview.setAdapter(recycler);
                     }
                 })
                         .addOnFailureListener(new OnFailureListener() {
@@ -383,7 +378,28 @@ public class CustomerOrderFragment extends Fragment {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 recyclerview.setVisibility(v.VISIBLE);
                 emptyTag.setText("EMPTY");
-                emptyTag.setVisibility(v.INVISIBLE);
+
+                if(list.isEmpty()){
+                    emptyTag.setVisibility(v.VISIBLE);
+                }
+
+                else {
+                    emptyTag.setVisibility(v.INVISIBLE);
+                }
+
+                CustomerOrderAdapter recycler = new CustomerOrderAdapter(getContext(), list);
+                RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
+                recyclerview.setLayoutManager(layoutmanager);
+                recyclerview.setItemAnimator(new SlideInLeftAnimator());
+
+                recycler.notifyDataSetChanged();
+
+                recyclerview.getItemAnimator().setAddDuration(1000);
+                recyclerview.getItemAnimator().setRemoveDuration(1000);
+                recyclerview.getItemAnimator().setMoveDuration(1000);
+                recyclerview.getItemAnimator().setChangeDuration(1000);
+
+                recyclerview.setAdapter(recycler);
             }
         });
 

@@ -35,7 +35,9 @@
         <service
             android:name=".Controller.TrackingService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
+        <activity android:name=".View.OrderStatus"></activity>
     </application>
 
 </manifest>
