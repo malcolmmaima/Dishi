@@ -37,7 +37,8 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".View.OrderStatus"></activity>
+        <activity android:name=".View.OrderStatus" />
+        <activity android:name=".View.Adapters.OrderStatAdapter"></activity>
     </application>
 
 </manifest>

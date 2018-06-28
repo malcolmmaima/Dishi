@@ -379,27 +379,30 @@ public class CustomerOrderFragment extends Fragment {
                 recyclerview.setVisibility(v.VISIBLE);
                 emptyTag.setText("EMPTY");
 
-                if(list.isEmpty()){
-                    emptyTag.setVisibility(v.VISIBLE);
+                try {
+                    if (list.isEmpty()) {
+                        emptyTag.setVisibility(v.VISIBLE);
+                    } else {
+                        emptyTag.setVisibility(v.INVISIBLE);
+                    }
+
+                    CustomerOrderAdapter recycler = new CustomerOrderAdapter(getContext(), list);
+                    RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
+                    recyclerview.setLayoutManager(layoutmanager);
+                    recyclerview.setItemAnimator(new SlideInLeftAnimator());
+
+                    recycler.notifyDataSetChanged();
+
+                    recyclerview.getItemAnimator().setAddDuration(1000);
+                    recyclerview.getItemAnimator().setRemoveDuration(1000);
+                    recyclerview.getItemAnimator().setMoveDuration(1000);
+                    recyclerview.getItemAnimator().setChangeDuration(1000);
+
+                    recyclerview.setAdapter(recycler);
+
+                } catch (Exception e){
+
                 }
-
-                else {
-                    emptyTag.setVisibility(v.INVISIBLE);
-                }
-
-                CustomerOrderAdapter recycler = new CustomerOrderAdapter(getContext(), list);
-                RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
-                recyclerview.setLayoutManager(layoutmanager);
-                recyclerview.setItemAnimator(new SlideInLeftAnimator());
-
-                recycler.notifyDataSetChanged();
-
-                recyclerview.getItemAnimator().setAddDuration(1000);
-                recyclerview.getItemAnimator().setRemoveDuration(1000);
-                recyclerview.getItemAnimator().setMoveDuration(1000);
-                recyclerview.getItemAnimator().setChangeDuration(1000);
-
-                recyclerview.setAdapter(recycler);
             }
         });
 

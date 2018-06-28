@@ -1,7 +1,9 @@
 package malcolmmaima.dishi.View;
 
 import android.app.ActivityOptions;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -43,6 +45,7 @@ import malcolmmaima.dishi.Model.OrderDetails;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.Adapters.CustomerOrderAdapter;
 import malcolmmaima.dishi.View.Adapters.MyCartAdapter;
+import malcolmmaima.dishi.View.Adapters.OrderStatAdapter;
 
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
@@ -51,12 +54,11 @@ public class OrderStatus extends AppCompatActivity {
 
     List<MyCartDetails> myBasket;
     RecyclerView recyclerview;
-    String myPhone, paymentType;
+    String myPhone;
     TextView emptyTag, totalItems, totalFee;
     Button trackBtn;
-    Spinner payMethod;
 
-    DatabaseReference myCartRef, myPendingOrders, myRef;
+    DatabaseReference myPendingOrders, myRef;
     FirebaseDatabase db;
     FirebaseUser user;
 
@@ -112,18 +114,13 @@ public class OrderStatus extends AppCompatActivity {
                         String prices = myCartDetails.getPrice();
                         temp = Integer.parseInt(prices) + temp;
                         myBasket.add(myCartDetails);
-                        Toast.makeText(OrderStatus.this, myCartDetails.getName() + " status: " + myCartDetails.status, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(OrderStatus.this, myCartDetails.getName() + " status: " + myCartDetails.status, Toast.LENGTH_SHORT).show();
                     }
 
                     //Toast.makeText(getContext(), "TOTAL: " + temp, Toast.LENGTH_SHORT).show();
                     //Toast.makeText(getContext(), "Items: " + myBasket.size(), Toast.LENGTH_SHORT).show();
                     if(myBasket.size() == 0) {
                         trackBtn.setEnabled(false);
-                    /*
-                    Toast toast = Toast.makeText(getContext(),"Please add items to your cart!", Toast.LENGTH_LONG);
-                    toast.setGravity(Gravity.CENTER, 0, 0);
-                    toast.show();
-                    */
                     }
                     else {
                         trackBtn.setEnabled(true);
@@ -132,14 +129,14 @@ public class OrderStatus extends AppCompatActivity {
                     totalItems.setText("Items: " + myBasket.size());
 
                     if (!myBasket.isEmpty()) {
-                        MyCartAdapter recycler = new MyCartAdapter(OrderStatus.this, myBasket);
+                        OrderStatAdapter recycler = new OrderStatAdapter(OrderStatus.this, myBasket);
                         RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
                         recyclerview.setLayoutManager(layoutmanager);
                         recyclerview.setItemAnimator(new DefaultItemAnimator());
                         recyclerview.setAdapter(recycler);
                         emptyTag.setVisibility(INVISIBLE);
                     } else {
-                        MyCartAdapter recycler = new MyCartAdapter(OrderStatus.this, myBasket);
+                        OrderStatAdapter recycler = new OrderStatAdapter(OrderStatus.this, myBasket);
                         RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
                         recyclerview.setLayoutManager(layoutmanager);
                         recyclerview.setItemAnimator(new DefaultItemAnimator());
@@ -172,7 +169,7 @@ public class OrderStatus extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_settings_activity, menu);
+        getMenuInflater().inflate(R.menu.menu_order_start, menu);
         return true;
     }
 
@@ -184,8 +181,47 @@ public class OrderStatus extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if(id == R.id.action_save){
-            Toast.makeText(OrderStatus.this, "Clicked!", Toast.LENGTH_LONG).show();
+        if(id == R.id.cancel_order){
+            final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(OrderStatus.this)
+                    //set message, title, and icon
+                    .setTitle("Cancel Order")
+                    .setMessage("Are you sure you want to cancel your order?")
+                    //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
+                    //set three option buttons
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            Toast.makeText(OrderStatus.this, "Delete all from pending", Toast.LENGTH_SHORT).show();
+
+                            myPendingOrders.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Toast.makeText(OrderStatus.this, "Order Cancelled", Toast.LENGTH_SHORT).show();
+
+                                    //We need to update the provider (implement later)
+
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception exception) {
+                                    // Uh-oh, an error occurred!
+                                    Toast.makeText(OrderStatus.this, "error: " + exception, Toast.LENGTH_SHORT)
+                                            .show();
+                                }
+                            });
+                        }
+                    })//setPositiveButton
+
+
+                    .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            //Do not delete
+                            //Toast.makeText(OrderStatus.this, "No", Toast.LENGTH_SHORT).show();
+
+                        }
+                    })//setNegativeButton
+
+                    .create();
+            myQuittingDialogBox.show();
         }
         return super.onOptionsItemSelected(item);
     }
