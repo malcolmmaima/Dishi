@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Dishi</string>
 
+    <string name="google_directions_key">AIzaSyCxNU_WjOy_-X8Ztt59iMbHsnDmKI0tGBA</string>
+
     <string name="title_activity_welcome">Home Screen</string>
     <string name="next">NEXT</string>
     <string name="skip">SKIP</string>
@@ -52,4 +54,5 @@
     <!-- Add menu activity toolbar-->
     <string name="action_multiple">Add Multiple</string>
     <string name="action_save">Save</string>
+    <string name="title_activity_maps">Map</string>
 </resources>

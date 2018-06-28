@@ -46,6 +46,7 @@ import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.Adapters.CustomerOrderAdapter;
 import malcolmmaima.dishi.View.Adapters.MyCartAdapter;
 import malcolmmaima.dishi.View.Adapters.OrderStatAdapter;
+import malcolmmaima.dishi.View.Map.MapsActivity;
 
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
@@ -58,7 +59,7 @@ public class OrderStatus extends AppCompatActivity {
     TextView emptyTag, totalItems, totalFee;
     Button trackBtn;
 
-    DatabaseReference myPendingOrders, myRef;
+    DatabaseReference myPendingOrders, myRef, providerRef;
     FirebaseDatabase db;
     FirebaseUser user;
 
@@ -160,7 +161,10 @@ public class OrderStatus extends AppCompatActivity {
         trackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(OrderStatus.this, "Track order(Real-time)", Toast.LENGTH_SHORT).show();
+                Intent slideactivity = new Intent(OrderStatus.this, MapsActivity.class);
+                Bundle bndlanimation =
+                        ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                startActivity(slideactivity, bndlanimation);
             }
         });
 

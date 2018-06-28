@@ -10,6 +10,7 @@ public class ReceivedOrders {
     public String customerNumber;
     public String providerNumber;
     public String status;
+    public String payType;
     public String key;
 
     public String getName() {
