@@ -60,10 +60,14 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
     FirebaseDatabase db;
     FirebaseUser user;
 
+    boolean multiple_providers;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_cart);
+
+        multiple_providers = false;
 
         Toolbar topToolBar = findViewById(R.id.toolbar);
         setSupportActionBar(topToolBar);
@@ -111,17 +115,59 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
             //If there is, loop through the items found and add to myBasket list
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+
+                multiple_providers = false;
+
                 try {
                 myBasket = new ArrayList<>();
                 int temp = 0;
+                int counter = 0;
+                String[] phoneNumbers = new String[(int) dataSnapshot.getChildrenCount()];
+
 
                 for (DataSnapshot mycart : dataSnapshot.getChildren()) {
                     MyCartDetails myCartDetails = mycart.getValue(MyCartDetails.class);
                     myCartDetails.key = mycart.getKey();
-                    //myCartDetails.providerNumber = mycart.;
+                    //Toast.makeText(MyCart.this, "Number: " + myCartDetails.providerNumber, Toast.LENGTH_SHORT).show();
                     String prices = myCartDetails.getPrice();
                     temp = Integer.parseInt(prices) + temp;
                     myBasket.add(myCartDetails);
+
+                    //Need to capture the phone numbers of the providers in the cart and store in string array, if user has ordered from
+                    //Multiple providers, then will be prompted to search for nearby nduthi to fulfil the order
+                    for(DataSnapshot mycart2 : mycart.getChildren()){
+
+                        //Toast.makeText(MyCart.this, "mycart2: "+mycart2.getValue(), Toast.LENGTH_SHORT).show();
+
+                        if(mycart2.getKey().equals("providerNumber")){
+
+                            phoneNumbers[counter] = myCartDetails.providerNumber;
+
+                            //Toast.makeText(MyCart.this, "phoneNumbers["+counter+"] = "+phoneNumbers[counter], Toast.LENGTH_SHORT).show();
+
+                            counter = counter + 1;
+
+                        }
+                    }
+
+                }
+
+                //compare phone numbers, immediately pattern of providers in cart is broken, then prompt user to use nduthi service
+                for(int i = 0; i<phoneNumbers.length; i++){
+                    if(i > 0){
+                        if(phoneNumbers[i].equals(phoneNumbers[i-1])){
+
+                            //current phone number and previous are the same, keep checking
+                            //Toast.makeText(MyCart.this, "phoneNumbers["+i+"] = "
+                            //        +phoneNumbers[i]+" == phoneNumbers["+(i-1)+"] = " +phoneNumbers[i-1], Toast.LENGTH_SHORT).show();
+                        }
+                        else {//Pattern broken, menu items in cart are from different providers
+
+                            //Toast.makeText(MyCart.this, "phoneNumbers["+i+"] = "
+                            //        +phoneNumbers[i]+" != phoneNumbers["+(i-1)+"] = " +phoneNumbers[i-1], Toast.LENGTH_SHORT).show();
+                            multiple_providers = true;
+                        }
+                    }
                 }
 
                 //Toast.makeText(getContext(), "TOTAL: " + temp, Toast.LENGTH_SHORT).show();
@@ -160,6 +206,7 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
             } catch (Exception e){
                 emptyTag.setText("Failed");
                 emptyTag.setVisibility(VISIBLE);
+                    Toast.makeText(MyCart.this, e.toString(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -175,77 +222,84 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
 
                 if (paymentType.equals("empty")) {
                     Toast.makeText(MyCart.this, "You must select payment method", Toast.LENGTH_SHORT).show();
-                }
+                } else {
 
-                else {
-                String key = myCartRef.push().getKey(); //The child node in mycart for storing menu items
-                final MyCartDetails myCart = new MyCartDetails();
+                    if (multiple_providers == true) {
+                        Toast.makeText(MyCart.this, "You're about to order from multiple providers!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        //Check if theres anything in my cart
+                        myCartRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            //If there is, loop through the items found and start sending the orders
+                            @Override
+                            public void onDataChange(final DataSnapshot dataSnapshot) {
+                                try {
 
+                                    final String[] customerName = {""};
 
-                //Check if theres anything in my cart
-                myCartRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    //If there is, loop through the items found and start sending the orders
-                    @Override
-                    public void onDataChange(final DataSnapshot dataSnapshot) {
-                        try {
+                                    final int[] remainingOrders = {(int) dataSnapshot.getChildrenCount()}; //Need to keep track of each order successfully sent
+                                    //Toast.makeText(MyCart.this, "Items: " + remainingOrders[0], Toast.LENGTH_SHORT).show();
 
-                            final String[] customerName = {""};
+                                    myRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            customerName[0] = dataSnapshot.getValue(String.class); //My name will be sent to provider with my order
+                                            //Toast.makeText(MyAccountRestaurant.this, "Welcome " + account_name, Toast.LENGTH_LONG).show();
+                                        }
 
-                            final int[] remainingOrders = {(int) dataSnapshot.getChildrenCount()}; //Need to keep track of each order successfully sent
-                            //Toast.makeText(MyCart.this, "Items: " + remainingOrders[0], Toast.LENGTH_SHORT).show();
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+                                            Toast.makeText(MyCart.this, "Error: " + databaseError.toString() + ". Try again!", Toast.LENGTH_LONG).show();
+                                        }
+                                    });
 
-                            myRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    customerName[0] = dataSnapshot.getValue(String.class); //My name will be sent to provider with my order
-                                    //Toast.makeText(MyAccountRestaurant.this, "Welcome " + account_name, Toast.LENGTH_LONG).show();
-                                }
+                                    for (final DataSnapshot mycart : dataSnapshot.getChildren()) {
+                                        final MyCartDetails myCartDetails = mycart.getValue(MyCartDetails.class);
+                                        myCartDetails.key = mycart.getKey();
+                                        myCartDetails.customerNumber = myPhone;
+                                        myCartDetails.status = "pending";
+                                        myCartDetails.payType = paymentType;
 
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-                                    Toast.makeText(MyCart.this, "Error: " + databaseError.toString() + ". Try again!", Toast.LENGTH_LONG).show();
-                                }
-                            });
+                                        //Post the orders to the respective providers and have them confirm orders
+                                        providerRef = db.getReference(myCartDetails.getProviderNumber() + "/orders");
 
-                            for (final DataSnapshot mycart : dataSnapshot.getChildren()) {
-                                final MyCartDetails myCartDetails = mycart.getValue(MyCartDetails.class);
-                                myCartDetails.key = mycart.getKey();
-                                myCartDetails.customerNumber = myPhone;
-                                myCartDetails.status = "pending";
-                                myCartDetails.payType = paymentType;
-
-                                //Post the orders to the respective providers and have them confirm orders
-                                providerRef = db.getReference(myCartDetails.getProviderNumber() + "/orders");
-
-                                //add order to respective provider nodes
-                                providerRef.child(myCartDetails.key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        remainingOrders[0] = remainingOrders[0] - 1;
-
-                                        //After successfully sending the order to each provider, add it to my pending orders node
-                                        myPendingOrders.child(myCartDetails.key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        //add order to respective provider nodes
+                                        providerRef.child(myCartDetails.key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void aVoid) {
+                                                remainingOrders[0] = remainingOrders[0] - 1;
 
-                                                // After successfully appending my orders to the pending node, remove it from mycart
-                                                myCartRef.child(myCartDetails.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                //After successfully sending the order to each provider, add it to my pending orders node
+                                                myPendingOrders.child(myCartDetails.key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
 
-                                                        //Toast.makeText(MyCart.this, "Items: " + remainingOrders[0], Toast.LENGTH_SHORT).show();
-                                                        if (remainingOrders[0] == 0) {
-                                                            //Redirect to track orders map
-                                                            Toast toast = Toast.makeText(MyCart.this, "Redirect to realtime track order map", Toast.LENGTH_LONG);
-                                                            toast.setGravity(Gravity.CENTER, 0, 1);
-                                                            toast.show();
+                                                        // After successfully appending my orders to the pending node, remove it from mycart
+                                                        myCartRef.child(myCartDetails.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void aVoid) {
 
-                                                            Snackbar snackbar = Snackbar
-                                                                    .make(findViewById(R.id.parentlayout), "Orders sent", Snackbar.LENGTH_LONG);
+                                                                //Toast.makeText(MyCart.this, "Items: " + remainingOrders[0], Toast.LENGTH_SHORT).show();
+                                                                if (remainingOrders[0] == 0) {
+                                                                    //Redirect to track orders map
+                                                                    Toast toast = Toast.makeText(MyCart.this, "Redirect to realtime track order map", Toast.LENGTH_LONG);
+                                                                    toast.setGravity(Gravity.CENTER, 0, 1);
+                                                                    toast.show();
 
-                                                            snackbar.show();
-                                                        }
+                                                                    Snackbar snackbar = Snackbar
+                                                                            .make(findViewById(R.id.parentlayout), "Orders sent", Snackbar.LENGTH_LONG);
 
+                                                                    snackbar.show();
+                                                                }
+
+                                                            }
+                                                        }).addOnFailureListener(new OnFailureListener() {
+                                                            @Override
+                                                            public void onFailure(@NonNull Exception exception) {
+                                                                // Uh-oh, an error occurred!
+                                                                Toast.makeText(MyCart.this, "Error: " + exception, Toast.LENGTH_SHORT)
+                                                                        .show();
+                                                            }
+                                                        });
                                                     }
                                                 }).addOnFailureListener(new OnFailureListener() {
                                                     @Override
@@ -255,41 +309,34 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                                                                 .show();
                                                     }
                                                 });
-                                            }
-                                        }).addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception exception) {
-                                                // Uh-oh, an error occurred!
-                                                Toast.makeText(MyCart.this, "Error: " + exception, Toast.LENGTH_SHORT)
-                                                        .show();
-                                            }
-                                        });
 
-                                    }
-                                })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                // Write failed
-                                                Toast.makeText(MyCart.this, "Error: " + e.toString(), Toast.LENGTH_LONG).show();
                                             }
-                                        });
+                                        })
+                                                .addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        // Write failed
+                                                        Toast.makeText(MyCart.this, "Error: " + e.toString(), Toast.LENGTH_LONG).show();
+                                                    }
+                                                });
+                                    }
+
+
+                                } catch (Exception e) {
+                                    emptyTag.setText("Failed");
+                                    emptyTag.setVisibility(VISIBLE);
+                                }
                             }
 
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                Toast.makeText(MyCart.this, "Error: " + databaseError, Toast.LENGTH_SHORT).show();
+                            }
+                        });
 
-                        } catch (Exception e) {
-                            emptyTag.setText("Failed");
-                            emptyTag.setVisibility(VISIBLE);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Toast.makeText(MyCart.this, "Error: " + databaseError, Toast.LENGTH_SHORT).show();
-                    }
-                });
-
+                }
             }
+
         }
         });
 
