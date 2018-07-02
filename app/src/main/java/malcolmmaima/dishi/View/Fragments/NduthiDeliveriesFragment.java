@@ -8,9 +8,9 @@ import android.view.ViewGroup;
 
 import malcolmmaima.dishi.R;
 
-public class ItemSixFragment extends Fragment {
-    public static UserProfileFragment newInstance() {
-        UserProfileFragment fragment = new UserProfileFragment();
+public class NduthiDeliveriesFragment extends Fragment {
+    public static NduthiDeliveriesFragment newInstance() {
+        NduthiDeliveriesFragment fragment = new NduthiDeliveriesFragment();
         return fragment;
     }
 
@@ -22,7 +22,7 @@ public class ItemSixFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_item_six, container, false);
+        return inflater.inflate(R.layout.fragment_nduthi_deliveries, container, false);
     }
 }
 

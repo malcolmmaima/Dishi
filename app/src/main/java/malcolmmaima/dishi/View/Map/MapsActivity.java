@@ -6,6 +6,8 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
@@ -40,10 +42,17 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import static com.google.android.gms.maps.model.JointType.ROUND;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final String TAG = MapsActivity.class.getSimpleName();
     SupportMapFragment mapFragment;
@@ -61,11 +70,62 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String destination;
     private PolylineOptions polylineOptions, blackPolylineOptions;
     private Polyline blackPolyline, greyPolyLine;
+    private double myLat, myLng, speed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        Toolbar topToolBar = findViewById(R.id.toolbar);
+        setSupportActionBar(topToolBar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        //setTitle("Track Nduthi");
+        setTitle("");
+
+        topToolBar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish(); // Go back to previous activity
+            }
+        });
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String myPhone = user.getPhoneNumber(); //Current logged in user phone number
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        DatabaseReference dbRef = db.getReference(myPhone);
+
+        dbRef.child("location").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+
+                    if(dataSnapshot1.getKey().equals("latitude")){
+                        myLat = dataSnapshot1.getValue(Double.class) ;
+                    }
+
+                    if(dataSnapshot1.getKey().equals("longitude")){
+                        myLng = dataSnapshot1.getValue(Double.class);
+                    }
+
+                    if(dataSnapshot1.getKey().equals("speed")){
+                        speed = dataSnapshot1.getValue(Double.class);
+                    }
+
+                    //Toast.makeText(MapsActivity.this, "mylat: " + myLat + " mylon: " + myLng + " speed: " + speed, Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -87,14 +147,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        //Default Nairobi
         final double latitude = -1.281647;
         double longitude = 36.822638;
+
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.setTrafficEnabled(false);
         mMap.setIndoorEnabled(false);
         mMap.setBuildingsEnabled(false);
         mMap.getUiSettings().setZoomControlsEnabled(true);
-        myLocation = new LatLng(-1.281647, 36.822638);
+        myLocation = new LatLng(-myLat, myLng);
         mMap.addMarker(new MarkerOptions().position(myLocation).title("My Location"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder()
@@ -107,10 +170,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         try {
 
             requestUrl = "https://maps.googleapis.com/maps/api/directions/json?" +
-                    "mode=driving&"
-                    + "transit_routing_preference=less_driving&"
+                    "mode=walking&"
+                    + "transit_routing_preference=less_walking&"
                     + "origin=" + destination + "&"
-                    + "destination=" + latitude + "," + longitude + "&"
+                    + "destination=" + myLat + "," + myLng + "&"
                     + "key=" + getResources().getString(R.string.google_directions_key);
             Log.d(TAG, requestUrl);
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
