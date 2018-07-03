@@ -51,12 +51,14 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
     Circle myArea;
     Double distance;
     int zoomLevel;
+    boolean notifSent;
     VerticalSeekBar zoomMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_geo_fire);
+        notifSent = false;
 
         Toolbar topToolBar = findViewById(R.id.toolbar);
         setSupportActionBar(topToolBar);
@@ -133,8 +135,8 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                     myLocation = new LatLng(myLat, myLong);
                     orderLocation = new LatLng(-1.391996,36.8186076);
 
-                    myCurrent.remove();
-                    myArea.remove();
+                    myCurrent.remove(); //Remove previous marker
+                    myArea.remove(); //Remove previous circle
 
                     providerCurrent = mMap.addMarker(new MarkerOptions().position(orderLocation).title("Nduthi"));
                     myCurrent = mMap.addMarker(new MarkerOptions().position(myLocation).title("My Location"));
@@ -150,16 +152,23 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                     //Toast.makeText(GeoFireActivity.this, "Distance: " + distance, Toast.LENGTH_SHORT).show();
                     distance = distance * 1000; //Convert distance to meters
                     //If person making delivery is within 500m radius, send notification
-                    if(distance < 500){
+                    if(distance < 500 && notifSent == false){
                         sendNotification("Order is "+distance+"m away");
+                        notifSent = true;
                     }
                     //mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(myLat,myLong), zoomLevel));
 
                 }catch (Exception e){
                     //Toast.makeText(GeoFireActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
-                    myLocation = new LatLng(-34, 151);
+                    myLocation = new LatLng(-1.281647, 36.822638); //Default Nairobi
                     myCurrent = mMap.addMarker(new MarkerOptions().position(myLocation).title("Default Location"));
+                    //Radius around my area
+                    myArea = mMap.addCircle(new CircleOptions().center(myLocation)
+                            .radius(500)//in meters
+                            .strokeColor(Color.BLUE)
+                            .fillColor(0x220000FF)
+                            .strokeWidth(5.0f));
                     //mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(myLat,myLong), zoomLevel));
                 }

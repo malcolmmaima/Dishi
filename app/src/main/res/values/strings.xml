@@ -42,7 +42,6 @@
     <string name="history">History</string>
 
 
-
     <string name="action_cart">My basket</string>
 
     <!-- Toolbar-->
@@ -57,4 +56,5 @@
     <string name="action_multiple">Add Multiple</string>
     <string name="action_save">Save</string>
     <string name="title_activity_maps">Map</string>
+    <string name="title_activity_geo_fire">Map</string>
 </resources>

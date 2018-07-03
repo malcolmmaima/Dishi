@@ -36,7 +36,7 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:id="@+id/verticalSeekbar"
-                    android:progress="12"
+                    android:progress="18"
                     android:max="20"
                     android:splitTrack="false"
                     app:seekBarRotation="CW270"

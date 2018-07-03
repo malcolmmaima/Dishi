@@ -36,11 +36,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import malcolmmaima.dishi.Model.DishiUser;
 import malcolmmaima.dishi.Model.MyCartDetails;
+import malcolmmaima.dishi.Model.NduthiNearMe;
 import malcolmmaima.dishi.Model.OrderDetails;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.Adapters.CustomerOrderAdapter;
@@ -52,22 +56,28 @@ import static android.view.View.VISIBLE;
 public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     List<MyCartDetails> myBasket;
+    List<NduthiNearMe> nduthiNearMeList;
     RecyclerView recyclerview;
     String myPhone, paymentType;
     TextView emptyTag, totalItems, totalFee;
     Button checkoutBtn;
     Spinner payMethod;
 
-    DatabaseReference myCartRef, providerRef, myPendingOrders, myRef;
+    DatabaseReference myCartRef, providerRef, myPendingOrders, myRef, nduthisRef;
     FirebaseDatabase db;
     FirebaseUser user;
 
     boolean multiple_providers;
+    Double distance, myLat, myLong, nduthiLat, nduthiLong;
+    ProgressDialog progressDialog ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_cart);
+
+        // Assigning Id to ProgressDialog.
+        progressDialog = new ProgressDialog(MyCart.this);
 
         multiple_providers = false;
 
@@ -83,7 +93,10 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
         topToolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish(); //Go back to previous activity
+                //finish(); //Go back to previous activity
+                Intent cartActivity = new Intent(MyCart.this, MyAccountCustomer.class);
+                cartActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);//Load MyCart Activity and clear activity stack
+                startActivity(cartActivity);
             }
         });
         //topToolBar.setLogo(R.drawable.logo);
@@ -96,6 +109,8 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
         myCartRef = db.getReference(myPhone + "/mycart");
         myRef = db.getReference(myPhone);
         myPendingOrders = db.getReference(myPhone + "/pending");
+        nduthisRef = db.getReference();
+
         recyclerview = findViewById(R.id.rview);
         emptyTag = findViewById(R.id.empty_tag);
         totalItems = findViewById(R.id.totalItems);
@@ -218,9 +233,39 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
             }
         });
 
+        final FirebaseDatabase db;
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        final String myPhone = user.getPhoneNumber(); //Current logged in user phone number
+
+        db = FirebaseDatabase.getInstance();
+        final DatabaseReference mylocationRef = db.getReference(myPhone + "/location"); //loggedin user location reference
+
+        //My latitude longitude coordinates
+        mylocationRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot myCords : dataSnapshot.getChildren()) {
+                    if (myCords.getKey().equals("latitude")) {
+                            myLat = myCords.getValue(Double.class);
+                        }
+
+                        if (myCords.getKey().equals("longitude")) {
+                            myLong = myCords.getValue(Double.class);
+                        }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         checkoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                nduthisNearby(); //Initialize nduthisNearby() search
 
                 if (paymentType.equals("empty")) {
                     Toast.makeText(MyCart.this, "You must select payment method", Toast.LENGTH_SHORT).show();
@@ -239,7 +284,14 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                                 .setCancelable(false)
                                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int whichButton) {
-                                        Toast.makeText(MyCart.this, "Search nduthi activity", Toast.LENGTH_SHORT).show();
+                                        // Setting progressDialog Title.
+                                        progressDialog.setTitle("Searching...");
+                                        // Showing progressDialog.
+                                        progressDialog.show();
+                                        progressDialog.setCancelable(false);
+
+                                        nduthisNearby();
+
                                     }
                                 })//setPositiveButton
 
@@ -392,6 +444,111 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
         return super.onOptionsItemSelected(item);
     }
 
+    public void nduthisNearby(){
+        ///////
+        //Loop through all the users
+        nduthisRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                try {
+                    nduthiNearMeList = new ArrayList<>();
+
+                    // StringBuffer stringbuffer = new StringBuffer();
+
+                    //So first we loop through the users in the firebase db
+                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                        //Toast.makeText(MyCart.this, "User: " + dataSnapshot1.getKey()
+                        //+ " is of account type: " + dataSnapshot1.child("account_type").getValue(), Toast.LENGTH_SHORT).show();
+
+                        //And get users of account type = 3 (Nduthi account)
+                        if(dataSnapshot1.child("account_type").getValue().equals("3")){
+                            //Toast.makeText(MyCart.this, "User: " + dataSnapshot1.getKey()
+                            //       + " is nduthi", Toast.LENGTH_SHORT).show();
+
+                            NduthiNearMe nduthiNearMe = new NduthiNearMe();
+
+                            nduthiNearMe.name = dataSnapshot1.child("name").getValue(String.class);
+                            nduthiNearMe.profilepic = dataSnapshot1.child("profilepic").getValue(String.class);
+                            nduthiNearMe.bio = dataSnapshot1.child("bio").getValue(String.class);
+                            nduthiNearMe.email = dataSnapshot1.child("email").getValue(String.class);
+                            nduthiNearMe.gender = dataSnapshot1.child("gender").getValue(String.class);
+
+                            DatabaseReference nduthiRef = db.getReference(dataSnapshot1.getKey().toString() + "/location");
+
+                            //Nduthi latitude longitude coordinates
+                            nduthiRef.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                    for (DataSnapshot nduthiCords : dataSnapshot.getChildren()) {
+                                        if (nduthiCords.getKey().equals("latitude")) {
+                                            nduthiLat = nduthiCords.getValue(Double.class);
+                                        }
+
+                                        if (nduthiCords.getKey().equals("longitude")) {
+                                            nduthiLong = nduthiCords.getValue(Double.class);
+                                        }
+                                    }
+
+                                    //Calculate distance between nduthi and customer
+                                    distance = distance(myLat, myLong, nduthiLat, nduthiLong, "K");
+                                    distance = distance * 1000; //Convert to meters
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
+
+                            String key = myRef.push().getKey();
+                            //Search within a 500m radius for nduthis
+                            if(distance < 2000){
+                                nduthiNearMeList.add(nduthiNearMe);
+                                myRef.child("nearby_nduthis").child(dataSnapshot1.getKey().toString()).setValue(nduthiNearMe).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        //Toast.makeText(MyCart.this, "Added: " + nduthiNearMeList.size() + " nduthis", Toast.LENGTH_SHORT).show();
+                                        progressDialog.dismiss();
+
+                                        Intent slideactivity = new Intent(MyCart.this, SelectNduthiGuy.class)
+                                                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        Bundle bndlanimation =
+                                                ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                                        startActivity(slideactivity, bndlanimation);
+                                    }
+                                });
+                            }
+
+                            else {
+                                progressDialog.dismiss();
+                                Toast.makeText(MyCart.this, "No nduthi near you!", Toast.LENGTH_LONG).show();
+                            }
+                            //Toast.makeText(MyCart.this, "nduthiNearMeList size: " + nduthiNearMeList.size(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+
+                } catch (Exception e){
+                    //Toast.makeText(MyCart.this, e.toString(), Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                //  Log.w(TAG, "Failed to read value.", error.toException());
+
+                progressDialog.dismiss();
+
+                Toast.makeText(MyCart.this, "Failed, " + error, Toast.LENGTH_SHORT).show();
+            }
+        });
+        //////
+    }
+
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         if(position == 0){
@@ -409,6 +566,47 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    public static double distance(double lat1, double lon1, double lat2, double lon2, String unit) {
+        double theta = lon1 - lon2;
+        double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
+        dist = Math.acos(dist);
+        dist = rad2deg(dist);
+        dist = dist * 60 * 1.1515;
+        if (unit == "K") {
+            dist = dist * 1.609344;
+        } else if (unit == "N") {
+            dist = dist * 0.8684;
+        }
+
+        return round(dist, 2);
+    }
+
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    /*::	This function converts decimal degrees to radians			:*/
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    public static double deg2rad(double deg) {
+        return (deg * Math.PI / 180.0);
+    }
+
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    /*::	This function converts radians to decimal degrees			:*/
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    public static double rad2deg(double rad) {
+        return (rad * 180 / Math.PI);
+    }
+
+
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    /*::	This function rounds a double to N decimal places					 :*/
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    private static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(Double.toString(value));
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 }
 

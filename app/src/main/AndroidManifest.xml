@@ -58,7 +58,9 @@
             android:label="@string/title_activity_maps" />
         <activity
             android:name=".View.Map.GeoFireActivity"
-            android:label="@string/title_activity_geo_fire"></activity>
+            android:label="@string/title_activity_geo_fire" />
+        <activity android:name=".View.SelectNduthiGuy" />
+        <activity android:name=".View.Adapters.NduthiAdapter"></activity>
     </application>
 
 </manifest>
