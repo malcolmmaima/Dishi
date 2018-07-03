@@ -228,7 +228,7 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                 } else {
 
                     if (multiple_providers == true) {
-                        Toast.makeText(MyCart.this, "You're about to order from multiple providers!", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(MyCart.this, "You're about to order from multiple providers!", Toast.LENGTH_SHORT).show();
 
                         final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(MyCart.this)
                                 //set message, title, and icon
@@ -236,6 +236,7 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                                 .setMessage("You're about to order from multiple providers. Search Nduthi nearby to fulfil the orders")
                                 //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
                                 //set three option buttons
+                                .setCancelable(false)
                                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int whichButton) {
                                         Toast.makeText(MyCart.this, "Search nduthi activity", Toast.LENGTH_SHORT).show();

@@ -46,6 +46,7 @@ import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.Adapters.CustomerOrderAdapter;
 import malcolmmaima.dishi.View.Adapters.MyCartAdapter;
 import malcolmmaima.dishi.View.Adapters.OrderStatAdapter;
+import malcolmmaima.dishi.View.Map.GeoFireActivity;
 import malcolmmaima.dishi.View.Map.MapsActivity;
 
 import static android.view.View.INVISIBLE;
@@ -161,7 +162,7 @@ public class OrderStatus extends AppCompatActivity {
         trackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent slideactivity = new Intent(OrderStatus.this, MapsActivity.class);
+                Intent slideactivity = new Intent(OrderStatus.this, GeoFireActivity.class);
                 Bundle bndlanimation =
                         ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
                 startActivity(slideactivity, bndlanimation);
