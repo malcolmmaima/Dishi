@@ -68,9 +68,11 @@ public class SelectNduthiGuy extends AppCompatActivity {
                     }
                 });
 
+                finish();
+                /*
                 Intent cartActivity = new Intent(SelectNduthiGuy.this, MyCart.class);
                 cartActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);//Load MyCart Activity and clear activity stack
-                startActivity(cartActivity);
+                startActivity(cartActivity); */
             }
         });
         //topToolBar.setLogo(R.drawable.logo);
@@ -83,7 +85,6 @@ public class SelectNduthiGuy extends AppCompatActivity {
 
         nduthisNearmeRef = FirebaseDatabase.getInstance().getReference(myPhone + "/nearby_nduthis");
 
-        //Loop through the deliveries child node and get menu items, assign values to our POJO model
         nduthisNearmeRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

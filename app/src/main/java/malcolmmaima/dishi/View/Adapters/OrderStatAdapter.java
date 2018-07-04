@@ -238,9 +238,13 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
         holder.orderStatus.setText(myCartDetails.status);
 
 
-        //Loading image from Glide library.
-        Glide.with(context).load(myCartDetails.getImageURL()).into(holder.foodPic);
-        Log.d("glide", "onBindViewHolder: imageUrl: " + myCartDetails.getImageURL());
+        try {
+            //Loading image from Glide library.
+            Glide.with(context).load(myCartDetails.getImageURL()).into(holder.foodPic);
+            Log.d("glide", "onBindViewHolder: imageUrl: " + myCartDetails.getImageURL());
+        } catch (Exception e){
+
+        }
 
     }
 

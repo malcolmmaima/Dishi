@@ -218,9 +218,13 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
         holder.foodDescription.setText(receivedOrders.getDescription());
 
 
-        //Loading image from Glide library.
-        Glide.with(context).load(receivedOrders.getImageURL()).into(holder.foodPic);
-        //Log.d("glide", "onBindViewHolder: imageUrl: " + receivedOrders.getImageURL());
+        try {
+            //Loading image from Glide library.
+            Glide.with(context).load(receivedOrders.getImageURL()).into(holder.foodPic);
+            //Log.d("glide", "onBindViewHolder: imageUrl: " + receivedOrders.getImageURL());
+        } catch (Exception e){
+
+        }
 
         final String[] status = new String[listdata.size()];
 

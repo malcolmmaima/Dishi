@@ -163,7 +163,7 @@ public class NduthiAdapter extends RecyclerView.Adapter<NduthiAdapter.MyHolder>{
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         profilepic[0] = dataSnapshot.getValue(String.class);
-                    }
+                        }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -336,8 +336,12 @@ public class NduthiAdapter extends RecyclerView.Adapter<NduthiAdapter.MyHolder>{
         holder.tripsMade.setText("Trips made");
 
 
-        //Loading image from Glide library.
-        Glide.with(context).load(nduthiNearMe.profilepic).into(holder.nduthiProfile);
+        try {
+            //Loading image from Glide library.
+            Glide.with(context).load(nduthiNearMe.profilepic).into(holder.nduthiProfile);
+        } catch (Exception e){
+
+        }
 
     }
 

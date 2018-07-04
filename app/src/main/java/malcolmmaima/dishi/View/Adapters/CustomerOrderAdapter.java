@@ -200,9 +200,13 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
         holder.providerName.setText("Provider: " + orderDetails.providerName);
 
 
-        //Loading image from Glide library.
-        Glide.with(context).load(orderDetails.getImageURL()).into(holder.foodPic);
-        Log.d("glide", "onBindViewHolder: imageUrl: " + orderDetails.getImageURL());
+        try {
+            //Loading image from Glide library.
+            Glide.with(context).load(orderDetails.getImageURL()).into(holder.foodPic);
+            Log.d("glide", "onBindViewHolder: imageUrl: " + orderDetails.getImageURL());
+        } catch (Exception e){
+
+        }
 
         holder.orderBtn.setOnClickListener(new View.OnClickListener(){
 

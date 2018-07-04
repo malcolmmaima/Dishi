@@ -67,7 +67,7 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
     FirebaseDatabase db;
     FirebaseUser user;
 
-    boolean multiple_providers;
+    boolean multiple_providers, completeOrder;
     Double distance, myLat, myLong, nduthiLat, nduthiLong;
     ProgressDialog progressDialog ;
 
@@ -80,6 +80,7 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
         progressDialog = new ProgressDialog(MyCart.this);
 
         multiple_providers = false;
+        completeOrder = false;
 
         Toolbar topToolBar = findViewById(R.id.toolbar);
         setSupportActionBar(topToolBar);
@@ -93,10 +94,11 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
         topToolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //finish(); //Go back to previous activity
+                finish(); //Go back to previous activity
+                /*
                 Intent cartActivity = new Intent(MyCart.this, MyAccountCustomer.class);
                 cartActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);//Load MyCart Activity and clear activity stack
-                startActivity(cartActivity);
+                startActivity(cartActivity); */
             }
         });
         //topToolBar.setLogo(R.drawable.logo);
@@ -290,6 +292,7 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                                         progressDialog.show();
                                         progressDialog.setCancelable(false);
 
+                                        completeOrder = true;
                                         nduthisNearby();
 
                                     }
@@ -505,7 +508,7 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                                 }
                             });
 
-
+                            int nduthiSize = nduthiNearMeList.size();
                             String key = myRef.push().getKey();
                             //Search within a 500m radius for nduthis
                             if(distance < 2000){
@@ -514,13 +517,7 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         //Toast.makeText(MyCart.this, "Added: " + nduthiNearMeList.size() + " nduthis", Toast.LENGTH_SHORT).show();
-                                        progressDialog.dismiss();
 
-                                        Intent slideactivity = new Intent(MyCart.this, SelectNduthiGuy.class)
-                                                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                        Bundle bndlanimation =
-                                                ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
-                                        startActivity(slideactivity, bndlanimation);
                                     }
                                 });
                             }
@@ -531,11 +528,21 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                             }
                             //Toast.makeText(MyCart.this, "nduthiNearMeList size: " + nduthiNearMeList.size(), Toast.LENGTH_SHORT).show();
                         }
+
                     }
 
 
                 } catch (Exception e){
                     //Toast.makeText(MyCart.this, e.toString(), Toast.LENGTH_SHORT).show();
+                }
+
+                if(nduthiNearMeList.size() != 0 && completeOrder == true){
+                    progressDialog.dismiss();
+
+                    Intent slideactivity = new Intent(MyCart.this, SelectNduthiGuy.class);
+                    Bundle bndlanimation =
+                            ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                    startActivity(slideactivity, bndlanimation);
                 }
 
             }
@@ -549,6 +556,8 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
 
                 Toast.makeText(MyCart.this, "Failed, " + error, Toast.LENGTH_SHORT).show();
             }
+
+
         });
         //////
     }

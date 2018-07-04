@@ -74,9 +74,13 @@ public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAd
         holder.foodName.setText(productDetails.getName());
         holder.foodDescription.setText(productDetails.getDescription());
 
-        //Loading image from Glide library.
-        Glide.with(context).load(productDetails.getImageURL()).into(holder.foodPic);
-        Log.d("glide", "onBindViewHolder: imageUrl: " + productDetails.getImageURL());
+        try {
+            //Loading image from Glide library.
+            Glide.with(context).load(productDetails.getImageURL()).into(holder.foodPic);
+            Log.d("glide", "onBindViewHolder: imageUrl: " + productDetails.getImageURL());
+        } catch (Exception e){
+
+        }
 
         holder.editBtn.setOnClickListener(new View.OnClickListener(){
             @Override
