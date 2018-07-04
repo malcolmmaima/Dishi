@@ -276,6 +276,7 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
                                     dishiUser.setAccount_type(account_type); // int value
                                     dishiUser.setNotifications(switchState.toString()); // boolean value
                                     dishiUser.setVerified("true");
+                                    dishiUser.setEngaged("true"); //For nduthi accounts (determine if nduthi guy is engaged with an active order
 
                                     // Write user data to the database
                                     FirebaseDatabase database = FirebaseDatabase.getInstance();

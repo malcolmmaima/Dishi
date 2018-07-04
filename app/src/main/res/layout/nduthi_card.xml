@@ -83,12 +83,32 @@
             android:gravity="center|right">
 
             <ImageButton
+                android:id="@+id/nduthiStat"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:scaleType="centerCrop"
+                android:background="@drawable/ic_pending_order"
+                android:layout_marginRight="3dp"
+
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="pending"
+                android:id="@+id/nduthiStatMsg"
+                android:textColor="#666"
+                android:layout_toRightOf="@id/nduthiStat"/>
+
+            <ImageButton
                 android:id="@+id/locationTag"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:scaleType="centerCrop"
                 android:background="@drawable/ic_location_black_48dp"
                 android:layout_marginRight="10dp"
+                android:layout_below="@id/nduthiStat"
 
                 />
 
@@ -99,7 +119,8 @@
                 android:layout_height="wrap_content"
                 android:text=" 0 m away"
                 android:layout_marginLeft="-10dp"
-                android:layout_marginRight="5dp"/>
+                android:layout_marginRight="5dp"
+                android:layout_below="@id/nduthiStatMsg"/>
 
             <RelativeLayout
                 android:layout_width="wrap_content"

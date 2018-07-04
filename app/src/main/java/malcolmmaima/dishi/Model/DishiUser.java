@@ -10,6 +10,7 @@ public class DishiUser {
     public String account_type;
     public String notifications;
     public String verified;
+    public String engaged; //For nduthi accounts
 
     public String getName() {
         return name;
@@ -73,5 +74,13 @@ public class DishiUser {
 
     public void setVerified(String verified) {
         this.verified = verified;
+    }
+
+    public String getEngaged() {
+        return engaged;
+    }
+
+    public void setEngaged(String engaged) {
+        this.engaged = engaged;
     }
 }

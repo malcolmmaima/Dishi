@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -28,9 +29,15 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
+import malcolmmaima.dishi.Model.MyCartDetails;
 import malcolmmaima.dishi.Model.NduthiNearMe;
+import malcolmmaima.dishi.Model.RequestNduthi;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.SelectNduthiGuy;
+
+import static malcolmmaima.dishi.R.drawable.ic_delivered_order;
+import static malcolmmaima.dishi.R.drawable.ic_order_in_transit;
+import static malcolmmaima.dishi.R.drawable.ic_pending_order;
 
 public class NduthiAdapter extends RecyclerView.Adapter<NduthiAdapter.MyHolder>{
 
@@ -53,7 +60,7 @@ public class NduthiAdapter extends RecyclerView.Adapter<NduthiAdapter.MyHolder>{
 
     public void onBindViewHolder(final MyHolder holder, final int position) {
         final NduthiNearMe nduthiNearMe = listdata.get(position);
-        final DatabaseReference mylocationRef, nduthiRef;
+        final DatabaseReference myRef, mylocationRef, nduthiRef, requestRideRef, nduthiGuyRef, nduthiRequests;
         FirebaseDatabase db;
 
         final Double[] provlon = new Double[listdata.size()];
@@ -62,12 +69,57 @@ public class NduthiAdapter extends RecyclerView.Adapter<NduthiAdapter.MyHolder>{
         final Double[] myLong = new Double[listdata.size()];
         final Double[] dist = new Double[listdata.size()];
 
+        final String[] itemCount = new String[1];
+
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        String myPhone = user.getPhoneNumber(); //Current logged in user phone number
+        final String myPhone = user.getPhoneNumber(); //Current logged in user phone number
+        final String[] myName = new String[1];
 
         // Assign FirebaseStorage instance to storageReference.
 
         db = FirebaseDatabase.getInstance();
+        requestRideRef = db.getReference(nduthiNearMe.phone + "/request_ride");
+        nduthiGuyRef = db.getReference(nduthiNearMe.phone);
+        nduthiRequests = db.getReference(nduthiNearMe.phone + "/request_menus"+"/request_"+myPhone);
+
+        myRef = db.getReference(myPhone);
+
+        try {
+
+            nduthiGuyRef.child("engaged").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    //Toast.makeText(context, "engaged: " + dataSnapshot.getValue(), Toast.LENGTH_LONG).show();
+
+                    if(dataSnapshot.getValue().equals("false")){
+                        //Default state is green meaning is active and ready to receive requests
+                        Glide.with(context).load(ic_delivered_order).into(holder.nduthiStat);
+                        holder.nduthiStatMsg.setText("Ready");
+                    }
+
+                    //Once confimed request, set status to pending as nduthi goes to collect the orders
+                    if(dataSnapshot.getValue().equals("true")){
+                        Glide.with(context).load(ic_pending_order).into(holder.nduthiStat);
+                        holder.nduthiStatMsg.setText("engaged");
+                    }
+
+                    //Is actively in trnsit delivering an order
+                    if(dataSnapshot.getValue().equals("transit")) {
+                        Glide.with(context).load(ic_order_in_transit).into(holder.nduthiStat);
+                        holder.nduthiStatMsg.setText("Busy");
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+        } catch (Exception e){
+
+        }
+
 
 
         //Toast.makeText(context, "provider" + (" x:" + provlat[0] +" y:"+ provlon[0]) , Toast.LENGTH_SHORT).show();
@@ -105,6 +157,18 @@ public class NduthiAdapter extends RecyclerView.Adapter<NduthiAdapter.MyHolder>{
             @Override
             public void onClick(View v) {
 
+                myRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        myName[0] = dataSnapshot.getValue(String.class);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
                 final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(v.getContext())
                         //set message, title, and icon
                         .setTitle("Select "+nduthiNearMe.name)
@@ -114,7 +178,48 @@ public class NduthiAdapter extends RecyclerView.Adapter<NduthiAdapter.MyHolder>{
                         //set three option buttons
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                //We will receive a request to deliver the said products
+                                //Send request to nduthi guy for delivery of the said products
+                                final String key = requestRideRef.push().getKey();
+                                RequestNduthi requestNduthi = new RequestNduthi();
+                                requestNduthi.status = "pending";
+                                requestNduthi.name = myName[0];
+                                requestNduthi.phone = myPhone;
+                                requestRideRef.child(key).setValue(requestNduthi).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        //Send the items I want to the nduthi guy so he can view them as well
+                                        myRef.child("mycart").addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                for(DataSnapshot cart : dataSnapshot.getChildren()){
+                                                    final MyCartDetails myCartDetails = cart.getValue(MyCartDetails.class);
+                                                    //Toast.makeText(context, "cart=> provider:" + myCartDetails.providerNumber
+                                                    //        + "\n,item: " + myCartDetails.getName(), Toast.LENGTH_SHORT).show();
+
+                                                    String key = nduthiRequests.push().getKey();
+                                                    nduthiRequests.child(key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+                                                            //My cart items sent to nduthi guy
+                                                            Toast.makeText(context, "Request sent to "
+                                                                    + nduthiNearMe.name + "! wait for confirmation or call nduthi!", Toast.LENGTH_SHORT).show();
+
+                                                            holder.selectBtn.setEnabled(false);
+                                                            holder.selectBtn.setText("Sent");
+
+                                                        }
+                                                    });
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                            }
+                                        });
+                                    }
+                                });
+
                             }
                         }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
@@ -228,8 +333,8 @@ public class NduthiAdapter extends RecyclerView.Adapter<NduthiAdapter.MyHolder>{
 
 
     class MyHolder extends RecyclerView.ViewHolder{
-        TextView nduthiName , nduthiBio, tripsMade, distanceAway;
-        ImageView nduthiProfile;
+        TextView nduthiName , nduthiBio, tripsMade, distanceAway, nduthiStatMsg;
+        ImageView nduthiProfile, nduthiStat;
         Button callNduthi, selectBtn;
 
         public MyHolder(View itemView) {
@@ -241,6 +346,8 @@ public class NduthiAdapter extends RecyclerView.Adapter<NduthiAdapter.MyHolder>{
             distanceAway = itemView.findViewById(R.id.distanceAway);
             callNduthi = itemView.findViewById(R.id.callNduthi);
             selectBtn = itemView.findViewById(R.id.selectBtn);
+            nduthiStat = itemView.findViewById(R.id.nduthiStat);
+            nduthiStatMsg = itemView.findViewById(R.id.nduthiStatMsg);
 
         }
     }
