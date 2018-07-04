@@ -23,9 +23,9 @@
         >
 
         <com.alexzh.circleimageview.CircleImageView
-            android:id="@+id/nduthiProfile"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
+            android:id="@+id/customerPic"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:src="@drawable/default_profile"
             app:view_shadowRadius="2dp"
             app:view_shadowDx="2dp"
@@ -40,50 +40,37 @@
             android:layout_height="wrap_content"
             android:textColor="@color/colorAccent"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Nduthi name"
-            android:id="@+id/nduthiName"
+            android:text="Customer name"
+            android:id="@+id/customerName"
             android:layout_marginLeft="5dp"
-            android:layout_toRightOf="@id/nduthiProfile"
-            android:layout_toLeftOf="@+id/foodPrice"/>
-
+            android:layout_toRightOf="@id/customerPic"
+            android:layout_toLeftOf="@+id/itemCount"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Bio"
-            android:id="@+id/nduthiBio"
+            android:text="Items"
+            android:textSize="25dp"
+            android:id="@+id/itemCount"
+            android:textColor="@color/cardview_dark_background"
+            android:layout_alignParentRight="true"
             android:layout_marginLeft="5dp"
-            android:layout_below="@id/nduthiName"
-            android:layout_toRightOf="@id/nduthiProfile"
-            android:layout_toEndOf="@id/nduthiProfile"
-            android:textColor="#666"/>
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Trips made: 0"
-            android:id="@+id/tripsMade"
-            android:layout_marginLeft="5dp"
-            android:layout_below="@id/nduthiBio"
-            android:layout_toRightOf="@id/nduthiProfile"
-            android:textColor="#666"/>
-
+            android:layout_marginRight="5dp"
+            />
 
 
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tripsMade"
+            android:layout_below="@id/customerName"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_toRightOf="@id/nduthiProfile"
+            android:layout_toRightOf="@id/customerPic"
             android:gravity="center|right">
 
             <ImageButton
-                android:id="@+id/nduthiStat"
+                android:id="@+id/orderStat"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:scaleType="centerCrop"
@@ -96,19 +83,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="inactive"
-                android:id="@+id/nduthiStatMsg"
+                android:text="pending"
+                android:id="@+id/orderStatus"
                 android:textColor="#666"
-                android:layout_toRightOf="@id/nduthiStat"/>
+                android:layout_toRightOf="@id/orderStat"/>
 
             <ImageButton
                 android:id="@+id/locationTag"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
+                android:layout_marginTop="20dp"
                 android:scaleType="centerCrop"
                 android:background="@drawable/ic_location_black_48dp"
                 android:layout_marginRight="10dp"
-                android:layout_below="@id/nduthiStat"
 
                 />
 
@@ -117,10 +104,10 @@
                 android:layout_toRightOf="@id/locationTag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
                 android:text=" 0 m away"
                 android:layout_marginLeft="-10dp"
-                android:layout_marginRight="5dp"
-                android:layout_below="@id/nduthiStatMsg"/>
+                android:layout_marginRight="5dp"/>
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -133,18 +120,20 @@
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Select"
-                    android:id="@+id/selectBtn"
+                    android:text="Accept"
+                    android:id="@+id/acceptBtn"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
 
                     />
+                />
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Call"
-                    android:id="@+id/callNduthi"/>
+                    android:id="@+id/callCustomer"
+                    android:layout_toLeftOf="@id/acceptBtn"/>
             </RelativeLayout>
 
         </RelativeLayout>

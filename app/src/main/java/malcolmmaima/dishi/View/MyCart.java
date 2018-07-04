@@ -543,6 +543,7 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                     Bundle bndlanimation =
                             ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
                     startActivity(slideactivity, bndlanimation);
+                    completeOrder = false;
                 }
 
             }

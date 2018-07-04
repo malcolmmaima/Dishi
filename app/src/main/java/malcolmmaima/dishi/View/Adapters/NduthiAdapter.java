@@ -92,22 +92,26 @@ public class NduthiAdapter extends RecyclerView.Adapter<NduthiAdapter.MyHolder>{
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     //Toast.makeText(context, "engaged: " + dataSnapshot.getValue(), Toast.LENGTH_LONG).show();
 
-                    if(dataSnapshot.getValue().equals("false")){
-                        //Default state is green meaning is active and ready to receive requests
-                        Glide.with(context).load(ic_delivered_order).into(holder.nduthiStat);
-                        holder.nduthiStatMsg.setText("Ready");
-                    }
+                    try {
+                        if (dataSnapshot.getValue().equals("false")) {
+                            //Default state is green meaning is active and ready to receive requests
+                            Glide.with(context).load(ic_delivered_order).into(holder.nduthiStat);
+                            holder.nduthiStatMsg.setText("Ready");
+                        }
 
-                    //Once confimed request, set status to pending as nduthi goes to collect the orders
-                    if(dataSnapshot.getValue().equals("true")){
-                        Glide.with(context).load(ic_pending_order).into(holder.nduthiStat);
-                        holder.nduthiStatMsg.setText("engaged");
-                    }
+                        //Once confimed request, set status to pending as nduthi goes to collect the orders
+                        if (dataSnapshot.getValue().equals("true")) {
+                            Glide.with(context).load(ic_pending_order).into(holder.nduthiStat);
+                            holder.nduthiStatMsg.setText("engaged");
+                        }
 
-                    //Is actively in trnsit delivering an order
-                    if(dataSnapshot.getValue().equals("transit")) {
-                        Glide.with(context).load(ic_order_in_transit).into(holder.nduthiStat);
-                        holder.nduthiStatMsg.setText("Busy");
+                        //Is actively in trnsit delivering an order
+                        if (dataSnapshot.getValue().equals("transit")) {
+                            Glide.with(context).load(ic_order_in_transit).into(holder.nduthiStat);
+                            holder.nduthiStatMsg.setText("Busy");
+                        }
+                    } catch (Exception e){
+
                     }
                 }
 
