@@ -74,6 +74,7 @@ public class NduthiAdapter extends RecyclerView.Adapter<NduthiAdapter.MyHolder>{
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String myPhone = user.getPhoneNumber(); //Current logged in user phone number
         final String[] myName = new String[1];
+        final String[] profilepic = new String[1];
 
         // Assign FirebaseStorage instance to storageReference.
 
@@ -157,6 +158,20 @@ public class NduthiAdapter extends RecyclerView.Adapter<NduthiAdapter.MyHolder>{
             @Override
             public void onClick(View v) {
 
+                //Send my profile pic with the order request
+                myRef.child("profilepic").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        profilepic[0] = dataSnapshot.getValue(String.class);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+                //Send my name with the order request
                 myRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -184,6 +199,7 @@ public class NduthiAdapter extends RecyclerView.Adapter<NduthiAdapter.MyHolder>{
                                 requestNduthi.status = "pending";
                                 requestNduthi.name = myName[0];
                                 requestNduthi.phone = myPhone;
+                                requestNduthi.profilepic = profilepic[0];
                                 requestRideRef.child(key).setValue(requestNduthi).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {

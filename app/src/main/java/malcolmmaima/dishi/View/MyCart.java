@@ -490,9 +490,13 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                                         }
                                     }
 
-                                    //Calculate distance between nduthi and customer
-                                    distance = distance(myLat, myLong, nduthiLat, nduthiLong, "K");
-                                    distance = distance * 1000; //Convert to meters
+                                    try {
+                                        //Calculate distance between nduthi and customer
+                                        distance = distance(myLat, myLong, nduthiLat, nduthiLong, "K");
+                                        distance = distance * 1000; //Convert to meters
+                                    } catch (Exception e){
+
+                                    }
                                 }
 
                                 @Override

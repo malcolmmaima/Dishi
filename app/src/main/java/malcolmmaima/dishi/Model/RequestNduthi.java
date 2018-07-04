@@ -4,4 +4,5 @@ public class RequestNduthi {
     public String name;
     public String phone;
     public String status;
+    public String profilepic;
 }
