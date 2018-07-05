@@ -1,7 +1,13 @@
 package malcolmmaima.dishi.View.Fragments;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,13 +28,11 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
-import malcolmmaima.dishi.Model.ProductDetails;
 import malcolmmaima.dishi.Model.RequestNduthi;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.Adapters.DeliveryRequestsNduthi;
-import malcolmmaima.dishi.View.Adapters.NduthiAdapter;
-import malcolmmaima.dishi.View.Adapters.RestaurantMenuAdapter;
 
 public class NduthiDeliveriesFragment extends Fragment {
 
@@ -37,6 +41,8 @@ public class NduthiDeliveriesFragment extends Fragment {
     RecyclerView recyclerview;
     String myPhone;
     TextView emptyTag;
+
+    int notifications, newNotifications;
 
     DatabaseReference dbRef, myRef;
     FirebaseDatabase db;
@@ -56,7 +62,7 @@ public class NduthiDeliveriesFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.fragment_nduthi_deliveries, container, false);
         // Assigning Id to ProgressDialog.
@@ -74,10 +80,32 @@ public class NduthiDeliveriesFragment extends Fragment {
         recyclerview = v.findViewById(R.id.rview);
         emptyTag = v.findViewById(R.id.empty_tag);
 
-        //Loop through the mymenu child node and get menu items, assign values to our ProductDetails model
+        //Initialize notifications counter
+        dbRef.child("request_ride").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                notifications = (int) dataSnapshot.getChildrenCount();
+                }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         dbRef.child("request_ride").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+
+                //Check if there are new ride requests
+                newNotifications = (int) dataSnapshot.getChildrenCount();
+
+                //If there is a new ride request, send notification and update notifications count
+                if(newNotifications > notifications){
+                    sendNotification("new ride request");
+                    notifications = newNotifications;
+                }
+
                 list = new ArrayList<>();
                 int listSize = list.size(); //Bug fix, kept on refreshing menu on data change due to realtime location data.
                 //Will use this to determine if the list of menu items has changed, only refresh then
@@ -108,6 +136,24 @@ public class NduthiDeliveriesFragment extends Fragment {
 
                 }
 
+            }
+
+            private void sendNotification(String s) {
+                Notification.Builder builder = new Notification.Builder(getContext())
+                        .setSmallIcon(R.drawable.logo)
+                        .setContentTitle("Dishi")
+                        .setContentText(s);
+
+                NotificationManager manager = (NotificationManager)getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                Intent intent = new Intent(getContext(), getContext().getClass());
+                PendingIntent contentIntent = PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
+                builder.setContentIntent(contentIntent);
+                Notification notification = builder.build();
+                notification.flags |= Notification.FLAG_AUTO_CANCEL;
+                notification.defaults |= Notification.DEFAULT_SOUND;
+                notification.icon |= Notification.BADGE_ICON_LARGE;
+
+                manager.notify(new Random().nextInt(), notification);
             }
 
             @Override

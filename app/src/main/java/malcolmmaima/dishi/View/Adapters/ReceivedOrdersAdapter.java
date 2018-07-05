@@ -203,7 +203,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                     holder.providerName.setText("Customer: " + customername[position]);
 
                 } catch (Exception e){
-                    Toast.makeText(context, "Error: " + e, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(context, "Error: " + e, Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -247,7 +247,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                     holder.acceptBtn.setText("Confirm");
                 }
                 } catch (Exception e){
-                    Toast.makeText(context, "Error: " + e, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(context, "Error: " + e, Toast.LENGTH_SHORT).show();
                 }
             }
             @Override

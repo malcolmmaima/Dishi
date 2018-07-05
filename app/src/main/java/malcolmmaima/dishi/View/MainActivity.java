@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
+import com.google.firebase.FirebaseNetworkException;
 import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -125,14 +126,24 @@ public class MainActivity extends AppCompatActivity {
                 Log.w("TAG", "onVerificationFailed", e);
 
                 if (e instanceof FirebaseAuthInvalidCredentialsException) {
+                    progressDialog.dismiss();
                     Snackbar snackbar = Snackbar
                             .make((LinearLayout) findViewById(R.id.parentlayout), "Verification Failed !! Invalid verification Code", Snackbar.LENGTH_LONG);
 
                     snackbar.show();
                 }
                 else if (e instanceof FirebaseTooManyRequestsException) {
+                    progressDialog.dismiss();
                     Snackbar snackbar = Snackbar
                             .make((LinearLayout) findViewById(R.id.parentlayout), "Verification Failed !! Too many request. Try after some time. ", Snackbar.LENGTH_LONG);
+
+                    snackbar.show();
+                }
+
+                else if(e instanceof FirebaseNetworkException){
+                    progressDialog.dismiss();
+                    Snackbar snackbar = Snackbar
+                            .make((LinearLayout) findViewById(R.id.parentlayout), "Failed! Check connection and try again. ", Snackbar.LENGTH_LONG);
 
                     snackbar.show();
                 }
@@ -167,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
                     if (!phoneed.getText().toString().trim().isEmpty() && phoneed.getText().toString().trim().length() >= 10) {
                         // Setting progressDialog Title.
                         progressDialog.setTitle("Verifying...");
-                        progressDialog.setMessage("A text message is being sent");
+                        progressDialog.setMessage("Please wait");
                         // Showing progressDialog.
                         progressDialog.show();
                         progressDialog.setCancelable(false);
@@ -239,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
         timertext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!phoneed.getText().toString().trim().isEmpty() && phoneed.getText().toString().trim().length() == 10) {
+                if (!phoneed.getText().toString().trim().isEmpty() && phoneed.getText().toString().trim().length() >= 10) {
                     resendVerificationCode(phoneed.getText().toString().trim(), mResendToken);
                     mVerified = false;
                     starttimer();

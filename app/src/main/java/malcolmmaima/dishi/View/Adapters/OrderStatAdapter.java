@@ -67,7 +67,7 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
 
     public void onBindViewHolder(final MyHolder holder, final int position) {
         final MyCartDetails myCartDetails = listdata.get(position);
-        final DatabaseReference mylocationRef, providerRef, myCartRef;
+        final DatabaseReference mylocationRef, providerRef, myCartRef, provider;
         FirebaseDatabase db;
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -79,6 +79,9 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
         mylocationRef = db.getReference(myPhone + "/location"); //loggedin user location reference
         providerRef = db.getReference(myCartDetails.getProviderNumber() + "/location"); //food item provider location reference
         myCartRef = db.getReference(myPhone + "/mycart");
+        provider = db.getReference(myCartDetails.getProviderNumber());
+
+        final String [] providerName = new String[listdata.size()];
         final Double[] dist = new Double[listdata.size()];
 
         //Lets create a Double[] array containing my lat/lon
@@ -88,6 +91,19 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
         //Lets create a Double[] array containing the provider lat/lon
         final Double[] provlat = new Double[listdata.size()];
         final Double[] provlon = new Double[listdata.size()];
+
+        provider.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                providerName[position] = dataSnapshot.getValue(String.class);
+                holder.providerName.setText("Provider: " + providerName[position]);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
 
         //My latitude longitude coordinates
@@ -210,7 +226,7 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
                 final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(v.getContext())
                         //set message, title, and icon
                         .setTitle("Call Customer")
-                        .setMessage("Call " + myCartDetails.getProvider() + "?")
+                        .setMessage("Call " + providerName[position] + "?")
                         //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
                         //set three option buttons
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -234,7 +250,6 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
         holder.foodPrice.setText("Ksh "+myCartDetails.getPrice());
         holder.foodName.setText(myCartDetails.getName());
         holder.foodDescription.setText(myCartDetails.getDescription());
-        holder.providerName.setText("Provider: " + myCartDetails.getProvider());
         holder.orderStatus.setText(myCartDetails.status);
 
 

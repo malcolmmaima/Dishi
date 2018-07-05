@@ -84,6 +84,7 @@ public class CustomerOrderFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        loaded = false;
 
     }
 
@@ -108,13 +109,12 @@ public class CustomerOrderFragment extends Fragment {
         filterDistance = v.findViewById(R.id.filterDistance);
 
         checkoutBtn.setEnabled(false);
-        loaded = false;
 
         final int[] initial_filter = new int[1];
         final int[] distanceThreshold = {0};
         final int[] location_filter = new int[1];
 
-        dbRef.child("location-filter").addValueEventListener(new ValueEventListener() {
+        dbRef.child("location-filter").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 location_filter[0] = dataSnapshot.getValue(Integer.class);
@@ -230,8 +230,8 @@ public class CustomerOrderFragment extends Fragment {
                                             list.add(orderDetails);
 
                                             if(list.size() < 1){
-                                                loaded = false;
-                                                //Toast.makeText(getContext(), "Loaded" + loaded, Toast.LENGTH_SHORT).show();
+                                                //loaded = false;
+                                                //Toast.makeText(getContext(), "list.size() = " + list.size(), Toast.LENGTH_SHORT).show();
                                             }
                                         }
 
@@ -255,8 +255,6 @@ public class CustomerOrderFragment extends Fragment {
                     try {
 
                         if (loaded == false) {
-
-                                Toast.makeText(getContext(), "Loaded = " + loaded, Toast.LENGTH_SHORT).show();
                                 CustomerOrderAdapter recycler = new CustomerOrderAdapter(getContext(), list);
                                 RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
                                 recyclerview.setLayoutManager(layoutmanager);
