@@ -1,6 +1,12 @@
 package malcolmmaima.dishi.View.Fragments;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -22,6 +28,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import malcolmmaima.dishi.Model.ProductDetails;
@@ -37,6 +44,8 @@ public class ReceivedOrdersFragment extends Fragment {
     RecyclerView recyclerview;
     String myPhone;
     TextView emptyTag;
+
+    int orders, newOrders;
 
     DatabaseReference dbRef, myOrdersRef;
     FirebaseDatabase db;
@@ -65,10 +74,31 @@ public class ReceivedOrdersFragment extends Fragment {
         recyclerview = v.findViewById(R.id.rview);
         emptyTag = v.findViewById(R.id.empty_tag);
 
+        //Initialize orders count
+        myOrdersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                orders = (int)dataSnapshot.getChildrenCount();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         //Loop through the mymenu child node and get menu items, assign values to our ProductDetails model
         myOrdersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+
+                newOrders = (int)dataSnapshot.getChildrenCount(); //Assign new orders count here
+
+                if(newOrders > orders){
+                    sendNotification("New order request");
+                    orders = newOrders;
+                }
+
                 list = new ArrayList<>();
                 int listSize = list.size(); //Bug fix, kept on refreshing menu on data change due to realtime location data.
                 //Will use this to determine if the list of menu items has changed, only refresh then
@@ -98,6 +128,29 @@ public class ReceivedOrdersFragment extends Fragment {
                     recyclerview.setItemAnimator( new DefaultItemAnimator());
                     recyclerview.setAdapter(recycler);
                     emptyTag.setVisibility(v.VISIBLE);
+
+                }
+
+            }
+
+            private void sendNotification(String s) {
+                Notification.Builder builder = new Notification.Builder(getContext())
+                        .setSmallIcon(R.drawable.logo)
+                        .setContentTitle("Dishi")
+                        .setContentText(s);
+
+                try {
+                    NotificationManager manager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                    Intent intent = new Intent(getContext(), getContext().getClass());
+                    PendingIntent contentIntent = PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
+                    builder.setContentIntent(contentIntent);
+                    Notification notification = builder.build();
+                    notification.flags |= Notification.FLAG_AUTO_CANCEL;
+                    notification.defaults |= Notification.DEFAULT_SOUND;
+                    notification.icon |= Notification.BADGE_ICON_LARGE;
+
+                    manager.notify(new Random().nextInt(), notification);
+                } catch (Exception e){
 
                 }
 

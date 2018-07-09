@@ -1,10 +1,12 @@
 package malcolmmaima.dishi.View.Adapters;
 
+import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -33,8 +35,12 @@ import malcolmmaima.dishi.Model.MyCartDetails;
 import malcolmmaima.dishi.Model.NduthiNearMe;
 import malcolmmaima.dishi.Model.RequestNduthi;
 import malcolmmaima.dishi.R;
+import malcolmmaima.dishi.View.MyAccountCustomer;
 import malcolmmaima.dishi.View.SelectNduthiGuy;
+import malcolmmaima.dishi.View.SetupProfile;
+import malcolmmaima.dishi.View.ViewRequestItems;
 
+import static android.support.v4.content.ContextCompat.startActivity;
 import static malcolmmaima.dishi.R.drawable.ic_delivered_order;
 import static malcolmmaima.dishi.R.drawable.ic_order_in_transit;
 import static malcolmmaima.dishi.R.drawable.ic_pending_order;
@@ -147,7 +153,11 @@ public class DeliveryRequestsNduthi extends RecyclerView.Adapter<DeliveryRequest
         holder.acceptOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, "accept order", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, "accept order", Toast.LENGTH_SHORT).show();
+                Intent slideactivity = new Intent(context, ViewRequestItems.class);
+                Bundle bndlanimation =
+                        ActivityOptions.makeCustomAnimation(context, R.anim.animation,R.anim.animation2).toBundle();
+                context.startActivity(slideactivity, bndlanimation);
             }
         });
 
@@ -268,7 +278,7 @@ public class DeliveryRequestsNduthi extends RecyclerView.Adapter<DeliveryRequest
             distanceAway = itemView.findViewById(R.id.distanceAway);
             orderStatus = itemView.findViewById(R.id.orderStatus);
             callCustomer = itemView.findViewById(R.id.callCustomer);
-            acceptOrder = itemView.findViewById(R.id.acceptBtn);
+            acceptOrder = itemView.findViewById(R.id.viewBtn);
 
         }
     }

@@ -120,8 +120,8 @@
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Accept"
-                    android:id="@+id/acceptBtn"
+                    android:text="View"
+                    android:id="@+id/viewBtn"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
 
@@ -133,7 +133,7 @@
                     android:layout_height="wrap_content"
                     android:text="Call"
                     android:id="@+id/callCustomer"
-                    android:layout_toLeftOf="@id/acceptBtn"/>
+                    android:layout_toLeftOf="@id/viewBtn"/>
             </RelativeLayout>
 
         </RelativeLayout>

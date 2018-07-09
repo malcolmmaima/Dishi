@@ -20,6 +20,7 @@
         android:clickable="true"
         android:orientation="horizontal"
         android:padding="5dp"
+        android:id="@+id/card"
         >
 
         <com.alexzh.circleimageview.CircleImageView

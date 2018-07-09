@@ -144,16 +144,20 @@ public class NduthiDeliveriesFragment extends Fragment {
                         .setContentTitle("Dishi")
                         .setContentText(s);
 
-                NotificationManager manager = (NotificationManager)getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-                Intent intent = new Intent(getContext(), getContext().getClass());
-                PendingIntent contentIntent = PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
-                builder.setContentIntent(contentIntent);
-                Notification notification = builder.build();
-                notification.flags |= Notification.FLAG_AUTO_CANCEL;
-                notification.defaults |= Notification.DEFAULT_SOUND;
-                notification.icon |= Notification.BADGE_ICON_LARGE;
+                try {
+                    NotificationManager manager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                    Intent intent = new Intent(getContext(), getContext().getClass());
+                    PendingIntent contentIntent = PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
+                    builder.setContentIntent(contentIntent);
+                    Notification notification = builder.build();
+                    notification.flags |= Notification.FLAG_AUTO_CANCEL;
+                    notification.defaults |= Notification.DEFAULT_SOUND;
+                    notification.icon |= Notification.BADGE_ICON_LARGE;
 
-                manager.notify(new Random().nextInt(), notification);
+                    manager.notify(new Random().nextInt(), notification);
+                } catch (Exception e){
+
+                }
             }
 
             @Override

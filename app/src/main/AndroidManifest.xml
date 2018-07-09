@@ -61,7 +61,8 @@
             android:label="@string/title_activity_geo_fire" />
         <activity android:name=".View.SelectNduthiGuy" />
         <activity android:name=".View.Adapters.NduthiAdapter" />
-        <activity android:name=".View.Adapters.DeliveryRequestsNduthi"></activity>
+        <activity android:name=".View.Adapters.DeliveryRequestsNduthi" />
+        <activity android:name=".View.ViewRequestItems"></activity>
     </application>
 
 </manifest>
