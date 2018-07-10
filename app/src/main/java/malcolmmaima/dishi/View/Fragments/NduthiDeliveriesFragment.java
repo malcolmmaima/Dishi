@@ -113,6 +113,7 @@ public class NduthiDeliveriesFragment extends Fragment {
                 // StringBuffer stringbuffer = new StringBuffer();
                 for(DataSnapshot dataSnapshot1 :dataSnapshot.getChildren()){
                     RequestNduthi requestNduthi = dataSnapshot1.getValue(RequestNduthi.class); //Assign values to model
+                    requestNduthi.key = dataSnapshot1.getKey();
                     list.add(requestNduthi);
                     //progressDialog.dismiss();
                 }

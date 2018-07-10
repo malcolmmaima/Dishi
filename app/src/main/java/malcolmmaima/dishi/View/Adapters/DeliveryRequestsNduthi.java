@@ -150,11 +150,17 @@ public class DeliveryRequestsNduthi extends RecyclerView.Adapter<DeliveryRequest
             }
         });
 
-        holder.acceptOrder.setOnClickListener(new View.OnClickListener() {
+        holder.viewBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //Toast.makeText(context, "accept order", Toast.LENGTH_SHORT).show();
                 Intent slideactivity = new Intent(context, ViewRequestItems.class);
+                slideactivity.putExtra("customer_phone", requestNduthi.phone);
+                slideactivity.putExtra("customer_name", requestNduthi.name);
+                slideactivity.putExtra("item_count", itemCount[position]);
+                slideactivity.putExtra("profile_pic", requestNduthi.profilepic);
+                slideactivity.putExtra("key", requestNduthi.key);
+
                 Bundle bndlanimation =
                         ActivityOptions.makeCustomAnimation(context, R.anim.animation,R.anim.animation2).toBundle();
                 context.startActivity(slideactivity, bndlanimation);
@@ -267,7 +273,7 @@ public class DeliveryRequestsNduthi extends RecyclerView.Adapter<DeliveryRequest
     class MyHolder extends RecyclerView.ViewHolder{
         TextView customerName , itemCount, distanceAway, orderStatus;
         ImageView customerPic, orderStatIcon;
-        Button callCustomer, acceptOrder;
+        Button callCustomer, viewBtn;
 
         public MyHolder(View itemView) {
             super(itemView);
@@ -278,7 +284,7 @@ public class DeliveryRequestsNduthi extends RecyclerView.Adapter<DeliveryRequest
             distanceAway = itemView.findViewById(R.id.distanceAway);
             orderStatus = itemView.findViewById(R.id.orderStatus);
             callCustomer = itemView.findViewById(R.id.callCustomer);
-            acceptOrder = itemView.findViewById(R.id.viewBtn);
+            viewBtn = itemView.findViewById(R.id.viewBtn);
 
         }
     }

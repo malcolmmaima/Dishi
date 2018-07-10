@@ -62,7 +62,8 @@
         <activity android:name=".View.SelectNduthiGuy" />
         <activity android:name=".View.Adapters.NduthiAdapter" />
         <activity android:name=".View.Adapters.DeliveryRequestsNduthi" />
-        <activity android:name=".View.ViewRequestItems"></activity>
+        <activity android:name=".View.ViewRequestItems" />
+        <activity android:name=".View.Adapters.ShoppingListAdapter"></activity>
     </application>
 
 </manifest>

@@ -244,12 +244,8 @@ public class MyAccountNduthi extends AppCompatActivity implements GoogleApiClien
 
         //noinspection SimplifiableIfStatement
         if(id == R.id.action_new){
-            //Toast.makeText(MyAccountRestaurant.this, "Add Menu", Toast.LENGTH_LONG).show();
+            Toast.makeText(MyAccountNduthi.this, "in development", Toast.LENGTH_LONG).show();
 
-            Intent slideactivity = new Intent(MyAccountNduthi.this, AddMenu.class);
-            Bundle bndlanimation =
-                    ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
-            startActivity(slideactivity, bndlanimation);
 
         }
         if (id == R.id.action_settings) {
