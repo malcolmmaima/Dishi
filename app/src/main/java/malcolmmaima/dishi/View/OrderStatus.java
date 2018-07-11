@@ -161,69 +161,60 @@ public class OrderStatus extends AppCompatActivity {
         });
 
         confirmedNduthi.addValueEventListener(new ValueEventListener() {
-                                                  @Override
-                                                  public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                    getConfirmedNduthi.child(dataSnapshot1.getKey()).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            nduthiConfirmed = new ArrayList<>();
 
-                                                      for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                            int temp = 0;
+                            for (DataSnapshot dataSnapshot2 : dataSnapshot.getChildren()){
+                                //Toast.makeText(OrderStatus.this, "dtSnap: " + dataSnapshot2.getKey(), Toast.LENGTH_LONG).show();
+                                OrderDetails orderDetails = dataSnapshot2.getValue(OrderDetails.class); //Assign values to model
+                                orderDetails.providerName = dataSnapshot2.child("provider").getValue(String.class);
 
-                                                          getConfirmedNduthi.child(dataSnapshot1.getKey()).addValueEventListener(new ValueEventListener() {
-                                                              @Override
-                                                              public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                String prices = orderDetails.getPrice();
+                                temp = Integer.parseInt(prices) + temp;
+                                nduthiConfirmed.add(orderDetails);
+                                }
 
-                                                                  nduthiConfirmed = new ArrayList<>();
-                                                                  int temp = 0;
-
-                                                                  for (DataSnapshot dataSnapshot2 : dataSnapshot.getChildren()){
-                                                                      //Toast.makeText(OrderStatus.this, "dtSnap: " + dataSnapshot2.getKey(), Toast.LENGTH_LONG).show();
-                                                                      OrderDetails orderDetails = dataSnapshot2.getValue(OrderDetails.class); //Assign values to model
-                                                                      orderDetails.providerName = dataSnapshot2.child("provider").getValue(String.class);
-
-                                                                      String prices = orderDetails.getPrice();
-                                                                      temp = Integer.parseInt(prices) + temp;
-                                                                      nduthiConfirmed.add(orderDetails);
-                                                                  }
-
-                                                                  if(nduthiConfirmed.size() == 0) {
-                                                                      trackBtn.setEnabled(false);
-                                                                  }
-                                                                  else {
-                                                                      trackBtn.setEnabled(true);
-                                                                  }
-                                                                  totalFee.setText("Ksh: " + temp);
-                                                                  totalItems.setText("Items: " + nduthiConfirmed.size());
+                                if(nduthiConfirmed.size() == 0) {
+                                    trackBtn.setEnabled(false);
+                            }
+                            else {
+                                trackBtn.setEnabled(true);
+                                }
+                                totalFee.setText("Ksh: " + temp);
+                                totalItems.setText("Items: " + nduthiConfirmed.size());
 
 
-                                                                  if (!nduthiConfirmed.isEmpty()) {
-                                                                      ShoppingListAdapter recycler = new ShoppingListAdapter(OrderStatus.this, nduthiConfirmed);
-                                                                      RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
-                                                                      recyclerView2.setLayoutManager(layoutmanager);
-                                                                      recyclerView2.setItemAnimator(new DefaultItemAnimator());
-                                                                      recyclerView2.setAdapter(recycler);
-                                                                  } else {
-                                                                      ShoppingListAdapter recycler = new ShoppingListAdapter(OrderStatus.this, nduthiConfirmed);
-                                                                      RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
-                                                                      recyclerView2.setLayoutManager(layoutmanager);
-                                                                      recyclerView2.setItemAnimator(new DefaultItemAnimator());
-                                                                      recyclerView2.setAdapter(recycler);
-                                                                      emptyTag.setVisibility(VISIBLE);
+                                if (!nduthiConfirmed.isEmpty()) {
+                                    ShoppingListAdapter recycler = new ShoppingListAdapter(OrderStatus.this, nduthiConfirmed);
+                                    RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
+                                    recyclerView2.setLayoutManager(layoutmanager);
+                                    recyclerView2.setItemAnimator(new DefaultItemAnimator());
+                                    recyclerView2.setAdapter(recycler);
+                                    } else {
+                                    ShoppingListAdapter recycler = new ShoppingListAdapter(OrderStatus.this, nduthiConfirmed);
+                                    RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
+                                    recyclerView2.setLayoutManager(layoutmanager);
+                                    recyclerView2.setItemAnimator(new DefaultItemAnimator());
+                                    recyclerView2.setAdapter(recycler);
+                                    emptyTag.setVisibility(VISIBLE);
+                                    }
 
-                                                                  }
+                                    }
+                                     @Override
+                                     public void onCancelled(@NonNull DatabaseError databaseError) { }
+                                     });
+                                }
+                                }
 
-                                                              }
-
-                                                              @Override
-                                                              public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                                              }
-                                                          });
-                                                      }
-                                                  }
-
-                                                  @Override
-                                                  public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                                  }
-                                              });
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) { }
+                                });
 
 
         trackBtn.setOnClickListener(new View.OnClickListener() {

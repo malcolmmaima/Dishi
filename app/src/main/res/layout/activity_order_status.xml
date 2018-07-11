@@ -85,7 +85,7 @@
         <android.support.v7.widget.RecyclerView
             android:layout_below="@id/rview"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:id="@+id/rview2">
 
         </android.support.v7.widget.RecyclerView>
