@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.Toast;
@@ -21,11 +22,14 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -45,20 +49,42 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
 
     private GoogleMap mMap;
     double myLat, myLong;
-    LatLng myLocation;
-    LatLng orderLocation;
+    LatLng loggedInUserLoc, nduthiGuyLoc;
     Marker myCurrent, providerCurrent;
     Circle myArea;
     Double distance;
-    int zoomLevel;
-    boolean notifSent;
+    int zoomLevel, initZoom;
+    Double nduthiLat, nduthiLng;
+    boolean notifSent = false;
     VerticalSeekBar zoomMap;
+    DatabaseReference myRef;
+    String myPhone, accType, nduthi_phone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_geo_fire);
-        notifSent = false;
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        myPhone = user.getPhoneNumber(); //Current logged in user phone number
+
+        nduthi_phone = getIntent().getStringExtra("nduthi_phone");
+
+        //Get logged in user account type
+        myRef = FirebaseDatabase.getInstance().getReference(myPhone);
+
+        myRef.child("account_type").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                accType = dataSnapshot.getValue(String.class);
+                //Toast.makeText(GeoFireActivity.this, "accType: " + accType, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         Toolbar topToolBar = findViewById(R.id.toolbar);
         setSupportActionBar(topToolBar);
@@ -76,15 +102,42 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
 
+        myRef.child("zoom_filter").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                initZoom = dataSnapshot.getValue(Integer.class);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         mapFragment.getMapAsync(this);
 
         zoomMap = findViewById(R.id.verticalSeekbar);
         zoomMap.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
-                zoomLevel = progress;
+            public void onProgressChanged(SeekBar seekBar, final int progress, boolean fromUser) {
+                //Synchronize the filter settings in realtime to firebase for a more personalized feel
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(progress), 2000, null);
+                myRef.child("zoom_filter").setValue(progress).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        //Toast.makeText(getContext(), "filter posted", Toast.LENGTH_SHORT).show();
+                        zoomLevel = progress;
+
+                    }
+                })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                // Write failed
+                                Toast.makeText(GeoFireActivity.this, "Error: " + e, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
             }
 
             @Override
@@ -102,9 +155,8 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-
-        final DatabaseReference mylocationRef, providerRef, myCartRef, dbRef;
+        zoomLevel = initZoom;
+        final DatabaseReference mylocationRef, nduthiGuyRef;
         FirebaseDatabase db;
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -112,6 +164,34 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
 
         db = FirebaseDatabase.getInstance();
         mylocationRef = db.getReference(myPhone + "/location"); //loggedin user location reference
+        nduthiGuyRef = FirebaseDatabase.getInstance().getReference(nduthi_phone + "/location");
+
+
+        nduthiGuyRef.child("latitude").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                nduthiLat = dataSnapshot.getValue(Double.class);
+                //Toast.makeText(GeoFireActivity.this, "nduthiLat: " + nduthiLat, Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        nduthiGuyRef.child("longitude").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                nduthiLng = dataSnapshot.getValue(Double.class);
+                //Toast.makeText(GeoFireActivity.this, "nduthiLng: " + nduthiLat, Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d("dishi", "GeoFireActivity: " + databaseError);
+            }
+        });
 
         //My latitude longitude coordinates
         mylocationRef.addValueEventListener(new ValueEventListener() {
@@ -132,45 +212,61 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
 
                 try {
 
-                    myLocation = new LatLng(myLat, myLong);
-                    orderLocation = new LatLng(-1.391996,36.8186076);
+                    loggedInUserLoc = new LatLng(myLat, myLong);
+                    nduthiGuyLoc = new LatLng(nduthiLat, nduthiLng);
 
                     myCurrent.remove(); //Remove previous marker
                     myArea.remove(); //Remove previous circle
 
-                    providerCurrent = mMap.addMarker(new MarkerOptions().position(orderLocation).title("Nduthi"));
-                    myCurrent = mMap.addMarker(new MarkerOptions().position(myLocation).title("My Location"));
+                    providerCurrent = mMap.addMarker(new MarkerOptions().position(nduthiGuyLoc).title("Nduthi")
+                            .snippet("Extra info")
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.nduthi_guy)));
+
+                    myCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("My Location"));
 
                     //Radius around my area
-                    myArea = mMap.addCircle(new CircleOptions().center(myLocation)
-                            .radius(500)//in meters
+                    myArea = mMap.addCircle(new CircleOptions().center(loggedInUserLoc)
+                            .radius(200)//in meters
                     .strokeColor(Color.BLUE)
                     .fillColor(0x220000FF)
                     .strokeWidth(5.0f));
 
-                    distance = distance(orderLocation.latitude,orderLocation.longitude, myLocation.latitude, myLocation.longitude, "K");
+                    distance = distance(nduthiGuyLoc.latitude,nduthiGuyLoc.longitude, loggedInUserLoc.latitude, loggedInUserLoc.longitude, "K");
                     //Toast.makeText(GeoFireActivity.this, "Distance: " + distance, Toast.LENGTH_SHORT).show();
                     distance = distance * 1000; //Convert distance to meters
                     //If person making delivery is within 500m radius, send notification
-                    if(distance < 500 && notifSent == false){
+                    if(distance < 200 && notifSent == false){
                         sendNotification("Order is "+distance+"m away");
                         notifSent = true;
                     }
                     //mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(myLat,myLong), zoomLevel));
+
+                    if(accType.equals("1")){//Customer
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nduthiLat,nduthiLng), zoomLevel));
+                    }
+
+                    if(accType.equals("2")) {//provider
+                        //track both nduthi and customer
+                    }
+
+                    if(accType.equals("3")){//nduthi
+                        //track customer
+                    }
+
 
                 }catch (Exception e){
                     //Toast.makeText(GeoFireActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
-                    myLocation = new LatLng(-1.281647, 36.822638); //Default Nairobi
-                    myCurrent = mMap.addMarker(new MarkerOptions().position(myLocation).title("Default Location"));
+                    Log.d("dish", "GeoFireActivity: " + e);
+                    loggedInUserLoc = new LatLng(-1.281647, 36.822638); //Default Nairobi
+                    myCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("Default Location"));
                     //Radius around my area
-                    myArea = mMap.addCircle(new CircleOptions().center(myLocation)
+                    myArea = mMap.addCircle(new CircleOptions().center(loggedInUserLoc)
                             .radius(500)//in meters
                             .strokeColor(Color.BLUE)
                             .fillColor(0x220000FF)
                             .strokeWidth(5.0f));
                     //mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(myLat,myLong), zoomLevel));
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-1.281647, 36.822638), zoomLevel));
                 }
 
 
@@ -197,7 +293,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                Log.d("dishi", "GeoFireActivity: "+ databaseError);
             }
         });
 

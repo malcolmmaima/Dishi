@@ -293,15 +293,22 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
                                                     myRef.child("location-filter").setValue(10).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                         @Override
                                                         public void onSuccess(Void aVoid) {
-                                                            Toast.makeText(SetupProfile.this, "Customer Account", Toast.LENGTH_LONG).show();
-                                                            Intent slideactivity = new Intent(SetupProfile.this, MyAccountCustomer.class)
-                                                                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                                            Bundle bndlanimation =
-                                                                    ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
-                                                            startActivity(slideactivity, bndlanimation);
+                                                            myRef.child("zoom_filter").setValue(12).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                @Override
+                                                                public void onSuccess(Void aVoid) {
+                                                                    Toast.makeText(SetupProfile.this, "Customer Account", Toast.LENGTH_LONG).show();
+                                                                    Intent slideactivity = new Intent(SetupProfile.this, MyAccountCustomer.class)
+                                                                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                                    Bundle bndlanimation =
+                                                                            ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                                                                    startActivity(slideactivity, bndlanimation);
 
-                                                            // Hiding the progressDialog after done uploading.
-                                                            progressDialog.dismiss();
+                                                                    // Hiding the progressDialog after done uploading.
+                                                                    progressDialog.dismiss();
+                                                                }
+                                                            });
+
+
                                                         }
                                                     });
 

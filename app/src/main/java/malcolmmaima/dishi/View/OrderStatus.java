@@ -58,7 +58,7 @@ public class OrderStatus extends AppCompatActivity {
     List<MyCartDetails> myBasket;
     List<OrderDetails> nduthiConfirmed;
     RecyclerView recyclerview, recyclerView2;
-    String myPhone;
+    String myPhone, trackNduthi, str;
     TextView emptyTag, totalItems, totalFee;
     Button trackBtn;
 
@@ -164,6 +164,12 @@ public class OrderStatus extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+
+                    //Clean the nduthi phone number which we will use for tracking purposes in GeoFireActivity
+                    str = dataSnapshot1.getKey();
+                    trackNduthi = str.replace("confirmed_", "");
+
+                    //Get the menu items nduthi has confirmed will deliver
                     getConfirmedNduthi.child(dataSnapshot1.getKey()).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -220,10 +226,20 @@ public class OrderStatus extends AppCompatActivity {
         trackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent slideactivity = new Intent(OrderStatus.this, GeoFireActivity.class);
-                Bundle bndlanimation =
-                        ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
-                startActivity(slideactivity, bndlanimation);
+
+                if(trackNduthi.equals(null)){
+                    //unable to fetch nduthi phone or doesn't exist
+                    Toast.makeText(OrderStatus.this, "Unable to fetch nduthi phone number, try again!", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    Intent slideactivity = new Intent(OrderStatus.this, GeoFireActivity.class);
+                    slideactivity.putExtra("nduthi_phone", trackNduthi);
+                    Bundle bndlanimation =
+                            ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                    startActivity(slideactivity, bndlanimation);
+
+                }
+
             }
         });
 

@@ -489,7 +489,8 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                        progressDialog.dismiss();
+                        Toast.makeText(MyCart.this, "Error: " + databaseError, Toast.LENGTH_LONG).show();
                     }
                 });
 
@@ -583,7 +584,7 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                             int nduthiSize = nduthiNearMeList.size();
                             String key = myRef.push().getKey();
                             //Search within a 500m radius for nduthis
-                            if(distance < 2000){ //testing with 2km, switch back to 500 before production
+                            if(distance < 500){ //testing with 2km, switch back to 500 before production
                                 nduthiNearMeList.add(nduthiNearMe);
                                 myRef.child("nearby_nduthis").child(dataSnapshot1.getKey().toString()).setValue(nduthiNearMe).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
