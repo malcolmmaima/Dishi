@@ -105,6 +105,9 @@ public class OrderStatus extends AppCompatActivity {
         totalFee = findViewById(R.id.totalFee);
         trackBtn = findViewById(R.id.trackOrder);
 
+        final ProgressDialog progressDialog = new ProgressDialog(OrderStatus.this);
+        progressDialog.setMessage("loading...");
+        progressDialog.show();
 
         //Check if theres anything in pendin node
         myPendingOrders.addValueEventListener(new ValueEventListener() {
@@ -197,12 +200,19 @@ public class OrderStatus extends AppCompatActivity {
 
 
                                 if (!nduthiConfirmed.isEmpty()) {
+                                    if(progressDialog.isShowing()){
+                                        progressDialog.dismiss();
+                                    }
                                     ShoppingListAdapter recycler = new ShoppingListAdapter(OrderStatus.this, nduthiConfirmed);
                                     RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
                                     recyclerView2.setLayoutManager(layoutmanager);
                                     recyclerView2.setItemAnimator(new DefaultItemAnimator());
                                     recyclerView2.setAdapter(recycler);
+                                    emptyTag.setVisibility(INVISIBLE);
                                     } else {
+                                    if(progressDialog.isShowing()){
+                                        progressDialog.dismiss();
+                                    }
                                     ShoppingListAdapter recycler = new ShoppingListAdapter(OrderStatus.this, nduthiConfirmed);
                                     RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
                                     recyclerView2.setLayoutManager(layoutmanager);
@@ -213,13 +223,13 @@ public class OrderStatus extends AppCompatActivity {
 
                                     }
                                      @Override
-                                     public void onCancelled(@NonNull DatabaseError databaseError) { }
+                                     public void onCancelled(@NonNull DatabaseError databaseError) { progressDialog.dismiss(); }
                                      });
                                 }
                                 }
 
                                 @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) { }
+                                public void onCancelled(@NonNull DatabaseError databaseError) { progressDialog.dismiss(); }
                                 });
 
 

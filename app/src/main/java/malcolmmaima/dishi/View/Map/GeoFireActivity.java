@@ -1,11 +1,14 @@
 package malcolmmaima.dishi.View.Map;
 
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -13,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
@@ -48,12 +52,13 @@ import malcolmmaima.dishi.R;
 public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    Button callNduthi, confirmOrd;
     double myLat, myLong;
     LatLng loggedInUserLoc, nduthiGuyLoc;
     Marker myCurrent, providerCurrent;
     Circle myArea;
     Double distance;
-    int zoomLevel, initZoom;
+    int zoomLevel;
     Double nduthiLat, nduthiLng;
     boolean notifSent = false;
     VerticalSeekBar zoomMap;
@@ -65,10 +70,68 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_geo_fire);
 
+        callNduthi = findViewById(R.id.callNduthi);
+        confirmOrd = findViewById(R.id.confirmOrd);
+
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         myPhone = user.getPhoneNumber(); //Current logged in user phone number
 
         nduthi_phone = getIntent().getStringExtra("nduthi_phone");
+
+
+        callNduthi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(v.getContext())
+                        //set message, title, and icon
+                        .setMessage("Call Nduthi?")
+                        //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
+                        //set three option buttons
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                String phone = nduthi_phone;
+                                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null));
+                                startActivity(intent);
+                            }
+                        }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                //do nothing
+
+                            }
+                        })//setNegativeButton
+
+                        .create();
+                myQuittingDialogBox.show();
+            }
+        });
+
+        confirmOrd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(v.getContext())
+                        //set message, title, and icon
+                        .setTitle("Confirm Order Delivery")
+                        .setMessage("Has nduthi delivered your order?")
+                        //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
+                        //set three option buttons
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                //Update respective fireB nodes
+                            }
+                        }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                //update respective fireB nodes
+
+                            }
+                        })//setNegativeButton
+
+                        .create();
+                myQuittingDialogBox.show();
+
+            }
+        });
 
         //Get logged in user account type
         myRef = FirebaseDatabase.getInstance().getReference(myPhone);
@@ -102,18 +165,6 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
 
-        myRef.child("zoom_filter").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                initZoom = dataSnapshot.getValue(Integer.class);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
         mapFragment.getMapAsync(this);
 
         zoomMap = findViewById(R.id.verticalSeekbar);
@@ -121,12 +172,11 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
             @Override
             public void onProgressChanged(SeekBar seekBar, final int progress, boolean fromUser) {
                 //Synchronize the filter settings in realtime to firebase for a more personalized feel
+                zoomLevel = progress;
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(progress), 2000, null);
                 myRef.child("zoom_filter").setValue(progress).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        //Toast.makeText(getContext(), "filter posted", Toast.LENGTH_SHORT).show();
-                        zoomLevel = progress;
 
                     }
                 })
@@ -150,12 +200,29 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
 
             }
         });
+
+        try {
+            myRef.child("zoom_filter").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    zoomLevel = dataSnapshot.getValue(Integer.class);
+
+                    zoomMap.setProgress(zoomLevel);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            }); } catch (Exception e){
+            Log.d("dishi", "GeoFireActivity: "+ e);
+        }
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
         mMap = googleMap;
-        zoomLevel = initZoom;
         final DatabaseReference mylocationRef, nduthiGuyRef;
         FirebaseDatabase db;
 
@@ -220,7 +287,8 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
 
                     providerCurrent = mMap.addMarker(new MarkerOptions().position(nduthiGuyLoc).title("Nduthi")
                             .snippet("Extra info")
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.nduthi_guy)));
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.nduthi_guy))
+                            .flat(true));
 
                     myCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("My Location"));
 
@@ -258,7 +326,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                     //Toast.makeText(GeoFireActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                     Log.d("dish", "GeoFireActivity: " + e);
                     loggedInUserLoc = new LatLng(-1.281647, 36.822638); //Default Nairobi
-                    myCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("Default Location"));
+                    myCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("Default Location").snippet("Error fetching your location"));
                     //Radius around my area
                     myArea = mMap.addCircle(new CircleOptions().center(loggedInUserLoc)
                             .radius(500)//in meters
