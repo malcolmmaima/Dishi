@@ -173,7 +173,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
             public void onProgressChanged(SeekBar seekBar, final int progress, boolean fromUser) {
                 //Synchronize the filter settings in realtime to firebase for a more personalized feel
                 zoomLevel = progress;
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(progress), 2000, null);
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(zoomLevel), 2000, null);
                 myRef.child("zoom_filter").setValue(progress).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
