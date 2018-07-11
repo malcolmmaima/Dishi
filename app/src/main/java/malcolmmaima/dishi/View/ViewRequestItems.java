@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -39,17 +40,20 @@ import malcolmmaima.dishi.View.Adapters.CustomerOrderAdapter;
 import malcolmmaima.dishi.View.Adapters.NduthiAdapter;
 import malcolmmaima.dishi.View.Adapters.ShoppingListAdapter;
 
+import static malcolmmaima.dishi.R.drawable.ic_delivered_order;
 import static malcolmmaima.dishi.R.drawable.ic_order_in_transit;
+import static malcolmmaima.dishi.R.drawable.ic_pending_order;
 
 public class ViewRequestItems extends AppCompatActivity {
 
     RecyclerView recyclerview;
     TextView customername, itemcount, distanceAway, orderStatus, totalKsh;
     Button callCustomer, acceptOrder;
-    ImageView profilepic;
-    DatabaseReference incomingRequestsRef, requestStatus;
+    ImageView profilepic, orderStat;
+    DatabaseReference incomingRequestsRef, requestStatus, customerRef, customerDelRef;
     List<OrderDetails> nduthis;
     int totalPrice;
+    String status;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +66,7 @@ public class ViewRequestItems extends AppCompatActivity {
         profilepic = findViewById(R.id.customerPic);
         distanceAway = findViewById(R.id.distanceAway);
         orderStatus = findViewById(R.id.orderStatus);
+        orderStat = findViewById(R.id.orderStat);
         callCustomer = findViewById(R.id.callCustomer);
         acceptOrder = findViewById(R.id.acceptBtn);
         totalKsh = findViewById(R.id.totalKsh);
@@ -85,7 +90,7 @@ public class ViewRequestItems extends AppCompatActivity {
         });
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        String myPhone = user.getPhoneNumber();
+        final String myPhone = user.getPhoneNumber();
 
         final String itemPhone = getIntent().getStringExtra("customer_phone");
         final String customerName = getIntent().getStringExtra("customer_name");
@@ -100,6 +105,49 @@ public class ViewRequestItems extends AppCompatActivity {
         } catch (Exception e){
 
         }
+
+        requestStatus = FirebaseDatabase.getInstance().getReference(myPhone + "/request_ride/"+key);
+        incomingRequestsRef = FirebaseDatabase.getInstance().getReference(myPhone + "/request_menus/request_"+itemPhone);
+        customerRef = FirebaseDatabase.getInstance().getReference(itemPhone + "/confirmed_order");
+        customerDelRef = FirebaseDatabase.getInstance().getReference(itemPhone);
+
+        requestStatus.child("status").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                status = dataSnapshot.getValue(String.class);
+                try {
+                    if (status.equals("pending")) {
+                        //Default state is green meaning is active and ready to receive requests
+                        Glide.with(ViewRequestItems.this).load(ic_pending_order).into(orderStat);
+                        orderStatus.setText("Pending");
+                        acceptOrder.setEnabled(true);
+                    }
+
+                    //Once customer has confirmed delivery
+                    if (status.equals("confirmed")) {
+                        Glide.with(ViewRequestItems.this).load(ic_delivered_order).into(orderStat);
+                        orderStatus.setText("confirmed");
+                        acceptOrder.setEnabled(false);
+                    }
+
+                    //You have accepted the order are in transit to the customer
+                    if (status.equals("transit")) {
+                        Glide.with(ViewRequestItems.this).load(ic_order_in_transit).into(orderStat);
+                        orderStatus.setText("transit");
+                        acceptOrder.setEnabled(false);
+                    }
+
+
+                } catch (Exception e){ }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
         callCustomer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -128,7 +176,6 @@ public class ViewRequestItems extends AppCompatActivity {
             }
         });
 
-        requestStatus = FirebaseDatabase.getInstance().getReference(myPhone + "/request_ride/"+key);
 
         acceptOrder.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,12 +190,43 @@ public class ViewRequestItems extends AppCompatActivity {
                         //set three option buttons
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                Toast.makeText(ViewRequestItems.this, "Update respective fireB nodes", Toast.LENGTH_SHORT).show();
-
                                 //Change request status to transit
                                 requestStatus.child("status").setValue("transit").addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
+
+                                        incomingRequestsRef.addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                nduthis = new ArrayList<>();
+                                                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                                                    OrderDetails orderDetails = dataSnapshot1.getValue(OrderDetails.class); //Assign values to model
+                                                    orderDetails.providerName = dataSnapshot1.child("provider").getValue(String.class);
+                                                    totalPrice = totalPrice + Integer.parseInt(orderDetails.getPrice());
+
+                                                    String key = customerRef.push().getKey();
+                                                    //Take the order items customer sent to me and move them to his/her confirmed order node
+                                                    customerRef.child("confirmed_"+myPhone).child(key).setValue(orderDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+                                                            //Empty the customers's cart since we've moved the items to a new node after confirmation
+                                                            customerDelRef.child("mycart").removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                @Override
+                                                                public void onSuccess(Void aVoid) {
+                                                                    //confirmation complete
+                                                                    Toast.makeText(ViewRequestItems.this, "Confirmation sent", Toast.LENGTH_LONG).show();
+                                                                }
+                                                            });
+                                                        }
+                                                    });
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                            }
+                                        });
 
                                     }
                                 });
@@ -164,8 +242,6 @@ public class ViewRequestItems extends AppCompatActivity {
                 myQuittingDialogBox.show();
             }
         });
-
-        incomingRequestsRef = FirebaseDatabase.getInstance().getReference(myPhone + "/request_menus/request_"+itemPhone);
 
         incomingRequestsRef.addValueEventListener(new ValueEventListener() {
             @Override

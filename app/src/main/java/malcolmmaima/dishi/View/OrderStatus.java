@@ -46,6 +46,7 @@ import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.Adapters.CustomerOrderAdapter;
 import malcolmmaima.dishi.View.Adapters.MyCartAdapter;
 import malcolmmaima.dishi.View.Adapters.OrderStatAdapter;
+import malcolmmaima.dishi.View.Adapters.ShoppingListAdapter;
 import malcolmmaima.dishi.View.Map.GeoFireActivity;
 import malcolmmaima.dishi.View.Map.MapsActivity;
 
@@ -55,12 +56,13 @@ import static android.view.View.VISIBLE;
 public class OrderStatus extends AppCompatActivity {
 
     List<MyCartDetails> myBasket;
-    RecyclerView recyclerview;
+    List<OrderDetails> nduthiConfirmed;
+    RecyclerView recyclerview, recyclerView2;
     String myPhone;
     TextView emptyTag, totalItems, totalFee;
     Button trackBtn;
 
-    DatabaseReference myPendingOrders, myRef, providerRef;
+    DatabaseReference myPendingOrders, myRef, confirmedNduthi, getConfirmedNduthi;
     FirebaseDatabase db;
     FirebaseUser user;
 
@@ -93,7 +95,11 @@ public class OrderStatus extends AppCompatActivity {
 
         myRef = db.getReference(myPhone);
         myPendingOrders = db.getReference(myPhone + "/pending");
+        confirmedNduthi = db.getReference(myPhone + "/confirmed_order");
+        getConfirmedNduthi = db.getReference(myPhone + "/confirmed_order");
+
         recyclerview = findViewById(R.id.rview);
+        recyclerView2 = findViewById(R.id.rview2);
         emptyTag = findViewById(R.id.empty_tag);
         totalItems = findViewById(R.id.totalItems);
         totalFee = findViewById(R.id.totalFee);
@@ -137,13 +143,8 @@ public class OrderStatus extends AppCompatActivity {
                         recyclerview.setItemAnimator(new DefaultItemAnimator());
                         recyclerview.setAdapter(recycler);
                         emptyTag.setVisibility(INVISIBLE);
+
                     } else {
-                        OrderStatAdapter recycler = new OrderStatAdapter(OrderStatus.this, myBasket);
-                        RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
-                        recyclerview.setLayoutManager(layoutmanager);
-                        recyclerview.setItemAnimator(new DefaultItemAnimator());
-                        recyclerview.setAdapter(recycler);
-                        emptyTag.setVisibility(VISIBLE);
 
                     }
 
@@ -158,6 +159,72 @@ public class OrderStatus extends AppCompatActivity {
 
             }
         });
+
+        confirmedNduthi.addValueEventListener(new ValueEventListener() {
+                                                  @Override
+                                                  public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                                      for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+
+                                                          getConfirmedNduthi.child(dataSnapshot1.getKey()).addValueEventListener(new ValueEventListener() {
+                                                              @Override
+                                                              public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                                                  nduthiConfirmed = new ArrayList<>();
+                                                                  int temp = 0;
+
+                                                                  for (DataSnapshot dataSnapshot2 : dataSnapshot.getChildren()){
+                                                                      //Toast.makeText(OrderStatus.this, "dtSnap: " + dataSnapshot2.getKey(), Toast.LENGTH_LONG).show();
+                                                                      OrderDetails orderDetails = dataSnapshot2.getValue(OrderDetails.class); //Assign values to model
+                                                                      orderDetails.providerName = dataSnapshot2.child("provider").getValue(String.class);
+
+                                                                      String prices = orderDetails.getPrice();
+                                                                      temp = Integer.parseInt(prices) + temp;
+                                                                      nduthiConfirmed.add(orderDetails);
+                                                                  }
+
+                                                                  if(nduthiConfirmed.size() == 0) {
+                                                                      trackBtn.setEnabled(false);
+                                                                  }
+                                                                  else {
+                                                                      trackBtn.setEnabled(true);
+                                                                  }
+                                                                  totalFee.setText("Ksh: " + temp);
+                                                                  totalItems.setText("Items: " + nduthiConfirmed.size());
+
+
+                                                                  if (!nduthiConfirmed.isEmpty()) {
+                                                                      ShoppingListAdapter recycler = new ShoppingListAdapter(OrderStatus.this, nduthiConfirmed);
+                                                                      RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
+                                                                      recyclerView2.setLayoutManager(layoutmanager);
+                                                                      recyclerView2.setItemAnimator(new DefaultItemAnimator());
+                                                                      recyclerView2.setAdapter(recycler);
+                                                                  } else {
+                                                                      ShoppingListAdapter recycler = new ShoppingListAdapter(OrderStatus.this, nduthiConfirmed);
+                                                                      RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
+                                                                      recyclerView2.setLayoutManager(layoutmanager);
+                                                                      recyclerView2.setItemAnimator(new DefaultItemAnimator());
+                                                                      recyclerView2.setAdapter(recycler);
+                                                                      emptyTag.setVisibility(VISIBLE);
+
+                                                                  }
+
+                                                              }
+
+                                                              @Override
+                                                              public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                              }
+                                                          });
+                                                      }
+                                                  }
+
+                                                  @Override
+                                                  public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                  }
+                                              });
+
 
         trackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -195,14 +262,10 @@ public class OrderStatus extends AppCompatActivity {
                     //set three option buttons
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
-                            Toast.makeText(OrderStatus.this, "Delete all from pending", Toast.LENGTH_SHORT).show();
 
                             myPendingOrders.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    Toast.makeText(OrderStatus.this, "Order Cancelled", Toast.LENGTH_SHORT).show();
-
-                                    //We need to update the provider (implement later)
 
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
@@ -211,6 +274,13 @@ public class OrderStatus extends AppCompatActivity {
                                     // Uh-oh, an error occurred!
                                     Toast.makeText(OrderStatus.this, "error: " + exception, Toast.LENGTH_SHORT)
                                             .show();
+                                }
+                            });
+
+                            confirmedNduthi.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+
                                 }
                             });
                         }

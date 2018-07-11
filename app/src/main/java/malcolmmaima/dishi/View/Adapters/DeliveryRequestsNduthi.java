@@ -91,17 +91,17 @@ public class DeliveryRequestsNduthi extends RecyclerView.Adapter<DeliveryRequest
             if (requestNduthi.status.equals("pending")) {
                 //Default state is green meaning is active and ready to receive requests
                     Glide.with(context).load(ic_pending_order).into(holder.orderStatIcon);
-                    holder.orderStatus.setText("Pending"); }
+                    holder.orderStatus.setText("pending"); }
 
                 //Once customer has confirmed delivery
             if (requestNduthi.status.equals("confirmed")) {
                     Glide.with(context).load(ic_delivered_order).into(holder.orderStatIcon);
-                    holder.orderStatus.setText("engaged"); }
+                    holder.orderStatus.setText("confirmed"); }
 
                 //You have accepted the order are in transit to the customer
             if (requestNduthi.status.equals("transit")) {
                     Glide.with(context).load(ic_order_in_transit).into(holder.orderStatIcon);
-                    holder.orderStatus.setText("Busy"); }
+                    holder.orderStatus.setText("transit"); }
 
             customerRequests.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -251,8 +251,6 @@ public class DeliveryRequestsNduthi extends RecyclerView.Adapter<DeliveryRequest
 
         holder.customerName.setText(requestNduthi.name);
         holder.distanceAway.setText("0 m away");
-        holder.orderStatus.setText("pending");
-
 
         try {
             //Loading image from Glide library.
