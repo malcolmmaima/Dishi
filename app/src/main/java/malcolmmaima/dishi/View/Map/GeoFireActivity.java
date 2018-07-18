@@ -78,7 +78,6 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
 
         nduthi_phone = getIntent().getStringExtra("nduthi_phone");
 
-
         callNduthi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

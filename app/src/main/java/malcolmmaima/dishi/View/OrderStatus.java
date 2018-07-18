@@ -58,7 +58,7 @@ public class OrderStatus extends AppCompatActivity {
     List<MyCartDetails> myBasket;
     List<OrderDetails> nduthiConfirmed;
     RecyclerView recyclerview, recyclerView2;
-    String myPhone, trackNduthi, str;
+    String myPhone, trackNduthi, str, trackRestaurant;
     TextView emptyTag, totalItems, totalFee;
     Button trackBtn;
 
@@ -121,17 +121,19 @@ public class OrderStatus extends AppCompatActivity {
                     for (DataSnapshot mycart : dataSnapshot.getChildren()) {
                         MyCartDetails myCartDetails = mycart.getValue(MyCartDetails.class);
                         myCartDetails.key = mycart.getKey();
-                        //myCartDetails.providerNumber = mycart.;
                         String prices = myCartDetails.getPrice();
                         temp = Integer.parseInt(prices) + temp;
                         myBasket.add(myCartDetails);
+                        trackRestaurant = myCartDetails.providerNumber;
                         //Toast.makeText(OrderStatus.this, myCartDetails.getName() + " status: " + myCartDetails.status, Toast.LENGTH_SHORT).show();
                     }
-
                     //Toast.makeText(getContext(), "TOTAL: " + temp, Toast.LENGTH_SHORT).show();
                     //Toast.makeText(getContext(), "Items: " + myBasket.size(), Toast.LENGTH_SHORT).show();
                     if(myBasket.size() == 0) {
                         trackBtn.setEnabled(false);
+                        if(progressDialog.isShowing()){
+                            progressDialog.dismiss();
+                        }
                     }
                     else {
                         trackBtn.setEnabled(true);
@@ -140,6 +142,9 @@ public class OrderStatus extends AppCompatActivity {
                     totalItems.setText("Items: " + myBasket.size());
 
                     if (!myBasket.isEmpty()) {
+                        if(progressDialog.isShowing()){
+                            progressDialog.dismiss();
+                        }
                         OrderStatAdapter recycler = new OrderStatAdapter(OrderStatus.this, myBasket);
                         RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
                         recyclerview.setLayoutManager(layoutmanager);
@@ -152,6 +157,9 @@ public class OrderStatus extends AppCompatActivity {
                     }
 
                 } catch (Exception e){
+                    if(progressDialog.isShowing()){
+                        progressDialog.dismiss();
+                    }
                     emptyTag.setText("Failed");
                     emptyTag.setVisibility(VISIBLE);
                 }
@@ -159,7 +167,9 @@ public class OrderStatus extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                if(progressDialog.isShowing()){
+                    progressDialog.dismiss();
+                }
             }
         });
 
@@ -191,6 +201,9 @@ public class OrderStatus extends AppCompatActivity {
 
                                 if(nduthiConfirmed.size() == 0) {
                                     trackBtn.setEnabled(false);
+                                    if(progressDialog.isShowing()){
+                                        progressDialog.dismiss();
+                                    }
                             }
                             else {
                                 trackBtn.setEnabled(true);
@@ -200,25 +213,27 @@ public class OrderStatus extends AppCompatActivity {
 
 
                                 if (!nduthiConfirmed.isEmpty()) {
-                                    if(progressDialog.isShowing()){
-                                        progressDialog.dismiss();
+                                        if(progressDialog.isShowing()){
+                                            progressDialog.dismiss();
+                                        }
+                                        ShoppingListAdapter recycler = new ShoppingListAdapter(OrderStatus.this, nduthiConfirmed);
+                                        RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
+                                        recyclerView2.setLayoutManager(layoutmanager);
+                                        recyclerView2.setItemAnimator(new DefaultItemAnimator());
+                                        recyclerView2.setAdapter(recycler);
+                                        emptyTag.setVisibility(INVISIBLE);
                                     }
-                                    ShoppingListAdapter recycler = new ShoppingListAdapter(OrderStatus.this, nduthiConfirmed);
-                                    RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
-                                    recyclerView2.setLayoutManager(layoutmanager);
-                                    recyclerView2.setItemAnimator(new DefaultItemAnimator());
-                                    recyclerView2.setAdapter(recycler);
-                                    emptyTag.setVisibility(INVISIBLE);
-                                    } else {
-                                    if(progressDialog.isShowing()){
-                                        progressDialog.dismiss();
-                                    }
-                                    ShoppingListAdapter recycler = new ShoppingListAdapter(OrderStatus.this, nduthiConfirmed);
-                                    RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
-                                    recyclerView2.setLayoutManager(layoutmanager);
-                                    recyclerView2.setItemAnimator(new DefaultItemAnimator());
-                                    recyclerView2.setAdapter(recycler);
-                                    emptyTag.setVisibility(VISIBLE);
+
+                                    else {
+                                        if(progressDialog.isShowing()){
+                                            progressDialog.dismiss();
+                                        }
+                                        ShoppingListAdapter recycler = new ShoppingListAdapter(OrderStatus.this, nduthiConfirmed);
+                                        RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
+                                        recyclerView2.setLayoutManager(layoutmanager);
+                                        recyclerView2.setItemAnimator(new DefaultItemAnimator());
+                                        recyclerView2.setAdapter(recycler);
+                                        emptyTag.setVisibility(VISIBLE);
                                     }
 
                                     }
@@ -237,9 +252,20 @@ public class OrderStatus extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if(trackNduthi.equals(null)){
-                    //unable to fetch nduthi phone or doesn't exist
-                    Toast.makeText(OrderStatus.this, "Unable to fetch nduthi phone number, try again!", Toast.LENGTH_LONG).show();
+                if(trackNduthi == null){
+                    if(trackRestaurant == null){
+                        //unable to fetch tracking codes or doesn't exist
+                        Toast.makeText(OrderStatus.this, "tracking code is empty, try again!", Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        trackNduthi = trackRestaurant;
+                        Intent slideactivity = new Intent(OrderStatus.this, GeoFireActivity.class);
+                        slideactivity.putExtra("nduthi_phone", trackNduthi);
+                        Bundle bndlanimation =
+                                ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                        startActivity(slideactivity, bndlanimation);
+                    }
+
                 }
                 else {
                     Intent slideactivity = new Intent(OrderStatus.this, GeoFireActivity.class);

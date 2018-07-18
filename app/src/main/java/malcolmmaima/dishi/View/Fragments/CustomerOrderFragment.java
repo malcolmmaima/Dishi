@@ -74,6 +74,7 @@ public class CustomerOrderFragment extends Fragment {
     FirebaseUser user;
 
     boolean loaded;
+    int counter;
 
 
     public static CustomerOrderFragment newInstance() {
@@ -109,7 +110,7 @@ public class CustomerOrderFragment extends Fragment {
         filterDistance = v.findViewById(R.id.filterDistance);
 
         checkoutBtn.setEnabled(false);
-
+        counter = 0;
         final int[] initial_filter = new int[1];
         final int[] distanceThreshold = {0};
         final int[] location_filter = new int[1];
@@ -130,7 +131,6 @@ public class CustomerOrderFragment extends Fragment {
 
             }
         });
-
 
 
         final Double[] myLat = new Double[1];
@@ -254,7 +254,7 @@ public class CustomerOrderFragment extends Fragment {
 
                     try {
 
-                        if (loaded == false) {
+                        if (!list.isEmpty()) {
                                 CustomerOrderAdapter recycler = new CustomerOrderAdapter(getContext(), list);
                                 RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
                                 recyclerview.setLayoutManager(layoutmanager);
@@ -271,6 +271,11 @@ public class CustomerOrderFragment extends Fragment {
                                 emptyTag.setVisibility(v.INVISIBLE);
 
                                 loaded = true;
+                                counter = counter + 1;
+
+                                if(counter == 5){
+                                    Toast.makeText(getContext(), "refreshed "+ counter + " times!", Toast.LENGTH_SHORT).show();
+                                }
 
                         }
 
@@ -388,9 +393,7 @@ public class CustomerOrderFragment extends Fragment {
                     RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
                     recyclerview.setLayoutManager(layoutmanager);
                     recyclerview.setItemAnimator(new SlideInLeftAnimator());
-
                     recycler.notifyDataSetChanged();
-
                     recyclerview.getItemAnimator().setAddDuration(1000);
                     recyclerview.getItemAnimator().setRemoveDuration(1000);
                     recyclerview.getItemAnimator().setMoveDuration(1000);
@@ -446,7 +449,6 @@ public class CustomerOrderFragment extends Fragment {
     public static double rad2deg(double rad) {
         return (rad * 180 / Math.PI);
     }
-
 
     /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
     /*::	This function rounds a double to N decimal places					 :*/

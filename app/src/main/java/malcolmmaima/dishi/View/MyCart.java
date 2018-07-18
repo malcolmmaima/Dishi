@@ -596,7 +596,9 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                             }
 
                             else {
-                                progressDialog.dismiss();
+                                if(progressDialog.isShowing()){
+                                    progressDialog.dismiss();
+                                }
                                 Toast.makeText(MyCart.this, "No nduthi near you!", Toast.LENGTH_LONG).show();
                             }
                             //Toast.makeText(MyCart.this, "nduthiNearMeList size: " + nduthiNearMeList.size(), Toast.LENGTH_SHORT).show();
