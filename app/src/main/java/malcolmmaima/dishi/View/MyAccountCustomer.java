@@ -209,6 +209,13 @@ public class MyAccountCustomer extends AppCompatActivity implements GoogleApiCli
         stopService(new Intent(this, NotificationService.class));
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startService(new Intent(this, NotificationService.class));
+
+    }
+
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[]
             grantResults) {
 

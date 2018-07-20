@@ -547,23 +547,31 @@ public class CustomerOrderFragment extends Fragment {
                     public void onFinish() {
                         //Toast.makeText(getContext(), "done!", Toast.LENGTH_SHORT).show();
                         progressDialog.dismiss();
-                        if (!list.isEmpty()) {
-                            recyclerview.setVisibility(View.VISIBLE);
-                            CustomerOrderAdapter recycler = new CustomerOrderAdapter(getContext(), list);
-                            RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
-                            recyclerview.setLayoutManager(layoutmanager);
-                            recyclerview.setItemAnimator(new SlideInLeftAnimator());
+                        try {
+                            if (!list.isEmpty()) {
+                                recyclerview.setVisibility(View.VISIBLE);
+                                CustomerOrderAdapter recycler = new CustomerOrderAdapter(getContext(), list);
+                                RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
+                                recyclerview.setLayoutManager(layoutmanager);
+                                recyclerview.setItemAnimator(new SlideInLeftAnimator());
 
-                            recycler.notifyDataSetChanged();
+                                recycler.notifyDataSetChanged();
 
-                            recyclerview.getItemAnimator().setAddDuration(1000);
-                            recyclerview.getItemAnimator().setRemoveDuration(1000);
-                            recyclerview.getItemAnimator().setMoveDuration(1000);
-                            recyclerview.getItemAnimator().setChangeDuration(1000);
+                                recyclerview.getItemAnimator().setAddDuration(1000);
+                                recyclerview.getItemAnimator().setRemoveDuration(1000);
+                                recyclerview.getItemAnimator().setMoveDuration(1000);
+                                recyclerview.getItemAnimator().setChangeDuration(1000);
 
-                            recyclerview.setAdapter(recycler);
-                            emptyTag.setVisibility(v.INVISIBLE);
-                        } else {
+                                recyclerview.setAdapter(recycler);
+                                emptyTag.setVisibility(v.INVISIBLE);
+                            } else {
+                                recyclerview.setVisibility(v.INVISIBLE);
+                                emptyTag.setVisibility(v.VISIBLE);
+                                emptyTag.setText("Try again");
+                            }
+                        }
+
+                        catch (Exception e){
                             recyclerview.setVisibility(v.INVISIBLE);
                             emptyTag.setVisibility(v.VISIBLE);
                             emptyTag.setText("Try again");

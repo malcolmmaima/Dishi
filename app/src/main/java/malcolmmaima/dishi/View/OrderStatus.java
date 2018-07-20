@@ -153,7 +153,7 @@ public class OrderStatus extends AppCompatActivity {
                         emptyTag.setVisibility(INVISIBLE);
 
                     } else {
-
+                        emptyTag.setVisibility(VISIBLE);
                     }
 
                 } catch (Exception e){

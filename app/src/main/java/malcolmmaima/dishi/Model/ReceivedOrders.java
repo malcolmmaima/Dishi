@@ -12,6 +12,7 @@ public class ReceivedOrders {
     public String status;
     public String payType;
     public String key;
+    public Boolean sent;
 
     public String getName() {
         return name;

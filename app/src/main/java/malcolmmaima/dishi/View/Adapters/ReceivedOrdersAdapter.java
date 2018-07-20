@@ -373,6 +373,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                             public void onClick(DialogInterface dialog, int whichButton) {
 
                                 receivedOrders.status = "confirmed";
+                                receivedOrders.sent = false;
                                 //Change my order status to confirmed
                                 myOrdersRef.child(receivedOrders.key).setValue(receivedOrders).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
