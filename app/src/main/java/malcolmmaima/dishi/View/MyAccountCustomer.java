@@ -40,6 +40,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import malcolmmaima.dishi.Controller.NotificationService;
 import malcolmmaima.dishi.Controller.TrackingService;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.Fragments.NearbyRestaurantsFragment;
@@ -66,6 +67,7 @@ public class MyAccountCustomer extends AppCompatActivity implements GoogleApiCli
             startActivity(new Intent(MyAccountCustomer.this, MainActivity.class)
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));//Load Main Activity and clear activity stack
         }
+        startService(new Intent(this, NotificationService.class));
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         myPhone = user.getPhoneNumber(); //Current logged in user phone number
@@ -201,6 +203,12 @@ public class MyAccountCustomer extends AppCompatActivity implements GoogleApiCli
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopService(new Intent(this, NotificationService.class));
+    }
+
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[]
             grantResults) {
 
@@ -224,6 +232,7 @@ public class MyAccountCustomer extends AppCompatActivity implements GoogleApiCli
 
     private void startTrackerService() {
         startService(new Intent(this, TrackingService.class));
+
         //Notify the user that tracking has been enabled//
 
         //Toast.makeText(this, "GPS tracking enabled", Toast.LENGTH_SHORT).show();
