@@ -282,6 +282,7 @@ public class MyAccountCustomer extends AppCompatActivity implements GoogleApiCli
             Toast.makeText(MyAccountCustomer.this, "Refresh App", Toast.LENGTH_LONG).show();
         }
         if(id == R.id.action_logout){
+            stopService(new Intent(this, NotificationService.class));
             //Toast.makeText(MyAccountRestaurant.this, "Logout", Toast.LENGTH_LONG).show();
             FirebaseAuth.getInstance().signOut();
             startActivity(new Intent(MyAccountCustomer.this,MainActivity.class)

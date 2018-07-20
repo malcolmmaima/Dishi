@@ -262,7 +262,11 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
 
     @Override
     public int getItemCount() {
-        return listdata.size();
+        try {
+            return listdata.size();
+        } catch (Exception e){
+            return 0;
+        }
     }
 
 

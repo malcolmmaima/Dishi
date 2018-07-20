@@ -293,8 +293,6 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                             if(progressDialog.isShowing()){
                                 progressDialog.dismiss();
                             }
-                            //Allow order to take place
-                            nduthisNearby(); //Initialize nduthisNearby() search
 
                             if (paymentType.equals("empty")) {
                                 Toast.makeText(MyCart.this, "You must select payment method", Toast.LENGTH_SHORT).show();
@@ -303,7 +301,7 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
 
                                 if (multiple_providers == true) {
                                     //Toast.makeText(MyCart.this, "You're about to order from multiple providers!", Toast.LENGTH_SHORT).show();
-
+                                    nduthisNearby(); //Initialize nduthisNearby() search
                                     final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(MyCart.this)
                                             //set message, title, and icon
                                             .setTitle("Search Nduthi")
@@ -368,6 +366,9 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                                             else { //No active nduthi delivery, allow new order
                                                 //Toast.makeText(MyCart.this, "no children", Toast.LENGTH_SHORT).show();
 
+                                                progressDialog.setMessage("Please wait...");
+                                                progressDialog.setCancelable(false);
+                                                progressDialog.show();
 
                                                 //Check if theres anything in my cart
                                                 myCartRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -390,6 +391,7 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
 
                                                                 @Override
                                                                 public void onCancelled(DatabaseError databaseError) {
+                                                                    progressDialog.dismiss();
                                                                     Toast.makeText(MyCart.this, "Error: " + databaseError.toString() + ". Try again!", Toast.LENGTH_LONG).show();
                                                                 }
                                                             });
@@ -423,15 +425,18 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
 
                                                                                         //Toast.makeText(MyCart.this, "Items: " + remainingOrders[0], Toast.LENGTH_SHORT).show();
                                                                                         if (remainingOrders[0] == 0) {
-                                                                                            //Redirect to track orders map
-                                                                                            Toast toast = Toast.makeText(MyCart.this, "Redirect to realtime track order map", Toast.LENGTH_LONG);
-                                                                                            toast.setGravity(Gravity.CENTER, 0, 1);
-                                                                                            toast.show();
-
                                                                                             Snackbar snackbar = Snackbar
-                                                                                                    .make(findViewById(R.id.parentlayout), "Orders sent", Snackbar.LENGTH_LONG);
+                                                                                                    .make(findViewById(R.id.parentlayout), "Orders sent! Check Order status", Snackbar.LENGTH_LONG);
 
                                                                                             snackbar.show();
+                                                                                            if(progressDialog.isShowing()){
+                                                                                                progressDialog.dismiss();
+                                                                                                Intent slideactivity = new Intent(MyCart.this, OrderStatus.class);
+                                                                                                Bundle bndlanimation =
+                                                                                                        ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                                                                                                startActivity(slideactivity, bndlanimation);
+                                                                                            }
+
                                                                                         }
 
                                                                                     }

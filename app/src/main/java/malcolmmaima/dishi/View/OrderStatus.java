@@ -204,6 +204,19 @@ public class OrderStatus extends AppCompatActivity {
                                     if(progressDialog.isShowing()){
                                         progressDialog.dismiss();
                                     }
+
+                                    ShoppingListAdapter recycler = new ShoppingListAdapter(OrderStatus.this, nduthiConfirmed);
+                                    RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
+                                    recyclerView2.setLayoutManager(layoutmanager);
+                                    recyclerView2.setItemAnimator(new DefaultItemAnimator());
+                                    recyclerView2.setAdapter(recycler);
+
+                                    RecyclerView.LayoutManager layoutmanager2 = new LinearLayoutManager(OrderStatus.this);
+                                    recyclerview.setLayoutManager(layoutmanager2);
+                                    recyclerview.setItemAnimator(new DefaultItemAnimator());
+                                    recyclerview.setAdapter(recycler);
+
+                                    emptyTag.setVisibility(VISIBLE);
                             }
                             else {
                                 trackBtn.setEnabled(true);
@@ -228,12 +241,18 @@ public class OrderStatus extends AppCompatActivity {
                                         if(progressDialog.isShowing()){
                                             progressDialog.dismiss();
                                         }
-                                        ShoppingListAdapter recycler = new ShoppingListAdapter(OrderStatus.this, nduthiConfirmed);
-                                        RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
-                                        recyclerView2.setLayoutManager(layoutmanager);
-                                        recyclerView2.setItemAnimator(new DefaultItemAnimator());
-                                        recyclerView2.setAdapter(recycler);
-                                        emptyTag.setVisibility(VISIBLE);
+                                    ShoppingListAdapter recycler = new ShoppingListAdapter(OrderStatus.this, nduthiConfirmed);
+                                    RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
+                                    recyclerView2.setLayoutManager(layoutmanager);
+                                    recyclerView2.setItemAnimator(new DefaultItemAnimator());
+                                    recyclerView2.setAdapter(recycler);
+
+                                    RecyclerView.LayoutManager layoutmanager2 = new LinearLayoutManager(OrderStatus.this);
+                                    recyclerview.setLayoutManager(layoutmanager2);
+                                    recyclerview.setItemAnimator(new DefaultItemAnimator());
+                                    recyclerview.setAdapter(recycler);
+
+                                    emptyTag.setVisibility(VISIBLE);
                                     }
 
                                     }
@@ -296,51 +315,74 @@ public class OrderStatus extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if(id == R.id.cancel_order){
-            final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(OrderStatus.this)
-                    //set message, title, and icon
-                    .setTitle("Cancel Order")
-                    .setMessage("Are you sure you want to cancel your order?")
-                    //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
-                    //set three option buttons
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
 
-                            myPendingOrders.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
+            if (id == R.id.cancel_order) {
+                final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(OrderStatus.this)
+                        //set message, title, and icon
+                        .setTitle("Cancel Order")
+                        .setMessage("Are you sure you want to cancel your order?")
+                        //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
+                        //set three option buttons
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                myPendingOrders.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        ShoppingListAdapter recycler = new ShoppingListAdapter(OrderStatus.this, nduthiConfirmed);
+                                        RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
+                                        recyclerView2.setLayoutManager(layoutmanager);
+                                        recyclerView2.setItemAnimator(new DefaultItemAnimator());
+                                        recyclerView2.setAdapter(recycler);
 
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception exception) {
-                                    // Uh-oh, an error occurred!
-                                    Toast.makeText(OrderStatus.this, "error: " + exception, Toast.LENGTH_SHORT)
-                                            .show();
-                                }
-                            });
+                                        RecyclerView.LayoutManager layoutmanager2 = new LinearLayoutManager(OrderStatus.this);
+                                        recyclerview.setLayoutManager(layoutmanager2);
+                                        recyclerview.setItemAnimator(new DefaultItemAnimator());
+                                        recyclerview.setAdapter(recycler);
 
-                            confirmedNduthi.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
+                                        emptyTag.setVisibility(VISIBLE);
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception exception) {
+                                        // Uh-oh, an error occurred!
+                                        Toast.makeText(OrderStatus.this, "error: " + exception, Toast.LENGTH_SHORT)
+                                                .show();
+                                    }
+                                });
 
-                                }
-                            });
-                        }
-                    })//setPositiveButton
+                                confirmedNduthi.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        ShoppingListAdapter recycler = new ShoppingListAdapter(OrderStatus.this, nduthiConfirmed);
+                                        RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
+                                        recyclerView2.setLayoutManager(layoutmanager);
+                                        recyclerView2.setItemAnimator(new DefaultItemAnimator());
+                                        recyclerView2.setAdapter(recycler);
+
+                                        RecyclerView.LayoutManager layoutmanager2 = new LinearLayoutManager(OrderStatus.this);
+                                        recyclerview.setLayoutManager(layoutmanager2);
+                                        recyclerview.setItemAnimator(new DefaultItemAnimator());
+                                        recyclerview.setAdapter(recycler);
+
+                                        emptyTag.setVisibility(VISIBLE);
+                                    }
+                                });
+                            }
+                        })//setPositiveButton
 
 
-                    .setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                            //Do not delete
-                            //Toast.makeText(OrderStatus.this, "No", Toast.LENGTH_SHORT).show();
+                        .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                //Do not delete
+                                //Toast.makeText(OrderStatus.this, "No", Toast.LENGTH_SHORT).show();
 
-                        }
-                    })//setNegativeButton
+                            }
+                        })//setNegativeButton
 
-                    .create();
-            myQuittingDialogBox.show();
-        }
+                        .create();
+                myQuittingDialogBox.show();
+            }
+
         return super.onOptionsItemSelected(item);
     }
 
