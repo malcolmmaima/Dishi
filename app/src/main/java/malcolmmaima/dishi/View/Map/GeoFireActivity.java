@@ -284,6 +284,8 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                     myCurrent.remove(); //Remove previous marker
                     myArea.remove(); //Remove previous circle
 
+                    providerCurrent.remove();
+
                     providerCurrent = mMap.addMarker(new MarkerOptions().position(nduthiGuyLoc).title("Nduthi")
                             .snippet("Extra info")
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.nduthi_guy))
@@ -326,6 +328,8 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                     Log.d("dish", "GeoFireActivity: " + e);
                     loggedInUserLoc = new LatLng(-1.281647, 36.822638); //Default Nairobi
                     myCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("Default Location").snippet("Error fetching your location"));
+                    providerCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("Default Location").snippet("Error fetching your location"));
+
                     //Radius around my area
                     myArea = mMap.addCircle(new CircleOptions().center(loggedInUserLoc)
                             .radius(500)//in meters

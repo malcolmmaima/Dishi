@@ -34,6 +34,8 @@
         <activity android:name=".View.MyAccountCustomer" />
         <activity android:name=".View.MyAccountNduthi" />
         <activity android:name=".View.MyCart" />
+        <activity android:name=".View.SelectNduthiGuy" />
+        <activity android:name=".View.ViewRequestItems" />
 
         <service
             android:name=".Controller.TrackingService"
@@ -59,11 +61,7 @@
         <activity
             android:name=".View.Map.GeoFireActivity"
             android:label="@string/title_activity_geo_fire" />
-        <activity android:name=".View.SelectNduthiGuy" />
-        <activity android:name=".View.Adapters.NduthiAdapter" />
-        <activity android:name=".View.Adapters.DeliveryRequestsNduthi" />
-        <activity android:name=".View.ViewRequestItems" />
-        <activity android:name=".View.Adapters.ShoppingListAdapter"></activity>
+
     </application>
 
 </manifest>

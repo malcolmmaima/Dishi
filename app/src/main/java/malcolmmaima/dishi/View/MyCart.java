@@ -20,8 +20,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,13 +39,9 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
-import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
-import malcolmmaima.dishi.Model.DishiUser;
 import malcolmmaima.dishi.Model.MyCartDetails;
 import malcolmmaima.dishi.Model.NduthiNearMe;
-import malcolmmaima.dishi.Model.OrderDetails;
 import malcolmmaima.dishi.R;
-import malcolmmaima.dishi.View.Adapters.CustomerOrderAdapter;
 import malcolmmaima.dishi.View.Adapters.MyCartAdapter;
 
 import static android.view.View.INVISIBLE;
@@ -67,7 +61,7 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
     FirebaseDatabase db;
     FirebaseUser user;
 
-    boolean multiple_providers, completeOrder;
+    boolean multiple_providers, completeOrder, avail_nduthi;
     Double distance, myLat, myLong, nduthiLat, nduthiLong;
     ProgressDialog progressDialog ;
 
@@ -276,7 +270,9 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if(dataSnapshot.hasChildren()){
-                            progressDialog.dismiss();
+                            if(progressDialog.isShowing()){
+                                progressDialog.dismiss();
+                            }
                             final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(MyCart.this)
                                     //set message, title, and icon
                                     .setTitle("Active order")
@@ -294,7 +290,9 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                             myQuittingDialogBox.show();
                         }
                         else {
-                            progressDialog.dismiss();
+                            if(progressDialog.isShowing()){
+                                progressDialog.dismiss();
+                            }
                             //Allow order to take place
                             nduthisNearby(); //Initialize nduthisNearby() search
 
@@ -322,7 +320,13 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                                                     progressDialog.setCancelable(false);
 
                                                     completeOrder = true;
-                                                    nduthisNearby();
+
+                                                    if(nduthisNearby() == false){
+                                                        progressDialog.dismiss();
+                                                    }
+                                                    else {
+                                                        nduthisNearby();
+                                                    }
 
                                                 }
                                             })//setPositiveButton
@@ -489,7 +493,9 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-                        progressDialog.dismiss();
+                        if(progressDialog.isShowing()){
+                            progressDialog.dismiss();
+                        }
                         Toast.makeText(MyCart.this, "Error: " + databaseError, Toast.LENGTH_LONG).show();
                     }
                 });
@@ -520,7 +526,7 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
         return super.onOptionsItemSelected(item);
     }
 
-    public void nduthisNearby(){
+    public boolean nduthisNearby(){
         ///////
         //Loop through all the users
         nduthisRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -577,20 +583,27 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
 
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                                    if(progressDialog.isShowing()){
+                                        progressDialog.dismiss();
+                                    }
                                 }
                             });
 
                             int nduthiSize = nduthiNearMeList.size();
+                            if(nduthiSize == 0){
+                                if(progressDialog.isShowing()){
+                                    progressDialog.dismiss();
+                                }
+                            }
                             String key = myRef.push().getKey();
-                            //Search within a 500m radius for nduthis
-                            if(distance < 500){ //testing with 2km, switch back to 500 before production
+                            //Search within a 500m radius for nduthis, if you're from USIU it's motorbike... my bad
+                            if(distance < 500){
                                 nduthiNearMeList.add(nduthiNearMe);
                                 myRef.child("nearby_nduthis").child(dataSnapshot1.getKey().toString()).setValue(nduthiNearMe).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         //Toast.makeText(MyCart.this, "Added: " + nduthiNearMeList.size() + " nduthis", Toast.LENGTH_SHORT).show();
-
+                                        avail_nduthi = true;
                                     }
                                 });
                             }
@@ -599,7 +612,10 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                                 if(progressDialog.isShowing()){
                                     progressDialog.dismiss();
                                 }
+
                                 Toast.makeText(MyCart.this, "No nduthi near you!", Toast.LENGTH_LONG).show();
+                                avail_nduthi = false;
+
                             }
                             //Toast.makeText(MyCart.this, "nduthiNearMeList size: " + nduthiNearMeList.size(), Toast.LENGTH_SHORT).show();
                         }
@@ -612,7 +628,9 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                 }
 
                 if(nduthiNearMeList.size() != 0 && completeOrder == true){
-                    progressDialog.dismiss();
+                    if(progressDialog.isShowing()){
+                        progressDialog.dismiss();
+                    }
 
                     Intent slideactivity = new Intent(MyCart.this, SelectNduthiGuy.class);
                     Bundle bndlanimation =
@@ -636,6 +654,7 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
 
         });
         //////
+        return avail_nduthi;
     }
 
     @Override

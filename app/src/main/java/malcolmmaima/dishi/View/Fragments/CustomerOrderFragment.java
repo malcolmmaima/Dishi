@@ -4,12 +4,15 @@ import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +38,7 @@ import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -45,11 +49,15 @@ import malcolmmaima.dishi.Model.OrderDetails;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.Adapters.CustomerOrderAdapter;
 import malcolmmaima.dishi.View.AddMenu;
+import malcolmmaima.dishi.View.MainActivity;
 import malcolmmaima.dishi.View.MyCart;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 import static android.content.Context.MODE_PRIVATE;
@@ -67,6 +75,7 @@ public class CustomerOrderFragment extends Fragment {
     TextView emptyTag, totalItems, totalFee, filterDistance;
     Button checkoutBtn;
     SeekBar seekBar;
+    Timer timer;
 
     DatabaseReference dbRef, menusRef, providerRef;
     FirebaseDatabase db;
@@ -74,7 +83,7 @@ public class CustomerOrderFragment extends Fragment {
     FirebaseUser user;
 
     boolean loaded;
-    int counter;
+    int counter, filter, duplicate;
 
 
     public static CustomerOrderFragment newInstance() {
@@ -93,6 +102,7 @@ public class CustomerOrderFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.fragment_customer_order, container, false);
+        progressDialog = new ProgressDialog(getContext());
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         myPhone = user.getPhoneNumber(); //Current logged in user phone number
@@ -114,6 +124,7 @@ public class CustomerOrderFragment extends Fragment {
         final int[] initial_filter = new int[1];
         final int[] distanceThreshold = {0};
         final int[] location_filter = new int[1];
+        duplicate = 0;
 
         dbRef.child("location-filter").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -166,144 +177,10 @@ public class CustomerOrderFragment extends Fragment {
         });
 
 
-        //Loop through the mymenu child node and get menu items, assign values to our ProductDetails model
-        menusRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                try {
-                    list = new ArrayList<>();
-                    users = new ArrayList<>();
-
-                    // StringBuffer stringbuffer = new StringBuffer();
-
-                    //So first we loop through the users in the firebase db
-                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                        //DishiUser dishiUser = dataSnapshot1.getValue(DishiUser.class); //Assign values to model
-                        //Toast.makeText(getContext(), "User: " + dishiUser.getName(), Toast.LENGTH_SHORT).show();
-
-                        //afterwards we check if that user has a 'mymenu' child node, if so loop through it and show the products
-                        //NOTE: only restaurant/provider accounts have the 'mymenu', so essentially we are fetching restaurant menus into our customers fragment via the adapter
-                        for (DataSnapshot dataSnapshot2 : dataSnapshot1.child("mymenu").getChildren()) {
-                            final OrderDetails orderDetails = dataSnapshot2.getValue(OrderDetails.class);
-                            //Toast.makeText(getContext(), "mymenu: " + dataSnapshot2.getKey(), Toast.LENGTH_SHORT).show();
-                            orderDetails.providerNumber = dataSnapshot1.getKey();
-                            orderDetails.providerName = dataSnapshot1.child("name").getValue().toString();
-
-
-
-                            providerRef = db.getReference(orderDetails.providerNumber);
-                            //Item provider latitude longitude coordinates
-                            providerRef.child("location").addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                                    for(DataSnapshot providerLoc : dataSnapshot.getChildren()){
-
-                                        try {
-                                        if(providerLoc.getKey().equals("longitude")){
-                                            provlon[0] = providerLoc.getValue(Double.class);
-                                            //Toast.makeText(getContext(), "(prov lat): " + provlon[0], Toast.LENGTH_SHORT).show();
-                                        }
-
-                                        if(providerLoc.getKey().equals("latitude")){
-                                            provlat[0] = providerLoc.getValue(Double.class);
-                                            //Toast.makeText(getContext(), "(prov lon): " + provlat[0], Toast.LENGTH_SHORT).show();
-                                        }
-
-
-                                        } catch (Exception e){
-                                            Toast.makeText(getContext(), "" + e, Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                                    /*
-                                    Toast.makeText(getContext(), "Thresh: " + distanceThreshold[0] + "Km. You are " + distance(myLat[0], myLong[0], provlat[0], provlon[0], "K")
-                                            + " Km away from " + orderDetails.getName(), Toast.LENGTH_SHORT).show();
-                                    */
-
-                                    //If the distance between me and the provider of the product is above the distance threshold(filter), then
-                                    //dont add it to the recycler view list else add it
-                                    try {
-                                    if(distanceThreshold[0] > distance(myLat[0], myLong[0], provlat[0], provlon[0], "K")){
-
-                                        if(orderDetails.providerNumber != myPhone){
-                                            //Don't add my menu to order list (if user switches account type)
-                                            list.add(orderDetails);
-
-                                            if(list.size() < 1){
-                                                //loaded = false;
-                                                //Toast.makeText(getContext(), "list.size() = " + list.size(), Toast.LENGTH_SHORT).show();
-                                            }
-                                        }
-
-                                    } } catch (Exception e){
-                                        //Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
-
-                        }
-                        //Toast.makeText(getContext(), "Phone: " + dataSnapshot1.getKey(), Toast.LENGTH_SHORT).show(); //Phone numbers
-
-                    }
-
-
-                    try {
-
-                        if (!list.isEmpty()) {
-                                CustomerOrderAdapter recycler = new CustomerOrderAdapter(getContext(), list);
-                                RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
-                                recyclerview.setLayoutManager(layoutmanager);
-                                recyclerview.setItemAnimator(new SlideInLeftAnimator());
-
-                                recycler.notifyDataSetChanged();
-
-                                recyclerview.getItemAnimator().setAddDuration(1000);
-                                recyclerview.getItemAnimator().setRemoveDuration(1000);
-                                recyclerview.getItemAnimator().setMoveDuration(1000);
-                                recyclerview.getItemAnimator().setChangeDuration(1000);
-
-                                recyclerview.setAdapter(recycler);
-                                emptyTag.setVisibility(v.INVISIBLE);
-
-                                loaded = true;
-                                counter = counter + 1;
-
-                                if(counter == 5){
-                                    Toast.makeText(getContext(), "refreshed "+ counter + " times!", Toast.LENGTH_SHORT).show();
-                                }
-
-                        }
-
-                    } catch (Exception exception){
-                        Toast.makeText(getContext(), "Error: " + exception, Toast.LENGTH_SHORT).show();
-                    }
-                } catch (Exception e){
-                    emptyTag.setText("Failed");
-                    emptyTag.setVisibility(v.VISIBLE);
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                //  Log.w(TAG, "Failed to read value.", error.toException());
-
-                progressDialog.dismiss();
-
-                Toast.makeText(getActivity(), "Failed, " + error, Toast.LENGTH_SHORT).show();
-            }
-        });
-
         DatabaseReference myCartRef;
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        String myPhone = user.getPhoneNumber(); //Current logged in user phone number
+        final String myPhone = user.getPhoneNumber(); //Current logged in user phone number
         myCartRef = db.getReference(myPhone + "/mycart");
 
         //Check if theres anything in my cart
@@ -345,11 +222,173 @@ public class CustomerOrderFragment extends Fragment {
             }
         });
 
+        emptyTag.setText("Press here");
+        emptyTag.setVisibility(v.VISIBLE);
+
+        emptyTag.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                progressDialog.setMessage("loading...");
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+
+                recyclerview.setVisibility(v.INVISIBLE);
+                emptyTag.setVisibility(v.VISIBLE);
+                //emptyTag.setText("Loading");
+
+                //Loop through the mymenu child node and get menu items, assign values to our ProductDetails model
+                menusRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        int counter = 0;
+                        try {
+                            list = new ArrayList<>();
+                            users = new ArrayList<>();
+
+                            // StringBuffer stringbuffer = new StringBuffer();
+
+                            //So first we loop through the users in the firebase db
+                            for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                                //DishiUser dishiUser = dataSnapshot1.getValue(DishiUser.class); //Assign values to model
+                                //Toast.makeText(getContext(), "User: " + dishiUser.getName(), Toast.LENGTH_SHORT).show();
+
+                                //afterwards we check if that user has a 'mymenu' child node, if so loop through it and show the products
+                                //NOTE: only restaurant/provider accounts have the 'mymenu', so essentially we are fetching restaurant menus into our customers fragment via the adapter
+                                for (DataSnapshot dataSnapshot2 : dataSnapshot1.child("mymenu").getChildren()) {
+
+                                    final String[] keys = new String[(int) dataSnapshot1.getChildrenCount()];
+
+                                    final OrderDetails orderDetails = dataSnapshot2.getValue(OrderDetails.class);
+                                    //Toast.makeText(getContext(), "mymenu: " + dataSnapshot2.getKey(), Toast.LENGTH_SHORT).show();
+                                    orderDetails.providerNumber = dataSnapshot1.getKey();
+                                    orderDetails.providerName = dataSnapshot1.child("name").getValue().toString();
+                                    orderDetails.key = dataSnapshot2.getKey(); //we'll use this to prevent duplicates
+
+                                    keys[counter] = orderDetails.key;
+
+                                    //Toast.makeText(getContext(), "keys["+counter+"] = "+keys[counter], Toast.LENGTH_SHORT).show();
+
+                                    counter = counter + 1;
+
+                                    providerRef = db.getReference(orderDetails.providerNumber);
+                                    //Item provider latitude longitude coordinates
+                                    providerRef.child("location").addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                            for(DataSnapshot providerLoc : dataSnapshot.getChildren()){
+
+                                                try {
+                                                    if(providerLoc.getKey().equals("longitude")){
+                                                        provlon[0] = providerLoc.getValue(Double.class);
+                                                        //Toast.makeText(getContext(), "(prov lat): " + provlon[0], Toast.LENGTH_SHORT).show();
+                                                    }
+
+                                                    if(providerLoc.getKey().equals("latitude")){
+                                                        provlat[0] = providerLoc.getValue(Double.class);
+                                                        //Toast.makeText(getContext(), "(prov lon): " + provlat[0], Toast.LENGTH_SHORT).show();
+                                                    }
+
+
+                                                } catch (Exception e){
+                                                    Toast.makeText(getContext(), "" + e, Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                    /*
+                                    Toast.makeText(getContext(), "Thresh: " + distanceThreshold[0] + "Km. You are " + distance(myLat[0], myLong[0], provlat[0], provlon[0], "K")
+                                            + " Km away from " + orderDetails.getName(), Toast.LENGTH_SHORT).show();
+                                    */
+
+                                            //If the distance between me and the provider of the product is above the distance threshold(filter), then
+                                            //dont add it to the recycler view list else add it
+                                            try {
+
+                                                if(filter > distance(myLat[0], myLong[0], provlat[0], provlon[0], "K")){
+                                                    if(orderDetails.providerNumber != myPhone){ //make sure my menus are not on my filter
+
+                                                        //filter duplicates from the list
+                                                        if(list.contains(orderDetails.key)){
+                                                            // is present ... :)
+                                                            list.remove(orderDetails);
+                                                        } else { list.add(orderDetails); }
+                                                    }
+
+                                                } } catch (Exception e){
+                                                //Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
+
+                                }
+                                //Toast.makeText(getContext(), "Phone: " + dataSnapshot1.getKey(), Toast.LENGTH_SHORT).show(); //Phone numbers
+
+                            }
+
+                        } catch (Exception e){
+                            emptyTag.setText("Failed");
+                            emptyTag.setVisibility(v.VISIBLE);
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+                        // Failed to read value
+                        //  Log.w(TAG, "Failed to read value.", error.toException());
+
+                        progressDialog.dismiss();
+
+                        Toast.makeText(getActivity(), "Failed, " + error, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                new CountDownTimer(5000, 1000) {
+                    public void onTick(long millisUntilFinished) {
+                        //Toast.makeText(getContext(), "seconds remaining: " + millisUntilFinished / 1000, Toast.LENGTH_SHORT).show();
+                    }
+
+                    public void onFinish() {
+                        //Toast.makeText(getContext(), "done!", Toast.LENGTH_SHORT).show();
+                        progressDialog.dismiss();
+                        if (!list.isEmpty()) {
+                            recyclerview.setVisibility(View.VISIBLE);
+                            CustomerOrderAdapter recycler = new CustomerOrderAdapter(getContext(), list);
+                            RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
+                            recyclerview.setLayoutManager(layoutmanager);
+                            recyclerview.setItemAnimator(new SlideInLeftAnimator());
+
+                            recycler.notifyDataSetChanged();
+
+                            recyclerview.getItemAnimator().setAddDuration(1000);
+                            recyclerview.getItemAnimator().setRemoveDuration(1000);
+                            recyclerview.getItemAnimator().setMoveDuration(1000);
+                            recyclerview.getItemAnimator().setChangeDuration(1000);
+
+                            recyclerview.setAdapter(recycler);
+                            emptyTag.setVisibility(v.INVISIBLE);
+                        } else {
+                            recyclerview.setVisibility(v.INVISIBLE);
+                            emptyTag.setVisibility(v.VISIBLE);
+                            emptyTag.setText("Try again");
+                        }
+                    }
+                }.start();
+            }
+        });
+
+
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 //Toast.makeText(getContext(), progress + " km", Toast.LENGTH_SHORT).show();
+                filter = progress;
                 filterDistance.setText("Filter distance: " + progress + " km");
+
 
                 //Synchronize the filter settings in realtime to firebase for a more personalized feel
                 dbRef.child("location-filter").setValue(progress).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -374,36 +413,158 @@ public class CustomerOrderFragment extends Fragment {
                 //On active press of filter slider, hide recycler view and set text to loading
                 recyclerview.setVisibility(v.INVISIBLE);
                 emptyTag.setVisibility(v.VISIBLE);
-                emptyTag.setText("Loading");
+                //emptyTag.setText("Loading");
+
+                //Loop through the mymenu child node and get menu items, assign values to our ProductDetails model
+                menusRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        int counter = 0;
+                        try {
+                            list = new ArrayList<>();
+                            users = new ArrayList<>();
+
+                            // StringBuffer stringbuffer = new StringBuffer();
+
+                            //So first we loop through the users in the firebase db
+                            for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                                //DishiUser dishiUser = dataSnapshot1.getValue(DishiUser.class); //Assign values to model
+                                //Toast.makeText(getContext(), "User: " + dishiUser.getName(), Toast.LENGTH_SHORT).show();
+
+                                //afterwards we check if that user has a 'mymenu' child node, if so loop through it and show the products
+                                //NOTE: only restaurant/provider accounts have the 'mymenu', so essentially we are fetching restaurant menus into our customers fragment via the adapter
+                                for (DataSnapshot dataSnapshot2 : dataSnapshot1.child("mymenu").getChildren()) {
+
+                                    final String[] keys = new String[(int) dataSnapshot1.getChildrenCount()];
+
+                                    final OrderDetails orderDetails = dataSnapshot2.getValue(OrderDetails.class);
+                                    //Toast.makeText(getContext(), "mymenu: " + dataSnapshot2.getKey(), Toast.LENGTH_SHORT).show();
+                                    orderDetails.providerNumber = dataSnapshot1.getKey();
+                                    orderDetails.providerName = dataSnapshot1.child("name").getValue().toString();
+                                    orderDetails.key = dataSnapshot2.getKey(); //we'll use this to prevent duplicates
+
+                                    keys[counter] = orderDetails.key;
+
+                                    //Toast.makeText(getContext(), "keys["+counter+"] = "+keys[counter], Toast.LENGTH_SHORT).show();
+
+                                    counter = counter + 1;
+
+                                    providerRef = db.getReference(orderDetails.providerNumber);
+                                    //Item provider latitude longitude coordinates
+                                    providerRef.child("location").addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                            for(DataSnapshot providerLoc : dataSnapshot.getChildren()){
+
+                                                try {
+                                                    if(providerLoc.getKey().equals("longitude")){
+                                                        provlon[0] = providerLoc.getValue(Double.class);
+                                                        //Toast.makeText(getContext(), "(prov lat): " + provlon[0], Toast.LENGTH_SHORT).show();
+                                                    }
+
+                                                    if(providerLoc.getKey().equals("latitude")){
+                                                        provlat[0] = providerLoc.getValue(Double.class);
+                                                        //Toast.makeText(getContext(), "(prov lon): " + provlat[0], Toast.LENGTH_SHORT).show();
+                                                    }
+
+
+                                                } catch (Exception e){
+                                                    Toast.makeText(getContext(), "" + e, Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                    /*
+                                    Toast.makeText(getContext(), "Thresh: " + distanceThreshold[0] + "Km. You are " + distance(myLat[0], myLong[0], provlat[0], provlon[0], "K")
+                                            + " Km away from " + orderDetails.getName(), Toast.LENGTH_SHORT).show();
+                                    */
+
+                                            //If the distance between me and the provider of the product is above the distance threshold(filter), then
+                                            //dont add it to the recycler view list else add it
+                                            try {
+
+                                                if(filter > distance(myLat[0], myLong[0], provlat[0], provlon[0], "K")){
+                                                    if(orderDetails.providerNumber != myPhone){ //make sure my menus are not on my filter
+
+                                                        //filter duplicates from the list
+                                                        if(list.contains(orderDetails.key)){
+                                                            // is present ... :)
+                                                            list.remove(orderDetails);
+                                                        } else { list.add(orderDetails); }
+                                                    }
+
+                                                } } catch (Exception e){
+                                                //Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
+
+                                }
+                                //Toast.makeText(getContext(), "Phone: " + dataSnapshot1.getKey(), Toast.LENGTH_SHORT).show(); //Phone numbers
+
+                            }
+
+                        } catch (Exception e){
+                            emptyTag.setText("Failed");
+                            emptyTag.setVisibility(v.VISIBLE);
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+                        // Failed to read value
+                        //  Log.w(TAG, "Failed to read value.", error.toException());
+
+                        progressDialog.dismiss();
+
+                        Toast.makeText(getActivity(), "Failed, " + error, Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                recyclerview.setVisibility(v.VISIBLE);
-                emptyTag.setText("EMPTY");
+                progressDialog.setMessage("loading...");
+                progressDialog.setCancelable(false);
+                progressDialog.show();
 
-                try {
-                    if (list.isEmpty()) {
-                        emptyTag.setVisibility(v.VISIBLE);
-                    } else {
-                        emptyTag.setVisibility(v.INVISIBLE);
+                new CountDownTimer(5000, 1000) {
+                    public void onTick(long millisUntilFinished) {
+                        //Toast.makeText(getContext(), "seconds remaining: " + millisUntilFinished / 1000, Toast.LENGTH_SHORT).show();
                     }
 
-                    CustomerOrderAdapter recycler = new CustomerOrderAdapter(getContext(), list);
-                    RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
-                    recyclerview.setLayoutManager(layoutmanager);
-                    recyclerview.setItemAnimator(new SlideInLeftAnimator());
-                    recycler.notifyDataSetChanged();
-                    recyclerview.getItemAnimator().setAddDuration(1000);
-                    recyclerview.getItemAnimator().setRemoveDuration(1000);
-                    recyclerview.getItemAnimator().setMoveDuration(1000);
-                    recyclerview.getItemAnimator().setChangeDuration(1000);
+                    public void onFinish() {
+                        //Toast.makeText(getContext(), "done!", Toast.LENGTH_SHORT).show();
+                        progressDialog.dismiss();
+                        if (!list.isEmpty()) {
+                            recyclerview.setVisibility(View.VISIBLE);
+                            CustomerOrderAdapter recycler = new CustomerOrderAdapter(getContext(), list);
+                            RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
+                            recyclerview.setLayoutManager(layoutmanager);
+                            recyclerview.setItemAnimator(new SlideInLeftAnimator());
 
-                    recyclerview.setAdapter(recycler);
+                            recycler.notifyDataSetChanged();
 
-                } catch (Exception e){
+                            recyclerview.getItemAnimator().setAddDuration(1000);
+                            recyclerview.getItemAnimator().setRemoveDuration(1000);
+                            recyclerview.getItemAnimator().setMoveDuration(1000);
+                            recyclerview.getItemAnimator().setChangeDuration(1000);
 
-                }
+                            recyclerview.setAdapter(recycler);
+                            emptyTag.setVisibility(v.INVISIBLE);
+                        } else {
+                            recyclerview.setVisibility(v.INVISIBLE);
+                            emptyTag.setVisibility(v.VISIBLE);
+                            emptyTag.setText("Try again");
+                        }
+                    }
+                }.start();
+
             }
         });
 
@@ -419,6 +580,19 @@ public class CustomerOrderFragment extends Fragment {
         });
 
         return  v;
+    }
+
+    public void starttimer() {
+        new CountDownTimer(5000, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                Toast.makeText(getContext(), "seconds remaining: " + millisUntilFinished / 1000, Toast.LENGTH_SHORT).show();
+            }
+
+            public void onFinish() {
+                Toast.makeText(getContext(), "done!", Toast.LENGTH_SHORT).show();
+            }
+        }.start();
     }
 
     public static double distance(double lat1, double lon1, double lat2, double lon2, String unit) {
