@@ -1,5 +1,6 @@
 package malcolmmaima.dishi.View;
 
+import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -39,6 +40,7 @@ import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.Adapters.CustomerOrderAdapter;
 import malcolmmaima.dishi.View.Adapters.NduthiAdapter;
 import malcolmmaima.dishi.View.Adapters.ShoppingListAdapter;
+import malcolmmaima.dishi.View.Map.GeoFireActivity;
 
 import static malcolmmaima.dishi.R.drawable.ic_delivered_order;
 import static malcolmmaima.dishi.R.drawable.ic_order_in_transit;
@@ -134,7 +136,8 @@ public class ViewRequestItems extends AppCompatActivity {
                     if (status.equals("transit")) {
                         Glide.with(ViewRequestItems.this).load(ic_order_in_transit).into(orderStat);
                         orderStatus.setText("transit");
-                        acceptOrder.setEnabled(false);
+                        acceptOrder.setEnabled(true);
+                        acceptOrder.setText("Track");
                     }
 
 
@@ -181,66 +184,75 @@ public class ViewRequestItems extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(v.getContext())
+                if(status.equals("transit")){
+                    Intent slideactivity = new Intent(ViewRequestItems.this, GeoFireActivity.class);
+                    slideactivity.putExtra("nduthi_phone", itemPhone);
+                    Bundle bndlanimation =
+                            ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                    startActivity(slideactivity, bndlanimation);
+                } else {
 
-                        //set message, title, and icon
-                        .setTitle("Accept order")
-                        .setMessage("Accept " + customerName + "'s order of "+ itemCount + " items?")
-                        //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
-                        //set three option buttons
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                //Change request status to transit
-                                customerDelRef.child("request_ride").child(key).child("status").setValue("transit");
-                                requestStatus.child("status").setValue("transit").addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
+                    final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(v.getContext())
 
-                                        incomingRequestsRef.addValueEventListener(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                                nduthis = new ArrayList<>();
-                                                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                                                    OrderDetails orderDetails = dataSnapshot1.getValue(OrderDetails.class); //Assign values to model
-                                                    orderDetails.providerName = dataSnapshot1.child("provider").getValue(String.class);
-                                                    totalPrice = totalPrice + Integer.parseInt(orderDetails.getPrice());
+                            //set message, title, and icon
+                            .setTitle("Accept order")
+                            .setMessage("Accept " + customerName + "'s order of "+ itemCount + " items?")
+                            //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
+                            //set three option buttons
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    //Change request status to transit
+                                    customerDelRef.child("request_ride").child(key).child("status").setValue("transit");
+                                    requestStatus.child("status").setValue("transit").addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
 
-                                                    String key = customerRef.push().getKey();
-                                                    //Take the order items customer sent to me and move them to his/her confirmed order node
-                                                    customerRef.child("confirmed_"+myPhone).child(key).setValue(orderDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                        @Override
-                                                        public void onSuccess(Void aVoid) {
-                                                            //Empty the customers's cart since we've moved the items to a new node after confirmation
-                                                            customerDelRef.child("mycart").removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                @Override
-                                                                public void onSuccess(Void aVoid) {
-                                                                    //confirmation complete
-                                                                    Toast.makeText(ViewRequestItems.this, "Confirmation sent", Toast.LENGTH_LONG).show();
-                                                                }
-                                                            });
-                                                        }
-                                                    });
+                                            incomingRequestsRef.addValueEventListener(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                                    nduthis = new ArrayList<>();
+                                                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                                                        OrderDetails orderDetails = dataSnapshot1.getValue(OrderDetails.class); //Assign values to model
+                                                        orderDetails.providerName = dataSnapshot1.child("provider").getValue(String.class);
+                                                        totalPrice = totalPrice + Integer.parseInt(orderDetails.getPrice());
+
+                                                        String key = customerRef.push().getKey();
+                                                        //Take the order items customer sent to me and move them to his/her confirmed order node
+                                                        customerRef.child("confirmed_"+myPhone).child(key).setValue(orderDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void aVoid) {
+                                                                //Empty the customers's cart since we've moved the items to a new node after confirmation
+                                                                customerDelRef.child("mycart").removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                    @Override
+                                                                    public void onSuccess(Void aVoid) {
+                                                                        //confirmation complete
+                                                                        Toast.makeText(ViewRequestItems.this, "Confirmation sent", Toast.LENGTH_LONG).show();
+                                                                    }
+                                                                });
+                                                            }
+                                                        });
+                                                    }
                                                 }
-                                            }
 
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                            }
-                                        });
+                                                }
+                                            });
 
-                                    }
-                                });
-                            }
-                        }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                Toast.makeText(ViewRequestItems.this, "Update respective fireB nodes", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+                            }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    Toast.makeText(ViewRequestItems.this, "Update respective fireB nodes", Toast.LENGTH_SHORT).show();
 
-                            }
-                        })//setNegativeButton
+                                }
+                            })//setNegativeButton
 
-                        .create();
-                myQuittingDialogBox.show();
+                            .create();
+                    myQuittingDialogBox.show();
+                }
             }
         });
 

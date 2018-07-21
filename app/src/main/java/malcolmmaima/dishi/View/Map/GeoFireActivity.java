@@ -63,7 +63,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
     boolean notifSent = false;
     VerticalSeekBar zoomMap;
     DatabaseReference myRef;
-    String myPhone, accType, nduthi_phone;
+    String myPhone, accType, nduthi_phone, message;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +77,8 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
         myPhone = user.getPhoneNumber(); //Current logged in user phone number
 
         nduthi_phone = getIntent().getStringExtra("nduthi_phone");
+
+        message = "Order delivered?";
 
         callNduthi.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,7 +114,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                 final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(v.getContext())
                         //set message, title, and icon
                         .setTitle("Confirm Order Delivery")
-                        .setMessage("Has nduthi delivered your order?")
+                        .setMessage(message)
                         //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
                         //set three option buttons
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -304,14 +306,15 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                     //Toast.makeText(GeoFireActivity.this, "Distance: " + distance, Toast.LENGTH_SHORT).show();
                     distance = distance * 1000; //Convert distance to meters
                     //If person making delivery is within 500m radius, send notification
-                    if(distance < 200 && notifSent == false){
-                        sendNotification("Order is "+distance+"m away");
-                        notifSent = true;
-                    }
                     //mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
 
                     if(accType.equals("1")){//Customer
+                        message = "Has nduthi delivered your order?";
                         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nduthiLat,nduthiLng), zoomLevel));
+                        if(distance < 200 && notifSent == false){
+                            sendNotification("Order is "+distance+"m away");
+                            notifSent = true;
+                        }
                     }
 
                     if(accType.equals("2")) {//provider
@@ -319,7 +322,32 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                     }
 
                     if(accType.equals("3")){//nduthi
+
+                        message = "Have you successfully made the delivery?";
+
+                        if(distance < 200 && notifSent == false){
+                            sendNotification("Customer is "+distance+"m away");
+                            notifSent = true;
+                        }
+                        myCurrent.remove();
+                        providerCurrent.remove();
+                        myArea.remove();
+
+                        myCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("My Location")
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.nduthi_guy))
+                                .flat(true));
+
+                        providerCurrent = mMap.addMarker(new MarkerOptions().position(nduthiGuyLoc).title("Customer Location")
+                                .snippet("Extra info"));
+
+                        //Radius around customer's area
+                        myArea = mMap.addCircle(new CircleOptions().center(nduthiGuyLoc)
+                                .radius(200)//in meters
+                                .strokeColor(Color.BLUE)
+                                .fillColor(0x220000FF)
+                                .strokeWidth(5.0f));
                         //track customer
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nduthiLat,nduthiLng), zoomLevel));
                     }
 
 
