@@ -52,7 +52,7 @@ public class ViewRequestItems extends AppCompatActivity {
     TextView customername, itemcount, distanceAway, orderStatus, totalKsh;
     Button callCustomer, acceptOrder;
     ImageView profilepic, orderStat;
-    DatabaseReference incomingRequestsRef, requestStatus, customerRef, customerDelRef;
+    DatabaseReference incomingRequestsRef, requestStatus, customerRef, customerDelRef, myRef;
     List<OrderDetails> nduthis;
     int totalPrice;
     String status;
@@ -112,6 +112,7 @@ public class ViewRequestItems extends AppCompatActivity {
         incomingRequestsRef = FirebaseDatabase.getInstance().getReference(myPhone + "/request_menus/request_"+itemPhone);
         customerRef = FirebaseDatabase.getInstance().getReference(itemPhone + "/confirmed_order");
         customerDelRef = FirebaseDatabase.getInstance().getReference(itemPhone);
+        myRef = FirebaseDatabase.getInstance().getReference(myPhone);
 
         requestStatus.child("status").addValueEventListener(new ValueEventListener() {
             @Override
@@ -123,6 +124,7 @@ public class ViewRequestItems extends AppCompatActivity {
                         Glide.with(ViewRequestItems.this).load(ic_pending_order).into(orderStat);
                         orderStatus.setText("Pending");
                         acceptOrder.setEnabled(true);
+                        myRef.child("engaged").setValue("false");
                     }
 
                     //Once customer has confirmed delivery
@@ -130,6 +132,7 @@ public class ViewRequestItems extends AppCompatActivity {
                         Glide.with(ViewRequestItems.this).load(ic_delivered_order).into(orderStat);
                         orderStatus.setText("confirmed");
                         acceptOrder.setEnabled(false);
+                        myRef.child("engaged").setValue("false");
                     }
 
                     //You have accepted the order are in transit to the customer
@@ -138,6 +141,7 @@ public class ViewRequestItems extends AppCompatActivity {
                         orderStatus.setText("transit");
                         acceptOrder.setEnabled(true);
                         acceptOrder.setText("Track");
+                        myRef.child("engaged").setValue("true");
                     }
 
 
