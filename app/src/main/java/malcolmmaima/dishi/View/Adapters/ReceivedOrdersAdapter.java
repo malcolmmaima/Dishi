@@ -229,7 +229,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
         final String[] status = new String[listdata.size()];
 
         //Check order status of each item
-        orderStatus.child("status").addValueEventListener(new ValueEventListener() {
+        myOrdersRef.child(receivedOrders.key).child("status").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 try {
@@ -248,17 +248,72 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                 }
 
                 if(status[position].equals("abort")){
-                    holder.acceptBtn.setText("client Cancelled");
+                    holder.acceptBtn.setText("Aborted");
                     holder.acceptBtn.setEnabled(false);
+                    holder.deleteItem.setVisibility(View.VISIBLE);
                     // after this will put a timer below, max 2 mins then delete aborted order from list
                 }
                 } catch (Exception e){
+                    try {
                     //Toast.makeText(context, "Error: " + e, Toast.LENGTH_SHORT).show();
+                    deliveriesRef.child(receivedOrders.key).child("status").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            try {
+                                    status[position] = dataSnapshot.getValue(String.class); //Order status
+                                    //Toast.makeText(context, "Order status: " + status, Toast.LENGTH_SHORT).show();
+                                    if(status[position].equals("confirmed")){
+                                        holder.acceptBtn.setText("Cancel");
+                                    }
+
+                                    if(status[position].equals("cancelled")){
+                                        holder.acceptBtn.setText("Confirm");
+                                    }
+
+                                    if(status[position].equals("pending")){
+                                        holder.acceptBtn.setText("Confirm");
+                                    }
+
+                                    if(status[position].equals("abort")){
+                                        holder.acceptBtn.setText("Aborted");
+                                        holder.acceptBtn.setEnabled(false);
+                                        holder.deleteItem.setVisibility(View.VISIBLE);
+                                        // after this will put a timer below, max 2 mins then delete aborted order from list
+                                    }
+                            } catch (Exception e){
+
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                    } catch (Exception ee){
+
+                    }
                 }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Toast.makeText(context, "Error: " + databaseError.toString() + ". Try again!", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        holder.deleteItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                myOrdersRef.child(receivedOrders.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // File deleted successfully
+                        Snackbar snackbar = Snackbar
+                                .make(v, "Deleted!", Snackbar.LENGTH_LONG);
+
+                        snackbar.show();
+                    }
+                });
             }
         });
 
@@ -505,6 +560,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
         TextView foodPrice , foodDescription, foodName, providerName, distAway;
         ImageView foodPic;
         Button acceptBtn, callBtn;
+        ImageButton deleteItem;
 
         public MyHolder(View itemView) {
             super(itemView);
@@ -516,6 +572,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
             callBtn = itemView.findViewById(R.id.callBtn);
             providerName = itemView.findViewById(R.id.providerName);
             distAway = itemView.findViewById(R.id.distanceAway);
+            deleteItem = itemView.findViewById(R.id.deleteBtn);
 
         }
     }

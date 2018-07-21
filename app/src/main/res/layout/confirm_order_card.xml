@@ -85,7 +85,22 @@
             android:layout_toRightOf="@id/foodPic"
             android:textColor="#666"/>
 
+        <ImageButton
+            android:id="@+id/deleteBtn"
+            android:scaleType="centerCrop"
+            android:background="@drawable/ic_delete_forever_white_48dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/foodPrice"
+            android:layout_marginTop="10dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:visibility="invisible"
+
+            />
+
         <RelativeLayout
+            android:id="@+id/cardActions"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/providerName"
@@ -116,6 +131,7 @@
                 android:layout_marginRight="5dp"/>
 
             <RelativeLayout
+                android:id="@+id/actionBtns"
                 android:layout_below="@+id/distanceAway"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
