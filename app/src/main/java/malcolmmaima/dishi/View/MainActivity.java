@@ -108,6 +108,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onVerificationCompleted(PhoneAuthCredential credential) {
+                if(progressDialog.isShowing()){
+                    progressDialog.dismiss();
+                }
                 // This callback will be invoked in two situations:
                 // 1 - Instant verification. In some cases the phone number can be instantly
                 //     verified without needing to send or enter a verification code.
@@ -126,14 +129,18 @@ public class MainActivity extends AppCompatActivity {
                 Log.w("TAG", "onVerificationFailed", e);
 
                 if (e instanceof FirebaseAuthInvalidCredentialsException) {
-                    progressDialog.dismiss();
+                    if(progressDialog.isShowing()){
+                        progressDialog.dismiss();
+                    }
                     Snackbar snackbar = Snackbar
                             .make((LinearLayout) findViewById(R.id.parentlayout), "Verification Failed !! Invalid verification Code", Snackbar.LENGTH_LONG);
 
                     snackbar.show();
                 }
                 else if (e instanceof FirebaseTooManyRequestsException) {
-                    progressDialog.dismiss();
+                    if(progressDialog.isShowing()){
+                        progressDialog.dismiss();
+                    }
                     Snackbar snackbar = Snackbar
                             .make((LinearLayout) findViewById(R.id.parentlayout), "Verification Failed !! Too many request. Try after some time. ", Snackbar.LENGTH_LONG);
 
@@ -141,7 +148,9 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 else if(e instanceof FirebaseNetworkException){
-                    progressDialog.dismiss();
+                    if(progressDialog.isShowing()){
+                        progressDialog.dismiss();
+                    }
                     Snackbar snackbar = Snackbar
                             .make((LinearLayout) findViewById(R.id.parentlayout), "Failed! Check connection and try again. ", Snackbar.LENGTH_LONG);
 
@@ -190,17 +199,19 @@ public class MainActivity extends AppCompatActivity {
                         phonenumber = phoneed.getText().toString();
                     }
                     else {
-                        progressDialog.dismiss();
+                        if(progressDialog.isShowing()){
+                            progressDialog.dismiss();
+                        }
                         phoneed.setError("Please enter valid mobile number");
                     }
                 }
 
                 if (fabbutton.getTag().equals(getResources().getString(R.string.tag_verify))) {
                     if (!codeed.getText().toString().trim().isEmpty() && !mVerified) {
-                        Snackbar snackbar = Snackbar
-                                .make((LinearLayout) findViewById(R.id.parentlayout), "Please wait...", Snackbar.LENGTH_LONG);
-
-                        snackbar.show();
+                        progressDialog.setMessage("Please wait...");
+                        progressDialog.setTitle(null);
+                        progressDialog.setCancelable(false);
+                        progressDialog.show();
                         PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, codeed.getText().toString().trim());
                         signInWithPhoneAuthCredential(credential);
                     }
@@ -218,6 +229,9 @@ public class MainActivity extends AppCompatActivity {
 
                                 Toast.makeText(MainActivity.this, "Verified: " + verified, Toast.LENGTH_LONG).show();
                                 if(verified == true){
+                                    if(progressDialog.isShowing()){
+                                        progressDialog.dismiss();
+                                    }
                                     //Slide to new activity
                                     Intent slideactivity = new Intent(MainActivity.this, MyAccountRestaurant.class)
                                             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -226,6 +240,9 @@ public class MainActivity extends AppCompatActivity {
                                     startActivity(slideactivity, bndlanimation);
 
                                 } else {
+                                    if(progressDialog.isShowing()){
+                                        progressDialog.dismiss();
+                                    }
                                     //User is not verified so have them verify their profile details first
                                     Intent slideactivity = new Intent(MainActivity.this, SetupProfile.class)
                                             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -236,6 +253,9 @@ public class MainActivity extends AppCompatActivity {
                             }
                             @Override
                             public void onCancelled(DatabaseError databaseError) {
+                                if(progressDialog.isShowing()){
+                                    progressDialog.dismiss();
+                                }
                             }
                         });
                     }
@@ -271,7 +291,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(mAuth.getInstance().getCurrentUser() != null){
+
+        try {
+        if (mAuth.getInstance().getCurrentUser() != null) {
 
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             myPhone = user.getPhoneNumber(); //Current logged in user phone number
@@ -286,41 +308,36 @@ public class MainActivity extends AppCompatActivity {
                     Boolean verified = dataSnapshot.getValue(Boolean.class);
 
                     Toast.makeText(MainActivity.this, "Verified: " + verified, Toast.LENGTH_LONG).show();
-                    if(verified == true){
+                    if (verified == true) {
                         //User is verified, so we need to check their account type and redirect accordingly
                         dbRef.child("account_type").addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override public void onDataChange(DataSnapshot dataSnapshot) {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
                                 int account_type = dataSnapshot.getValue(Integer.class);
 
-                                if(account_type == 1){ //Customer account
+                                if (account_type == 1) { //Customer account
                                     Toast.makeText(MainActivity.this, "Customer Account", Toast.LENGTH_LONG).show();
                                     Intent slideactivity = new Intent(MainActivity.this, MyAccountCustomer.class)
                                             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     Bundle bndlanimation =
-                                            ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                                            ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation, R.anim.animation2).toBundle();
                                     startActivity(slideactivity, bndlanimation);
-                                }
-
-                                else if (account_type == 2){ //Provider Restaurant account
+                                } else if (account_type == 2) { //Provider Restaurant account
                                     Toast.makeText(MainActivity.this, "Provider Account", Toast.LENGTH_LONG).show();
                                     Intent slideactivity = new Intent(MainActivity.this, MyAccountRestaurant.class)
                                             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     Bundle bndlanimation =
-                                            ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                                            ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation, R.anim.animation2).toBundle();
                                     startActivity(slideactivity, bndlanimation);
-                                }
-
-                                else if (account_type == 3){ //Nduthi account
+                                } else if (account_type == 3) { //Nduthi account
                                     //Slide to new activity
                                     Toast.makeText(MainActivity.this, "Nduthi Account", Toast.LENGTH_LONG).show();
                                     Intent slideactivity = new Intent(MainActivity.this, MyAccountNduthi.class)
                                             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     Bundle bndlanimation =
-                                            ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                                            ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation, R.anim.animation2).toBundle();
                                     startActivity(slideactivity, bndlanimation);
-                                }
-
-                                else { // Others
+                                } else { // Others
                                     Toast.makeText(MainActivity.this, "'Others' account still in development", Toast.LENGTH_LONG).show();
                                 }
 
@@ -337,15 +354,22 @@ public class MainActivity extends AppCompatActivity {
                         Intent slideactivity = new Intent(MainActivity.this, SetupProfile.class)
                                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         Bundle bndlanimation =
-                                ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                                ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation, R.anim.animation2).toBundle();
                         startActivity(slideactivity, bndlanimation);
                     }
+
                 }
+
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
                 }
             });
         }
+
+    } catch (Exception e){
+
+        }
+
     }
 
     private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
@@ -354,6 +378,9 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            progressDialog.setMessage("Success...");
+                            progressDialog.setCancelable(false);
+                            progressDialog.show();
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("TAG", "signInWithCredential:success");
                             FirebaseUser user = task.getResult().getUser();
@@ -406,6 +433,9 @@ public class MainActivity extends AppCompatActivity {
                                                 String account_type = dataSnapshot.getValue(String.class);
 
                                                 if(account_type.equals("1")){ //Customer account
+                                                    if(progressDialog.isShowing()){
+                                                        progressDialog.dismiss();
+                                                    }
                                                     //Toast.makeText(MainActivity.this, "Customer Account", Toast.LENGTH_LONG).show();
                                                     Intent slideactivity = new Intent(MainActivity.this, MyAccountCustomer.class)
                                                             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -415,6 +445,9 @@ public class MainActivity extends AppCompatActivity {
                                                 }
 
                                                 else if (account_type.equals("2")){ //Provider Restaurant account
+                                                    if(progressDialog.isShowing()){
+                                                        progressDialog.dismiss();
+                                                    }
                                                     //Toast.makeText(MainActivity.this, "Provider Account", Toast.LENGTH_LONG).show();
                                                     Intent slideactivity = new Intent(MainActivity.this, MyAccountRestaurant.class)
                                                             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -424,6 +457,9 @@ public class MainActivity extends AppCompatActivity {
                                                 }
 
                                                 else if (account_type.equals("3")){ //Nduthi account
+                                                    if(progressDialog.isShowing()){
+                                                        progressDialog.dismiss();
+                                                    }
                                                     //Slide to new activity
                                                     //Toast.makeText(MainActivity.this, "Nduthi Account", Toast.LENGTH_LONG).show();
                                                     Intent slideactivity = new Intent(MainActivity.this, MyAccountNduthi.class)
@@ -434,6 +470,9 @@ public class MainActivity extends AppCompatActivity {
                                                 }
 
                                                 else { // Others
+                                                    if(progressDialog.isShowing()){
+                                                        progressDialog.dismiss();
+                                                    }
                                                     Toast.makeText(MainActivity.this, "'Others' account still in development", Toast.LENGTH_LONG).show();
                                                 }
 
@@ -447,6 +486,9 @@ public class MainActivity extends AppCompatActivity {
                                             }
                                         });
                                     } else {
+                                        if(progressDialog.isShowing()){
+                                            progressDialog.dismiss();
+                                        }
                                         Intent slideactivity = new Intent(MainActivity.this, SetupProfile.class)
                                                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                         Bundle bndlanimation =
@@ -462,12 +504,14 @@ public class MainActivity extends AppCompatActivity {
 
                         } else {
                             // Sign in failed, display a message and update the UI
-                            progressDialog.dismiss();
+                            if(progressDialog.isShowing()){
+                                progressDialog.dismiss();
+                            }
                             Log.w("TAG", "signInWithCredential:failure", task.getException());
                             if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
                                 // The verification code entered was invalid
                                 Snackbar snackbar = Snackbar
-                                        .make((LinearLayout) findViewById(R.id.parentlayout), "Invalid OTP ! Please enter correct OTP", Snackbar.LENGTH_LONG);
+                                        .make((LinearLayout) findViewById(R.id.parentlayout), "Invalid Code ! Please enter correct Code", Snackbar.LENGTH_LONG);
 
                                 snackbar.show();
                             }

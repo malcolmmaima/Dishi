@@ -391,7 +391,9 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
 
                                                                 @Override
                                                                 public void onCancelled(DatabaseError databaseError) {
-                                                                    progressDialog.dismiss();
+                                                                    if(progressDialog.isShowing()){
+                                                                        progressDialog.dismiss();
+                                                                    }
                                                                     Toast.makeText(MyCart.this, "Error: " + databaseError.toString() + ". Try again!", Toast.LENGTH_LONG).show();
                                                                 }
                                                             });
@@ -429,12 +431,14 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                                                                                                     .make(findViewById(R.id.parentlayout), "Orders sent! Check Order status", Snackbar.LENGTH_LONG);
 
                                                                                             snackbar.show();
-                                                                                            if(progressDialog.isShowing()){
-                                                                                                progressDialog.dismiss();
-                                                                                                Intent slideactivity = new Intent(MyCart.this, OrderStatus.class);
-                                                                                                Bundle bndlanimation =
-                                                                                                        ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
-                                                                                                startActivity(slideactivity, bndlanimation);
+                                                                                            if(snackbar.isShown()){
+                                                                                                if(progressDialog.isShowing()){
+                                                                                                    progressDialog.dismiss();
+                                                                                                    Intent slideactivity = new Intent(MyCart.this, OrderStatus.class);
+                                                                                                    Bundle bndlanimation =
+                                                                                                            ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                                                                                                    startActivity(slideactivity, bndlanimation);
+                                                                                                }
                                                                                             }
 
                                                                                         }
@@ -443,6 +447,9 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                                                                                 }).addOnFailureListener(new OnFailureListener() {
                                                                                     @Override
                                                                                     public void onFailure(@NonNull Exception exception) {
+                                                                                        if(progressDialog.isShowing()){
+                                                                                            progressDialog.dismiss();
+                                                                                        }
                                                                                         // Uh-oh, an error occurred!
                                                                                         Toast.makeText(MyCart.this, "Error: " + exception, Toast.LENGTH_SHORT)
                                                                                                 .show();
@@ -471,6 +478,7 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
 
 
                                                         } catch (Exception e) {
+
                                                             emptyTag.setText("Failed");
                                                             emptyTag.setVisibility(VISIBLE);
                                                         }
@@ -478,6 +486,9 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
 
                                                     @Override
                                                     public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                        if(progressDialog.isShowing()){
+                                                            progressDialog.dismiss();
+                                                        }
                                                         Toast.makeText(MyCart.this, "Error: " + databaseError, Toast.LENGTH_SHORT).show();
                                                     }
                                                 } );

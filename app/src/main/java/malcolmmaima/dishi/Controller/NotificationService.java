@@ -144,7 +144,7 @@ public class NotificationService extends Service {
 
                         Thread.sleep(1000);
                     } catch (Exception e) {
-                        Log.d(TAG, e.getMessage());
+                        //Log.d(TAG, e.getMessage());
                     }
                     if(!isRunning){
                         break;
