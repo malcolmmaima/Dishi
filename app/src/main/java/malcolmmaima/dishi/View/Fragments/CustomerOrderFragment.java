@@ -304,7 +304,7 @@ public class CustomerOrderFragment extends Fragment {
                                             try {
 
                                                 if(filter > distance(myLat[0], myLong[0], provlat[0], provlon[0], "K")){
-                                                    if(orderDetails.providerNumber != myPhone){ //make sure my menus are not on my filter
+                                                    if(orderDetails.providerNumber.equals(myPhone) == false){ //make sure my menus are not on my filter
 
                                                         //filter duplicates from the list
                                                         if(list.contains(orderDetails.key)){
@@ -420,7 +420,7 @@ public class CustomerOrderFragment extends Fragment {
                 //emptyTag.setText("Loading");
 
                 //Loop through the mymenu child node and get menu items, assign values to our ProductDetails model
-                menusRef.addValueEventListener(new ValueEventListener() {
+                menusRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         int counter = 0;
@@ -487,7 +487,7 @@ public class CustomerOrderFragment extends Fragment {
                                             try {
 
                                                 if(filter > distance(myLat[0], myLong[0], provlat[0], provlon[0], "K")){
-                                                    if(orderDetails.providerNumber != myPhone){ //make sure my menus are not on my filter
+                                                    if(orderDetails.providerNumber.equals(myPhone) == false){ //make sure my menus are not on my filter
 
                                                         //filter duplicates from the list
                                                         if(list.contains(orderDetails.key)){

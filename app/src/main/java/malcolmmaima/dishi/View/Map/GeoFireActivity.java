@@ -63,7 +63,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
     boolean notifSent = false;
     VerticalSeekBar zoomMap;
     DatabaseReference myRef;
-    String myPhone, accType, nduthi_phone, message;
+    String myPhone, accType, nduthi_phone, message, callMsg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +79,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
         nduthi_phone = getIntent().getStringExtra("nduthi_phone");
 
         message = "Order delivered?";
+        callMsg = "Call?";
 
         callNduthi.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,7 +87,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
 
                 final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(v.getContext())
                         //set message, title, and icon
-                        .setMessage("Call Nduthi?")
+                        .setMessage(callMsg)
                         //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
                         //set three option buttons
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -310,6 +311,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
 
                     if(accType.equals("1")){//Customer
                         message = "Has nduthi delivered your order?";
+                        callMsg = "Call nduthi guy?";
                         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nduthiLat,nduthiLng), zoomLevel));
                         if(distance < 200 && notifSent == false){
                             sendNotification("Order is "+distance+"m away");
@@ -322,8 +324,8 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                     }
 
                     if(accType.equals("3")){//nduthi
-
                         message = "Have you successfully made the delivery?";
+                        callMsg = "Call customer?";
 
                         if(distance < 200 && notifSent == false){
                             sendNotification("Customer is "+distance+"m away");
