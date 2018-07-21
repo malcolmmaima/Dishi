@@ -197,7 +197,7 @@ public class OrderStatus extends AppCompatActivity {
                             for (DataSnapshot dataSnapshot2 : dataSnapshot.getChildren()){
                                 //Toast.makeText(OrderStatus.this, "dtSnap: " + dataSnapshot2.getKey(), Toast.LENGTH_LONG).show();
                                 OrderDetails orderDetails = dataSnapshot2.getValue(OrderDetails.class); //Assign values to model
-                                orderDetails.providerName = dataSnapshot2.child("provider").getValue(String.class);
+                                orderDetails.providerName = dataSnapshot2.child("providerName").getValue(String.class);
 
                                 String prices = orderDetails.getPrice();
                                 temp = Integer.parseInt(prices) + temp;

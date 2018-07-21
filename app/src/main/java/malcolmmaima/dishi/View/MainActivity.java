@@ -209,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
                 if (fabbutton.getTag().equals(getResources().getString(R.string.tag_verify))) {
                     if (!codeed.getText().toString().trim().isEmpty() && !mVerified) {
                         progressDialog.setMessage("Please wait...");
-                        progressDialog.setTitle(null);
+                        progressDialog.setTitle("Verifying");
                         progressDialog.setCancelable(false);
                         progressDialog.show();
                         PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, codeed.getText().toString().trim());

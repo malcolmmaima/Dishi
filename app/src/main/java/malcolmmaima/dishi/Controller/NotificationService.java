@@ -87,6 +87,7 @@ public class NotificationService extends Service {
                         String myPhone = user.getPhoneNumber(); //Current logged in user phone number
 
                         final DatabaseReference ref = FirebaseDatabase.getInstance().getReference(myPhone + "/pending");
+                        final DatabaseReference reqRide = FirebaseDatabase.getInstance().getReference(myPhone + "/request_ride");
 
                         ref.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
@@ -144,22 +145,29 @@ public class NotificationService extends Service {
                                     }
                                 }
 
-                            private void sendNotification(String s) {
-                                Notification.Builder builder = new Notification.Builder(NotificationService.this)
-                                        .setSmallIcon(R.drawable.logo)
-                                        .setContentTitle("Dishi")
-                                        .setContentText(s);
 
-                                NotificationManager manager = (NotificationManager)NotificationService.this.getSystemService(Context.NOTIFICATION_SERVICE);
-                                Intent intent = new Intent(getApplicationContext(), OrderStatus.class);
-                                PendingIntent contentIntent = PendingIntent.getActivity(NotificationService.this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-                                builder.setContentIntent(contentIntent);
-                                Notification notification = builder.build();
-                                notification.flags |= Notification.FLAG_AUTO_CANCEL;
-                                notification.defaults |= Notification.DEFAULT_SOUND;
-                                notification.icon |= Notification.BADGE_ICON_LARGE;
 
-                                manager.notify(new Random().nextInt(), notification);
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+                        //Check to see if nduthi has confirmed order request
+                        reqRide.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                try {
+                                    for(DataSnapshot rideStat : dataSnapshot.getChildren()){
+                                        if(rideStat.child("status").getValue().equals("transit") && counter < 1){
+                                            sendNotification(rideStat.child("name").getValue()
+                                                    + " has confirmed nduthi ride!");
+                                            counter = counter + 1;
+                                        }
+                                    }
+                                } catch (Exception e){
+
+                                }
                             }
 
                             @Override
@@ -179,6 +187,24 @@ public class NotificationService extends Service {
             }
             //stops the service for the start id.
             stopSelfResult(msg.arg1);
+        }
+
+        private void sendNotification(String s) {
+            Notification.Builder builder = new Notification.Builder(NotificationService.this)
+                    .setSmallIcon(R.drawable.logo)
+                    .setContentTitle("Dishi")
+                    .setContentText(s);
+
+            NotificationManager manager = (NotificationManager)NotificationService.this.getSystemService(Context.NOTIFICATION_SERVICE);
+            Intent intent = new Intent(getApplicationContext(), OrderStatus.class);
+            PendingIntent contentIntent = PendingIntent.getActivity(NotificationService.this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+            builder.setContentIntent(contentIntent);
+            Notification notification = builder.build();
+            notification.flags |= Notification.FLAG_AUTO_CANCEL;
+            notification.defaults |= Notification.DEFAULT_SOUND;
+            notification.icon |= Notification.BADGE_ICON_LARGE;
+
+            manager.notify(new Random().nextInt(), notification);
         }
     }
 }
