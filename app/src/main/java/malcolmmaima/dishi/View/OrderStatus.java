@@ -359,7 +359,7 @@ public class OrderStatus extends AppCompatActivity {
                                                     myCartDetails.key = mycart.getKey();
 
                                                     provider = db.getReference(myCartDetails.getProviderNumber() + "/orders/"+myCartDetails.key);
-                                                    provider.child("status").setValue("cancelled").addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    provider.child("status").setValue("abort").addOnSuccessListener(new OnSuccessListener<Void>() {
 
                                                         @Override
                                                         public void onSuccess(Void aVoid) {

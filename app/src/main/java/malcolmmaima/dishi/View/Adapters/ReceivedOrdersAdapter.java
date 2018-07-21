@@ -246,6 +246,12 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                 if(status[position].equals("pending")){
                     holder.acceptBtn.setText("Confirm");
                 }
+
+                if(status[position].equals("abort")){
+                    holder.acceptBtn.setText("client Cancelled");
+                    holder.acceptBtn.setEnabled(false);
+                    // after this will put a timer below, max 2 mins then delete aborted order from list
+                }
                 } catch (Exception e){
                     //Toast.makeText(context, "Error: " + e, Toast.LENGTH_SHORT).show();
                 }
