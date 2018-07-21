@@ -263,7 +263,8 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
             @Override
             public void onClick(View v) {
                 final ProgressDialog progressDialog = new ProgressDialog(MyCart.this);
-                progressDialog.setMessage("Checking orders queue...");
+                progressDialog.setMessage("processing...");
+                progressDialog.setCancelable(true);
                 progressDialog.show();
                 //First check if there's an ongoing delivery confirmed by nduthi guy taking place
                 currentOrderRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -300,46 +301,80 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                             } else {
 
                                 if (multiple_providers == true) {
-                                    //Toast.makeText(MyCart.this, "You're about to order from multiple providers!", Toast.LENGTH_SHORT).show();
-                                    nduthisNearby(); //Initialize nduthisNearby() search
-                                    final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(MyCart.this)
-                                            //set message, title, and icon
-                                            .setTitle("Search Nduthi")
-                                            .setMessage("You're about to order from multiple providers. Search Nduthi nearby to fulfil the orders")
-                                            //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
-                                            //set three option buttons
-                                            .setCancelable(false)
-                                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int whichButton) {
-                                                    // Setting progressDialog Title.
-                                                    progressDialog.setTitle("Searching...");
-                                                    // Showing progressDialog.
-                                                    progressDialog.show();
-                                                    progressDialog.setCancelable(false);
-
-                                                    completeOrder = true;
-
-                                                    if(nduthisNearby() == false){
-                                                        progressDialog.dismiss();
-                                                    }
-                                                    else {
-                                                        nduthisNearby();
-                                                    }
-
-                                                }
-                                            })//setPositiveButton
+                                    myPendingOrders.addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            if(dataSnapshot.hasChildren()){
+                                                //There exists pending orders
+                                                //Toast.makeText(MyCart.this, "You're about to order from multiple providers!", Toast.LENGTH_SHORT).show();
+                                                nduthisNearby(); //Initialize nduthisNearby() search
+                                                final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(MyCart.this)
+                                                        //set message, title, and icon
+                                                        .setTitle("Active order")
+                                                        .setMessage("You have pending orders!")
+                                                        //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
+                                                        //set three option buttons
+                                                        .setCancelable(false)
+                                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                            public void onClick(DialogInterface dialog, int whichButton) {
 
 
-                                            .setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int whichButton) {
-                                                    Toast.makeText(MyCart.this, "Orders from multiple providers must be filfilled by a nduthi", Toast.LENGTH_LONG).show();
+                                                            }
+                                                        })//setPositiveButton
 
-                                                }
-                                            })//setNegativeButton
+                                                        .create();
+                                                myQuittingDialogBox.show();
+                                            } else {
+                                                //No pending orders
 
-                                            .create();
-                                    myQuittingDialogBox.show();
+                                                //Toast.makeText(MyCart.this, "You're about to order from multiple providers!", Toast.LENGTH_SHORT).show();
+                                                nduthisNearby(); //Initialize nduthisNearby() search
+                                                final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(MyCart.this)
+                                                        //set message, title, and icon
+                                                        .setTitle("Search Nduthi")
+                                                        .setMessage("You're about to order from multiple providers. Search Nduthi nearby to fulfil the orders")
+                                                        //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
+                                                        //set three option buttons
+                                                        .setCancelable(false)
+                                                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                                            public void onClick(DialogInterface dialog, int whichButton) {
 
+                                                                nduthisNearby();
+                                                                // Setting progressDialog Title.
+                                                                progressDialog.setMessage("Searching...");
+                                                                // Showing progressDialog.
+                                                                progressDialog.setCancelable(false);
+                                                                progressDialog.show();
+
+                                                                completeOrder = true;
+
+                                                                if(nduthisNearby() == false){
+                                                                    progressDialog.dismiss();
+                                                                }
+
+                                                            }
+                                                        })//setPositiveButton
+
+
+                                                        .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                                            public void onClick(DialogInterface dialog, int whichButton) {
+                                                                Toast.makeText(MyCart.this, "Orders from multiple providers must be fulfilled by a nduthi", Toast.LENGTH_LONG).show();
+
+                                                            }
+                                                        })//setNegativeButton
+
+                                                        .create();
+                                                myQuittingDialogBox.show();
+
+
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
 
                                 } else {
                                     //First check if there's an ongoing delivery confirmed by nduthi guy taking place
@@ -543,6 +578,9 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
     }
 
     public boolean nduthisNearby(){
+        progressDialog.setMessage("Searching...");
+        progressDialog.setCancelable(true);
+        progressDialog.show();
         ///////
         //Loop through all the users
         nduthisRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -612,8 +650,8 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                                 }
                             }
                             String key = myRef.push().getKey();
-                            //Search within a 500m radius for nduthis, if you're from USIU it's motorbike... my bad
-                            if(distance < 500){
+                            //Search within a 1km radius for nduthis, if you're from USIU it's motorbike... my bad
+                            if(distance <= 1000){
                                 nduthiNearMeList.add(nduthiNearMe);
                                 myRef.child("nearby_nduthis").child(dataSnapshot1.getKey().toString()).setValue(nduthiNearMe).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
@@ -629,8 +667,10 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                                     progressDialog.dismiss();
                                 }
 
-                                Toast.makeText(MyCart.this, "No nduthi near you!", Toast.LENGTH_LONG).show();
+                                //Toast.makeText(MyCart.this, "No nduthi near you!", Toast.LENGTH_LONG).show();
                                 avail_nduthi = false;
+
+                                Toast.makeText(MyCart.this, "No nduthi near you!", Toast.LENGTH_SHORT).show();
 
                             }
                             //Toast.makeText(MyCart.this, "nduthiNearMeList size: " + nduthiNearMeList.size(), Toast.LENGTH_SHORT).show();

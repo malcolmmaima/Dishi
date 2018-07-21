@@ -330,8 +330,6 @@ public class CustomerOrderFragment extends Fragment {
                             }
 
                         } catch (Exception e){
-                            emptyTag.setText("Failed");
-                            emptyTag.setVisibility(v.VISIBLE);
                         }
 
                     }
@@ -515,8 +513,6 @@ public class CustomerOrderFragment extends Fragment {
                             }
 
                         } catch (Exception e){
-                            emptyTag.setText("Failed");
-                            emptyTag.setVisibility(v.VISIBLE);
                         }
 
                     }

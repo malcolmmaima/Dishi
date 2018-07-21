@@ -62,7 +62,7 @@ public class NduthiAdapter extends RecyclerView.Adapter<NduthiAdapter.MyHolder>{
 
     public void onBindViewHolder(final MyHolder holder, final int position) {
         final NduthiNearMe nduthiNearMe = listdata.get(position);
-        final DatabaseReference myRef, mylocationRef, nduthiRef, requestRideRef, nduthiGuyRef, nduthiRequests;
+        final DatabaseReference myRef, mylocationRef, nduthiRef, requestRideRef, nduthiRideReqs, nduthiGuyRef, nduthiRequests;
         FirebaseDatabase db;
 
         final Double[] provlon = new Double[listdata.size()];
@@ -82,6 +82,7 @@ public class NduthiAdapter extends RecyclerView.Adapter<NduthiAdapter.MyHolder>{
 
         db = FirebaseDatabase.getInstance();
         requestRideRef = db.getReference(nduthiNearMe.phone + "/request_ride");
+        nduthiRideReqs = db.getReference(myPhone + "/request_ride");
         nduthiGuyRef = db.getReference(nduthiNearMe.phone);
         nduthiRequests = db.getReference(nduthiNearMe.phone + "/request_menus"+"/request_"+myPhone);
 
@@ -100,18 +101,21 @@ public class NduthiAdapter extends RecyclerView.Adapter<NduthiAdapter.MyHolder>{
                             //Default state is green meaning is active and ready to receive requests
                             Glide.with(context).load(ic_delivered_order).into(holder.nduthiStat);
                             holder.nduthiStatMsg.setText("Ready");
+                            holder.selectBtn.setEnabled(true);
                         }
 
                         //Once confimed request, set status to pending as nduthi goes to collect the orders
                         if (dataSnapshot.getValue().equals("true")) {
                             Glide.with(context).load(ic_pending_order).into(holder.nduthiStat);
                             holder.nduthiStatMsg.setText("engaged");
+                            holder.selectBtn.setEnabled(false);
                         }
 
                         //Is actively in trnsit delivering an order
                         if (dataSnapshot.getValue().equals("transit")) {
                             Glide.with(context).load(ic_order_in_transit).into(holder.nduthiStat);
                             holder.nduthiStatMsg.setText("Busy");
+                            holder.selectBtn.setEnabled(false);
                         }
                     } catch (Exception e){
 
@@ -163,7 +167,7 @@ public class NduthiAdapter extends RecyclerView.Adapter<NduthiAdapter.MyHolder>{
 
         holder.selectBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
 
                 //Send my profile pic with the order request
                 myRef.child("profilepic").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -200,46 +204,90 @@ public class NduthiAdapter extends RecyclerView.Adapter<NduthiAdapter.MyHolder>{
                         //set three option buttons
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                //Send request to nduthi guy for delivery of the said products
-                                final String key = requestRideRef.push().getKey();
-                                RequestNduthi requestNduthi = new RequestNduthi();
-                                requestNduthi.status = "pending";
-                                requestNduthi.name = myName[0];
-                                requestNduthi.phone = myPhone;
-                                requestNduthi.profilepic = profilepic[0];
-                                requestRideRef.child(key).setValue(requestNduthi).addOnSuccessListener(new OnSuccessListener<Void>() {
+
+                                nduthiRequests.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
-                                    public void onSuccess(Void aVoid) {
-                                        //Send the items I want to the nduthi guy so he can view them as well
-                                        myRef.child("mycart").addListenerForSingleValueEvent(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                for(DataSnapshot cart : dataSnapshot.getChildren()){
-                                                    final MyCartDetails myCartDetails = cart.getValue(MyCartDetails.class);
-                                                    //Toast.makeText(context, "cart=> provider:" + myCartDetails.providerNumber
-                                                    //        + "\n,item: " + myCartDetails.getName(), Toast.LENGTH_SHORT).show();
-
-                                                    String key = nduthiRequests.push().getKey();
-                                                    nduthiRequests.child(key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                        @Override
-                                                        public void onSuccess(Void aVoid) {
-                                                            //My cart items sent to nduthi guy
-                                                            Toast.makeText(context, "Request sent to "
-                                                                    + nduthiNearMe.name + "! wait for confirmation or call nduthi!", Toast.LENGTH_SHORT).show();
-
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        if(dataSnapshot.hasChildren()){
+                                            //active order waiting for confirmation from nduthi guy
+                                            final AlertDialog activeRequestBox = new AlertDialog.Builder(v.getContext())
+                                                    //set message, title, and icon
+                                                    .setTitle("Active request")
+                                                    .setCancelable(false)
+                                                    .setMessage("You have an active request awaiting confirmation")
+                                                    //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
+                                                    //set three option buttons
+                                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                        public void onClick(DialogInterface dialog, int whichButton) {
                                                             holder.selectBtn.setEnabled(false);
-                                                            holder.selectBtn.setText("Sent");
+                                                        }
+                                                    }).create();
+                                            activeRequestBox.show();
+
+                                        } else {
+                                            //Send request to nduthi guy for delivery of the said products
+                                            final String key = requestRideRef.push().getKey();
+                                            RequestNduthi requestNduthi = new RequestNduthi();
+                                            requestNduthi.status = "pending";
+                                            requestNduthi.name = myName[0];
+                                            requestNduthi.phone = myPhone;
+                                            requestNduthi.profilepic = profilepic[0];
+                                            nduthiRideReqs.child(key).setValue(requestNduthi);
+                                            requestRideRef.child(key).setValue(requestNduthi).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    //Send the items I want to the nduthi guy so he can view them as well
+                                                    myRef.child("mycart").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                            for(DataSnapshot cart : dataSnapshot.getChildren()){
+                                                                final MyCartDetails myCartDetails = cart.getValue(MyCartDetails.class);
+                                                                //Toast.makeText(context, "cart=> provider:" + myCartDetails.providerNumber
+                                                                //        + "\n,item: " + myCartDetails.getName(), Toast.LENGTH_SHORT).show();
+
+                                                                String key = nduthiRequests.push().getKey();
+                                                                nduthiRequests.child(key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                    @Override
+                                                                    public void onSuccess(Void aVoid) {
+                                                                        //My cart items sent to nduthi guy
+
+                                                                        holder.selectBtn.setEnabled(false);
+                                                                        holder.selectBtn.setText("Sent");
+
+                                                                        final AlertDialog requestSentBox = new AlertDialog.Builder(v.getContext())
+                                                                                //set message, title, and icon
+                                                                                .setTitle("Request sent")
+                                                                                .setCancelable(false)
+                                                                                .setMessage("Request sent to "
+                                                                                        + nduthiNearMe.name + "! wait for confirmation or call nduthi!")
+                                                                                //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
+                                                                                //set three option buttons
+                                                                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                                                    public void onClick(DialogInterface dialog, int whichButton) {
+                                                                                        //do nothing
+                                                                                    }
+                                                                                })
+                                                                                .create();
+                                                                        requestSentBox.show();
+
+                                                                    }
+                                                                });
+                                                            }
+                                                        }
+
+                                                        @Override
+                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
                                                         }
                                                     });
                                                 }
-                                            }
+                                            });
+                                        }
+                                    }
 
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                            }
-                                        });
                                     }
                                 });
 

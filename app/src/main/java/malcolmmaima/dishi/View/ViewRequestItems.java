@@ -95,7 +95,7 @@ public class ViewRequestItems extends AppCompatActivity {
         final String itemPhone = getIntent().getStringExtra("customer_phone");
         final String customerName = getIntent().getStringExtra("customer_name");
         final String itemCount = getIntent().getStringExtra("item_count");
-        String key = getIntent().getStringExtra("key");
+        final String key = getIntent().getStringExtra("key");
         String profilePic = getIntent().getStringExtra("profile_pic");
 
         customername.setText(customerName);
@@ -191,6 +191,7 @@ public class ViewRequestItems extends AppCompatActivity {
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 //Change request status to transit
+                                customerDelRef.child("request_ride").child(key).child("status").setValue("transit");
                                 requestStatus.child("status").setValue("transit").addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {

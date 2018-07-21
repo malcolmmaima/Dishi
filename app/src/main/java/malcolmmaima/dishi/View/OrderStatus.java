@@ -357,9 +357,10 @@ public class OrderStatus extends AppCompatActivity {
                                                 for (DataSnapshot mycart : dataSnapshot.getChildren()) {
                                                     final MyCartDetails myCartDetails = mycart.getValue(MyCartDetails.class);
                                                     myCartDetails.key = mycart.getKey();
+                                                    myCartDetails.status = "abort";
 
-                                                    provider = db.getReference(myCartDetails.getProviderNumber() + "/orders/"+myCartDetails.key);
-                                                    provider.child("status").setValue("abort").addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    provider = db.getReference(myCartDetails.getProviderNumber() + "/orders");
+                                                    provider.child(myCartDetails.key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
 
                                                         @Override
                                                         public void onSuccess(Void aVoid) {

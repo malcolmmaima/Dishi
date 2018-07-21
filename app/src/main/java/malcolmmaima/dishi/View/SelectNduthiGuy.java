@@ -89,7 +89,6 @@ public class SelectNduthiGuy extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 nduthis = new ArrayList<>();
-                String phone;
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                     NduthiNearMe nduthiNearMe = dataSnapshot1.getValue(NduthiNearMe.class); //Assign values to model
                     nduthiNearMe.phone = dataSnapshot1.getKey();
