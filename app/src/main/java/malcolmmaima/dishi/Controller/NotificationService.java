@@ -114,7 +114,33 @@ public class NotificationService extends Service {
                                             } catch (Exception e){
 
                                             }
+
+
                                         }
+
+                                    else if(receivedOrders.status.equals("cancelled") && receivedOrders.sent == false ) {
+                                        try {
+
+                                            receivedOrders.sent = true;
+                                            ref.child(receivedOrders.key).setValue(receivedOrders).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    sendNotification("Order " + receivedOrders.name + " cancelled");
+                                                }
+                                            }).addOnFailureListener(new OnFailureListener() {
+
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    // Write failed
+                                                }
+                                            });
+
+                                        } catch (Exception e){
+
+                                        }
+
+
+                                    }
                                     }
                                 }
 

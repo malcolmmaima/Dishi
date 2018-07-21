@@ -65,6 +65,7 @@ public class OrderStatus extends AppCompatActivity {
     DatabaseReference myPendingOrders, myRef, confirmedNduthi, getConfirmedNduthi;
     FirebaseDatabase db;
     FirebaseUser user;
+    String order_status;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +79,7 @@ public class OrderStatus extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         setTitle("Delivery Status");
+        order_status = "pending";
 
         //Back button on toolbar
         topToolBar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -123,6 +125,9 @@ public class OrderStatus extends AppCompatActivity {
                         myCartDetails.key = mycart.getKey();
                         String prices = myCartDetails.getPrice();
                         temp = Integer.parseInt(prices) + temp;
+                        if(myCartDetails.status.equals("confirmed")){
+                            order_status = "confirmed";
+                        }
                         myBasket.add(myCartDetails);
                         trackRestaurant = myCartDetails.providerNumber;
                         //Toast.makeText(OrderStatus.this, myCartDetails.getName() + " status: " + myCartDetails.status, Toast.LENGTH_SHORT).show();
@@ -317,70 +322,121 @@ public class OrderStatus extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
 
             if (id == R.id.cancel_order) {
-                final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(OrderStatus.this)
-                        //set message, title, and icon
-                        .setTitle("Cancel Order")
-                        .setMessage("Are you sure you want to cancel your order?")
-                        //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
-                        //set three option buttons
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                myPendingOrders.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        ShoppingListAdapter recycler = new ShoppingListAdapter(OrderStatus.this, nduthiConfirmed);
-                                        RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
-                                        recyclerView2.setLayoutManager(layoutmanager);
-                                        recyclerView2.setItemAnimator(new DefaultItemAnimator());
-                                        recyclerView2.setAdapter(recycler);
+                //Toast.makeText(this, "order status: "+ order_status, Toast.LENGTH_LONG).show();
+                if(order_status.equals("confirmed")){
+                    final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(OrderStatus.this)
+                            //set message, title, and icon
+                            .setTitle("Active order")
+                            .setMessage("You have an active order! call the provider to cancel the order.")
+                            //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
+                            //set three option buttons
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
 
-                                        RecyclerView.LayoutManager layoutmanager2 = new LinearLayoutManager(OrderStatus.this);
-                                        recyclerview.setLayoutManager(layoutmanager2);
-                                        recyclerview.setItemAnimator(new DefaultItemAnimator());
-                                        recyclerview.setAdapter(recycler);
+                                }
+                            })//setPositiveButton
 
-                                        emptyTag.setVisibility(VISIBLE);
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception exception) {
-                                        // Uh-oh, an error occurred!
-                                        Toast.makeText(OrderStatus.this, "error: " + exception, Toast.LENGTH_SHORT)
-                                                .show();
-                                    }
-                                });
+                            .create();
+                    myQuittingDialogBox.show();
+                } else {
 
-                                confirmedNduthi.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        ShoppingListAdapter recycler = new ShoppingListAdapter(OrderStatus.this, nduthiConfirmed);
-                                        RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
-                                        recyclerView2.setLayoutManager(layoutmanager);
-                                        recyclerView2.setItemAnimator(new DefaultItemAnimator());
-                                        recyclerView2.setAdapter(recycler);
+                    final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(OrderStatus.this)
+                            //set message, title, and icon
+                            .setTitle("Cancel Order")
+                            .setMessage("Are you sure you want to cancel your order?")
+                            //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
+                            //set three option buttons
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    myPendingOrders.addValueEventListener(new ValueEventListener() {
+                                        //update my providers of the order cancellation
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            try {
+                                                DatabaseReference provider;
+                                                for (DataSnapshot mycart : dataSnapshot.getChildren()) {
+                                                    final MyCartDetails myCartDetails = mycart.getValue(MyCartDetails.class);
+                                                    myCartDetails.key = mycart.getKey();
 
-                                        RecyclerView.LayoutManager layoutmanager2 = new LinearLayoutManager(OrderStatus.this);
-                                        recyclerview.setLayoutManager(layoutmanager2);
-                                        recyclerview.setItemAnimator(new DefaultItemAnimator());
-                                        recyclerview.setAdapter(recycler);
+                                                    provider = db.getReference(myCartDetails.getProviderNumber() + "/orders/"+myCartDetails.key);
+                                                    provider.child("status").setValue("cancelled").addOnSuccessListener(new OnSuccessListener<Void>() {
 
-                                        emptyTag.setVisibility(VISIBLE);
-                                    }
-                                });
-                            }
-                        })//setPositiveButton
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+                                                            //Toast.makeText(OrderStatus.this, "Cancellation for " + myCartDetails.getName() + " sent to " + myCartDetails.providerNumber, Toast.LENGTH_LONG).show();
+
+                                                            myPendingOrders.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                @Override
+                                                                public void onSuccess(Void aVoid) {
+                                                                    ShoppingListAdapter recycler = new ShoppingListAdapter(OrderStatus.this, nduthiConfirmed);
+                                                                    RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
+                                                                    recyclerView2.setLayoutManager(layoutmanager);
+                                                                    recyclerView2.setItemAnimator(new DefaultItemAnimator());
+                                                                    recyclerView2.setAdapter(recycler);
+
+                                                                    RecyclerView.LayoutManager layoutmanager2 = new LinearLayoutManager(OrderStatus.this);
+                                                                    recyclerview.setLayoutManager(layoutmanager2);
+                                                                    recyclerview.setItemAnimator(new DefaultItemAnimator());
+                                                                    recyclerview.setAdapter(recycler);
+
+                                                                    emptyTag.setVisibility(VISIBLE);
+                                                                }
+                                                            }).addOnFailureListener(new OnFailureListener() {
+                                                                @Override
+                                                                public void onFailure(@NonNull Exception exception) {
+                                                                    // Uh-oh, an error occurred!
+                                                                    Toast.makeText(OrderStatus.this, "error: " + exception, Toast.LENGTH_SHORT)
+                                                                            .show();
+                                                                }
+                                                            });
+                                                        }
+                                                    });
+
+                                                }
+                                            } catch (Exception e){
+
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
 
 
-                        .setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                //Do not delete
-                                //Toast.makeText(OrderStatus.this, "No", Toast.LENGTH_SHORT).show();
+                                    confirmedNduthi.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            ShoppingListAdapter recycler = new ShoppingListAdapter(OrderStatus.this, nduthiConfirmed);
+                                            RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
+                                            recyclerView2.setLayoutManager(layoutmanager);
+                                            recyclerView2.setItemAnimator(new DefaultItemAnimator());
+                                            recyclerView2.setAdapter(recycler);
 
-                            }
-                        })//setNegativeButton
+                                            RecyclerView.LayoutManager layoutmanager2 = new LinearLayoutManager(OrderStatus.this);
+                                            recyclerview.setLayoutManager(layoutmanager2);
+                                            recyclerview.setItemAnimator(new DefaultItemAnimator());
+                                            recyclerview.setAdapter(recycler);
 
-                        .create();
-                myQuittingDialogBox.show();
+                                            emptyTag.setVisibility(VISIBLE);
+                                        }
+                                    });
+                                }
+                            })//setPositiveButton
+
+
+                            .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    //Do not delete
+                                    //Toast.makeText(OrderStatus.this, "No", Toast.LENGTH_SHORT).show();
+
+                                }
+                            })//setNegativeButton
+
+                            .create();
+                    myQuittingDialogBox.show();
+                }
             }
 
         return super.onOptionsItemSelected(item);
