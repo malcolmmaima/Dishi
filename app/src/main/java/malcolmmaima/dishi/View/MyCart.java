@@ -218,8 +218,11 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                     }
 
             } catch (Exception e){
-                emptyTag.setText("Failed");
-                emptyTag.setVisibility(VISIBLE);
+                    if(progressDialog.isShowing()){
+                        progressDialog.dismiss();
+                    }
+                    emptyTag.setText("Failed");
+                    emptyTag.setVisibility(VISIBLE);
                     Toast.makeText(MyCart.this, e.toString(), Toast.LENGTH_SHORT).show();
                 }
             }
@@ -372,7 +375,9 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
 
                                         @Override
                                         public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                                            if(progressDialog.isShowing()){
+                                                progressDialog.dismiss();
+                                            }
                                         }
                                     });
 
@@ -462,18 +467,21 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
 
                                                                                         //Toast.makeText(MyCart.this, "Items: " + remainingOrders[0], Toast.LENGTH_SHORT).show();
                                                                                         if (remainingOrders[0] == 0) {
+                                                                                            if(progressDialog.isShowing()){
+                                                                                                progressDialog.dismiss();
+                                                                                            }
                                                                                             Snackbar snackbar = Snackbar
                                                                                                     .make(findViewById(R.id.parentlayout), "Orders sent! Check Order status", Snackbar.LENGTH_LONG);
 
                                                                                             snackbar.show();
                                                                                             if(snackbar.isShown()){
-                                                                                                if(progressDialog.isShowing()){
+
                                                                                                     progressDialog.dismiss();
                                                                                                     Intent slideactivity = new Intent(MyCart.this, OrderStatus.class);
                                                                                                     Bundle bndlanimation =
                                                                                                             ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
                                                                                                     startActivity(slideactivity, bndlanimation);
-                                                                                                }
+
                                                                                             }
 
                                                                                         }
@@ -494,6 +502,9 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                                                                         }).addOnFailureListener(new OnFailureListener() {
                                                                             @Override
                                                                             public void onFailure(@NonNull Exception exception) {
+                                                                                if(progressDialog.isShowing()){
+                                                                                    progressDialog.dismiss();
+                                                                                }
                                                                                 // Uh-oh, an error occurred!
                                                                                 Toast.makeText(MyCart.this, "Error: " + exception, Toast.LENGTH_SHORT)
                                                                                         .show();
@@ -505,6 +516,9 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                                                                         .addOnFailureListener(new OnFailureListener() {
                                                                             @Override
                                                                             public void onFailure(@NonNull Exception e) {
+                                                                                if(progressDialog.isShowing()){
+                                                                                    progressDialog.dismiss();
+                                                                                }
                                                                                 // Write failed
                                                                                 Toast.makeText(MyCart.this, "Error: " + e.toString(), Toast.LENGTH_LONG).show();
                                                                             }
@@ -516,6 +530,9 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
 
                                                             emptyTag.setText("Failed");
                                                             emptyTag.setVisibility(VISIBLE);
+                                                            if(progressDialog.isShowing()){
+                                                                progressDialog.dismiss();
+                                                            }
                                                         }
                                                     }
 
@@ -532,7 +549,9 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
 
                                         @Override
                                         public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                                            if(progressDialog.isShowing()){
+                                                progressDialog.dismiss();
+                                            }
                                         }
                                     });
 
@@ -631,6 +650,9 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                                         distance = distance(myLat, myLong, nduthiLat, nduthiLong, "K");
                                         distance = distance * 1000; //Convert to meters
                                     } catch (Exception e){
+                                        if(progressDialog.isShowing()){
+                                            progressDialog.dismiss();
+                                        }
 
                                     }
                                 }
@@ -681,6 +703,9 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
 
                 } catch (Exception e){
                     //Toast.makeText(MyCart.this, e.toString(), Toast.LENGTH_SHORT).show();
+                    if(progressDialog.isShowing()){
+                        progressDialog.dismiss();
+                    }
                 }
 
                 if(nduthiNearMeList.size() != 0 && completeOrder == true){
@@ -702,7 +727,9 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                 // Failed to read value
                 //  Log.w(TAG, "Failed to read value.", error.toException());
 
-                progressDialog.dismiss();
+                if(progressDialog.isShowing()){
+                    progressDialog.dismiss();
+                }
 
                 Toast.makeText(MyCart.this, "Failed, " + error, Toast.LENGTH_SHORT).show();
             }

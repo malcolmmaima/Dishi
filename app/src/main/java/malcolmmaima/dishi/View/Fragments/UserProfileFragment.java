@@ -1,6 +1,7 @@
 package malcolmmaima.dishi.View.Fragments;
 
 import android.app.ActivityOptions;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -57,6 +58,10 @@ public class UserProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_user_profile, container, false);
+        final ProgressDialog progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage("loading...");
+        progressDialog.setCancelable(true);
+        progressDialog.show();
 
         userProfileName = v.findViewById(R.id.user_profile_name);
         profilePic = v.findViewById(R.id.user_profile_photo);
@@ -75,14 +80,24 @@ public class UserProfileFragment extends Fragment {
                     String ppic = dataSnapshot.getValue(String.class);
                     //Loading image from Glide library.
                     Glide.with(getContext()).load(ppic).into(profilePic);
+                    if(progressDialog.isShowing()){
+                        progressDialog.dismiss();
+                    }
                 } catch (Exception e){
                     //Error
+                    if(progressDialog.isShowing()){
+                        progressDialog.dismiss();
+                        Toast.makeText(getContext(), "failed to load profile picture. try again", Toast.LENGTH_SHORT).show();
+                    }
                 }
 
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+                if(progressDialog.isShowing()){
+                    progressDialog.dismiss();
+                }
                 Toast.makeText(getContext(), "Database Error. Load failed!", Toast.LENGTH_SHORT).show();
                 Glide.with(getContext()).load(R.drawable.default_profile).into(profilePic);
             }
@@ -96,14 +111,23 @@ public class UserProfileFragment extends Fragment {
                     String profilename = dataSnapshot.getValue(String.class);
                     userProfileName.setText(profilename);
                     //Toast.makeText(getContext(), "Name: " + profilename, Toast.LENGTH_SHORT).show();
+                    if(progressDialog.isShowing()){
+                        progressDialog.dismiss();
+                    }
                 } catch (Exception e){
                     Toast.makeText(getContext(), "Error: " + e, Toast.LENGTH_SHORT).show();
+                    if(progressDialog.isShowing()){
+                        progressDialog.dismiss();
+                    }
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Toast.makeText(getContext(), "Error: " + databaseError, Toast.LENGTH_SHORT).show();
+                if(progressDialog.isShowing()){
+                    progressDialog.dismiss();
+                }
             }
         });
 
@@ -115,14 +139,23 @@ public class UserProfileFragment extends Fragment {
                     String bio = dataSnapshot.getValue(String.class);
                     profileBio.setText(bio);
                     //Toast.makeText(getContext(), "Name: " + profilename, Toast.LENGTH_SHORT).show();
+                    if(progressDialog.isShowing()){
+                        progressDialog.dismiss();
+                    }
                 } catch (Exception e){
                     Toast.makeText(getContext(), "Error: " + e, Toast.LENGTH_SHORT).show();
+                    if(progressDialog.isShowing()){
+                        progressDialog.dismiss();
+                    }
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Toast.makeText(getContext(), "Error: " + databaseError, Toast.LENGTH_SHORT).show();
+                if(progressDialog.isShowing()){
+                    progressDialog.dismiss();
+                }
             }
         });
 

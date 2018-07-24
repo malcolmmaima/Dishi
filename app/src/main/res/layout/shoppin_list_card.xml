@@ -73,6 +73,17 @@
             android:textColor="#666"/>
 
 
+        <ImageButton
+            android:id="@+id/restIcon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:scaleType="centerCrop"
+            android:background="@drawable/ic_store_black_48dp"
+            android:layout_marginRight="3dp"
+            android:layout_below="@id/foodDescription"
+            android:layout_toRightOf="@id/foodPic"
+
+            />
 
         <TextView
             android:layout_width="wrap_content"
@@ -80,9 +91,8 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="Provider name"
             android:id="@+id/providerName"
-            android:layout_marginLeft="5dp"
             android:layout_below="@id/foodDescription"
-            android:layout_toRightOf="@id/foodPic"
+            android:layout_toRightOf="@id/restIcon"
             android:textColor="#666"/>
 
         <RelativeLayout

@@ -76,19 +76,23 @@ public class MainActivity extends AppCompatActivity {
             DatabaseReference dbRef = db.getReference(myPhone);
 
             //Check whether user is verified, if true send them directly to MyAccountRestaurant
-            dbRef.child("verified").addListenerForSingleValueEvent(new ValueEventListener() {
+            dbRef.child("verified").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    Boolean verified = dataSnapshot.getValue(Boolean.class);
+                    try {
+                        Boolean verified = dataSnapshot.getValue(Boolean.class);
 
-                    Toast.makeText(MainActivity.this, "Verified: " + verified, Toast.LENGTH_LONG).show();
-                    if(verified == true){
-                        startActivity(new Intent(MainActivity.this,MyAccountRestaurant.class)
-                                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-                    } else {
-                        //User is not verified so have them verify their profile details first
-                        startActivity(new Intent(MainActivity.this, SetupProfile.class)
-                                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));//Load Main Activity and clear activity stack
+                        Toast.makeText(MainActivity.this, "Verified: " + verified, Toast.LENGTH_LONG).show();
+                        if (verified == true) {
+                            startActivity(new Intent(MainActivity.this, MyAccountRestaurant.class)
+                                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                        } else {
+                            //User is not verified so have them verify their profile details first
+                            startActivity(new Intent(MainActivity.this, SetupProfile.class)
+                                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));//Load Main Activity and clear activity stack
+                        }
+                    } catch (Exception e){
+
                     }
                 }
                 @Override
