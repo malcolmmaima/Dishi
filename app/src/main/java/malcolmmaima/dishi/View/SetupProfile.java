@@ -52,10 +52,10 @@ import malcolmmaima.dishi.customfonts.EditText_Roboto_Regular;
 //@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class SetupProfile extends AppCompatActivity implements com.rey.material.widget.Spinner.OnItemSelectedListener, AdapterView.OnItemSelectedListener {
 
-    Button logoutbutton, continueBtn, backButton;
+    Button continueBtn, backButton;
     private ImageView profile_pic;
 
-    EditText_Roboto_Regular userName, userBio, userEmail, changeNumber;
+    EditText_Roboto_Regular userName, userBio, userEmail;
     RadioButton maleRd, femaleRd;
     RadioGroup gender;
     Spinner accType;
@@ -115,7 +115,6 @@ public class SetupProfile extends AppCompatActivity implements com.rey.material.
         userName = findViewById(R.id.userName);
         userEmail = findViewById(R.id.emailAddress);
         userBio = findViewById(R.id.userBio);
-        changeNumber = findViewById(R.id.phoneNumber);
 
         //Profile pic
         profile_pic = findViewById(R.id.profilePic);

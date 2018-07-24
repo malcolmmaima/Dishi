@@ -348,7 +348,7 @@ public class OrderStatus extends AppCompatActivity {
                             //set three option buttons
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
-                                    myPendingOrders.addValueEventListener(new ValueEventListener() {
+                                    myPendingOrders.addListenerForSingleValueEvent(new ValueEventListener() {
                                         //update my providers of the order cancellation
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {

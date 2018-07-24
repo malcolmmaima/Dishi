@@ -207,9 +207,14 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
             myRef.child("zoom_filter").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    zoomLevel = dataSnapshot.getValue(Integer.class);
+                    try {
+                        zoomLevel = dataSnapshot.getValue(Integer.class);
 
-                    zoomMap.setProgress(zoomLevel);
+                        zoomMap.setProgress(zoomLevel);
+                    } catch (Exception e){
+                        zoomLevel = 15;
+                        zoomMap.setProgress(zoomLevel);
+                    }
                 }
 
                 @Override

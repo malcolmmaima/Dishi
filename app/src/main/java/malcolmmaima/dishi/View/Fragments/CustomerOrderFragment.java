@@ -129,12 +129,21 @@ public class CustomerOrderFragment extends Fragment {
         dbRef.child("location-filter").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                location_filter[0] = dataSnapshot.getValue(Integer.class);
+                try {
+                    location_filter[0] = dataSnapshot.getValue(Integer.class);
 
-                distanceThreshold[0] = location_filter[0];
-                initial_filter[0] = location_filter[0];
-                //Toast.makeText(context, "Fetch: " + location_filter, Toast.LENGTH_SHORT).show();
-                seekBar.setProgress(location_filter[0]);
+                    distanceThreshold[0] = location_filter[0];
+                    initial_filter[0] = location_filter[0];
+                    //Toast.makeText(context, "Fetch: " + location_filter, Toast.LENGTH_SHORT).show();
+                    seekBar.setProgress(location_filter[0]);
+                } catch (Exception e){
+                    location_filter[0] = 0;
+
+                    distanceThreshold[0] = location_filter[0];
+                    initial_filter[0] = location_filter[0];
+                    //Toast.makeText(context, "Fetch: " + location_filter, Toast.LENGTH_SHORT).show();
+                    seekBar.setProgress(location_filter[0]);
+                }
             }
 
             @Override

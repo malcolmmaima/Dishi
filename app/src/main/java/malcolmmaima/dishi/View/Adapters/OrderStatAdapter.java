@@ -96,7 +96,7 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 providerName[position] = dataSnapshot.getValue(String.class);
-                holder.providerName.setText("Provider: " + providerName[position]);
+                holder.providerName.setText(providerName[position]);
             }
 
             @Override

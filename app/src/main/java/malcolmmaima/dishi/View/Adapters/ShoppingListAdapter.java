@@ -197,7 +197,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
         holder.foodPrice.setText("Ksh "+orderDetails.getPrice());
         holder.foodName.setText(orderDetails.getName());
         holder.foodDescription.setText(orderDetails.getDescription());
-        holder.providerName.setText("Provider: " + orderDetails.providerName);
+        holder.providerName.setText(orderDetails.providerName);
 
 
         try {

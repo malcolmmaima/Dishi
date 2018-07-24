@@ -189,7 +189,7 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.MyHolder>{
         holder.foodPrice.setText("Ksh "+myCartDetails.getPrice());
         holder.foodName.setText(myCartDetails.getName());
         holder.foodDescription.setText(myCartDetails.getDescription());
-        holder.providerName.setText("Provider: " + myCartDetails.getProvider());
+        holder.providerName.setText(myCartDetails.getProvider());
 
 
         try {
