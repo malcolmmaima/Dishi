@@ -38,12 +38,22 @@ public class SelectNduthiGuy extends AppCompatActivity {
     RecyclerView recyclerview;
     DatabaseReference nduthisNearmeRef;
     List<NduthiNearMe> nduthis;
+    FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_nduthi_guy);
+        mAuth = FirebaseAuth.getInstance();
+
+        if(mAuth.getInstance().getCurrentUser() == null){
+
+            //User is not signed in, send them back to verification page
+            Toast.makeText(this, "Not logged in!", Toast.LENGTH_LONG).show();
+            startActivity(new Intent(SelectNduthiGuy.this, MainActivity.class)
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));//Load Main Activity and clear activity stack
+        }
 
         Toolbar topToolBar = findViewById(R.id.toolbar);
         setSupportActionBar(topToolBar);

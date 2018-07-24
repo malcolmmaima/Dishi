@@ -64,11 +64,22 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
     boolean multiple_providers, completeOrder, avail_nduthi;
     Double distance, myLat, myLong, nduthiLat, nduthiLong;
     ProgressDialog progressDialog ;
+    FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_cart);
+
+        mAuth = FirebaseAuth.getInstance();
+
+        if(mAuth.getInstance().getCurrentUser() == null){
+
+            //User is not signed in, send them back to verification page
+            Toast.makeText(this, "Not logged in!", Toast.LENGTH_LONG).show();
+            startActivity(new Intent(MyCart.this, MainActivity.class)
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));//Load Main Activity and clear activity stack
+        }
 
         // Assigning Id to ProgressDialog.
         progressDialog = new ProgressDialog(MyCart.this);
