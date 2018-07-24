@@ -10,12 +10,16 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.chaos.view.PinView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -41,20 +45,22 @@ import java.util.concurrent.TimeUnit;
 
 import malcolmmaima.dishi.R;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
     FirebaseAuth mAuth;
-    EditText phoneed, codeed;
+    EditText phoneed;
+    PinView codeed;
     FloatingActionButton fabbutton;
     String mVerificationId;
     TextView timertext;
+    Spinner countryCode;
     Timer timer;
     ImageView verifiedimg;
     Boolean mVerified = false;
     String phonenumber;
     private PhoneAuthProvider.ForceResendingToken mResendToken;
-    String myPhone;
+    String myPhone, countrycode;
 
     ProgressDialog progressDialog ;
 
@@ -106,6 +112,17 @@ public class MainActivity extends AppCompatActivity {
         fabbutton = findViewById(R.id.sendverifybt);
         timertext = findViewById(R.id.timertv);
         verifiedimg = findViewById(R.id.verifiedsign);
+
+        countryCode = findViewById(R.id.countryCode);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.country, android.R.layout.simple_spinner_item);
+
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        countryCode.setAdapter(adapter);
+        countryCode.setOnItemSelectedListener(MainActivity.this);
+
         mAuth = FirebaseAuth.getInstance();
 
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -188,19 +205,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (fabbutton.getTag().equals(getResources().getString(R.string.tag_send))) {
-                    if (!phoneed.getText().toString().trim().isEmpty() && phoneed.getText().toString().trim().length() >= 10) {
+
+                    if (!phoneed.getText().toString().trim().isEmpty() && phoneed.getText().toString().trim().length() >= 9) {
                         // Setting progressDialog Title.
-                        progressDialog.setTitle("Verifying...");
-                        progressDialog.setMessage("Please wait");
+                        progressDialog.setTitle("Verifying");
+                        progressDialog.setMessage("Please wait...");
                         // Showing progressDialog.
                         progressDialog.show();
                         progressDialog.setCancelable(false);
-
-                        startPhoneNumberVerification(phoneed.getText().toString().trim());
+                        startPhoneNumberVerification(countryCode.getSelectedItem().toString() + phoneed.getText().toString().trim());
                         mVerified = false;
                         fabbutton.setImageResource(R.drawable.ic_arrow_forward_white_24dp);
                         fabbutton.setTag(getResources().getString(R.string.tag_verify));
-                        phonenumber = phoneed.getText().toString();
+                        phonenumber = countryCode.getSelectedItem().toString() + phoneed.getText().toString();
                     }
                     else {
                         if(progressDialog.isShowing()){
@@ -266,7 +283,6 @@ public class MainActivity extends AppCompatActivity {
 
                 }
 
-
             }
         });
 
@@ -274,7 +290,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!phoneed.getText().toString().trim().isEmpty() && phoneed.getText().toString().trim().length() >= 10) {
-                    resendVerificationCode(phoneed.getText().toString().trim(), mResendToken);
+                    resendVerificationCode(countryCode.getSelectedItem().toString() + phoneed.getText().toString().trim(), mResendToken);
                     mVerified = false;
                     codeed.setVisibility(View.VISIBLE);
                     progressDialog.setTitle("Resending");
@@ -577,4 +593,11 @@ public class MainActivity extends AppCompatActivity {
                 token);             // ForceResendingToken from callbacks
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+    }
 }

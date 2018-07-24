@@ -35,14 +35,6 @@
         android:textColor="@android:color/white"
         android:textSize="15sp"/>
 
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:padding="15dp"
-        app:cardBackgroundColor="#FBF7F7"
-        app:cardCornerRadius="5dp"
-        app:cardElevation="5dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -50,46 +42,74 @@
             android:layout_marginTop="30dp"
             android:orientation="vertical">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingLeft="25dp"
-                android:paddingRight="25dp">
+                android:paddingRight="25dp"
+                android:background="@drawable/round"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp">
+
+                <Spinner
+                    android:entries="@array/country"
+                    android:prompt="@string/code_prompt"
+                    android:layout_width="wrap_content"
+                    android:id="@+id/countryCode"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:padding="10dp"
+                    android:layout_marginLeft="-20dp"
+                    android:layout_weight="1"/>
 
                 <EditText
                     android:id="@+id/numbered"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
                     android:layout_weight="1"
-                    android:drawableLeft="@drawable/ic_phone_black_24dp"
-                    android:drawablePadding="15dp"
-                    android:hint="+254"
-                    android:inputType="phone" />
+                    android:hint="712345678"
+                    android:padding="10dp"
+                    android:inputType="phone"
+                    android:layout_toRightOf="@id/countryCode"
+                    />
 
                 <ImageView
                     android:id="@+id/verifiedsign"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginLeft="-40dp"
+                    android:layout_marginTop="10dp"
                     android:src="@drawable/ic_check_circle_black_24dp"
-                    android:visibility="invisible" />
+                    android:visibility="invisible"
+                    android:layout_toRightOf="@id/numbered"/>
 
-            </LinearLayout>
+            </RelativeLayout>
 
-            <EditText
+            <com.chaos.view.PinView
                 android:id="@+id/verificationed"
+                style="@style/PinWidget.PinView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:inputType="number"
+                android:textColor="#fff"
+                android:textSize="20sp"
+                android:cursorVisible="true"
+                android:layout_marginTop="10dp"
+                app:cursorColor="@android:color/black"
+                app:cursorWidth="1dp"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                app:itemCount="6"
+                app:itemHeight="40dp"
+                app:itemRadius="3dp"
+                app:itemSpacing="0dp"
+                app:itemWidth="30dp"
                 android:layout_gravity="center"
-                android:layout_margin="5dp"
-                android:background="@drawable/rect_text_edit"
-                android:hint="Enter Code"
-                android:inputType="phone"
-                android:padding="10dp"
-                android:visibility="invisible" />
+                app:lineColor="@android:color/white"
+                app:lineWidth="0dp"
+                app:viewType="rectangle"
+                android:visibility="visible"/>
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/sendverifybt"
@@ -102,6 +122,7 @@
                 app:backgroundTint="@color/dot_inactive_screen1" />
 
             <TextView
+                android:textColor="#fff"
                 android:id="@+id/timertv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -111,8 +132,6 @@
                 android:textSize="20sp" />
 
         </LinearLayout>
-
-    </android.support.v7.widget.CardView>
 
 </LinearLayout>
 </ScrollView>
