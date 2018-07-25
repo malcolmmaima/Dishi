@@ -1,7 +1,10 @@
 package malcolmmaima.dishi.View.Fragments;
 
 import android.app.ActivityOptions;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -25,6 +28,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import malcolmmaima.dishi.Model.MyCartDetails;
@@ -33,7 +37,9 @@ import malcolmmaima.dishi.Model.ReceivedOrders;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.Adapters.ReceivedOrdersAdapter;
 import malcolmmaima.dishi.View.Adapters.RestaurantMenuAdapter;
+import malcolmmaima.dishi.View.Map.GeoFireActivity;
 import malcolmmaima.dishi.View.MyCart;
+import malcolmmaima.dishi.View.OrderStatus;
 
 public class ConfirmedDeliveriesFragment extends Fragment {
 
@@ -78,6 +84,7 @@ public class ConfirmedDeliveriesFragment extends Fragment {
         myDeliveries.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                int counter = 0;
                 list = new ArrayList<>();
                 int listSize = list.size(); //Bug fix, kept on refreshing menu on data change due to realtime location data.
                 //Will use this to determine if the list of menu items has changed, only refresh then
@@ -157,10 +164,29 @@ public class ConfirmedDeliveriesFragment extends Fragment {
             }
         });
 
+
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(), "Confirm payment on successful delivery", Toast.LENGTH_LONG).show();
+                /*
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                    builder.setTitle("Customers")
+                            .setItems(R.array.accounts, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // The 'which' argument contains the index position
+                                    // of the selected item
+                                    Toast.makeText(getContext(), "clicked " + users[which], Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                    builder.create();
+                    builder.show();
+
+
+                Intent slideactivity = new Intent(getContext(), GeoFireActivity.class);
+                slideactivity.putExtra("customer_phone", "+254778256039");
+                Bundle bndlanimation =
+                        ActivityOptions.makeCustomAnimation(getContext(), R.anim.animation,R.anim.animation2).toBundle();
+                startActivity(slideactivity, bndlanimation); */
 
             }
         });

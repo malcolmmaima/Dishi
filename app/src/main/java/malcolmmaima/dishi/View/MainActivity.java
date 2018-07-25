@@ -289,7 +289,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         timertext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!phoneed.getText().toString().trim().isEmpty() && phoneed.getText().toString().trim().length() >= 10) {
+                if (!phoneed.getText().toString().trim().isEmpty() && phoneed.getText().toString().trim().length() >= 9) {
                     resendVerificationCode(countryCode.getSelectedItem().toString() + phoneed.getText().toString().trim(), mResendToken);
                     mVerified = false;
                     codeed.setVisibility(View.VISIBLE);

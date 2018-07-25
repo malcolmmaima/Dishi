@@ -59,11 +59,13 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
     Circle myArea;
     Double distance;
     int zoomLevel;
+    Double trcLat;
+    Double trcLng;
     Double nduthiLat, nduthiLng;
     boolean notifSent = false;
     VerticalSeekBar zoomMap;
     DatabaseReference myRef;
-    String myPhone, accType, nduthi_phone, message, callMsg;
+    String myPhone, accType, nduthi_phone, customer_phone, message, callMsg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,7 +140,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
         //Get logged in user account type
         myRef = FirebaseDatabase.getInstance().getReference(myPhone);
 
-        myRef.child("account_type").addListenerForSingleValueEvent(new ValueEventListener() {
+        myRef.child("account_type").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 accType = dataSnapshot.getValue(String.class);
@@ -230,18 +232,19 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
     public void onMapReady(GoogleMap googleMap) {
 
         mMap = googleMap;
-        final DatabaseReference mylocationRef, nduthiGuyRef;
+        final DatabaseReference mylocationRef;
+        final DatabaseReference[] nduthiGuyRef = new DatabaseReference[1];
         FirebaseDatabase db;
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String myPhone = user.getPhoneNumber(); //Current logged in user phone number
 
         db = FirebaseDatabase.getInstance();
         mylocationRef = db.getReference(myPhone + "/location"); //loggedin user location reference
-        nduthiGuyRef = FirebaseDatabase.getInstance().getReference(nduthi_phone + "/location");
+        nduthiGuyRef[0] = FirebaseDatabase.getInstance().getReference(nduthi_phone + "/location");
 
 
-        nduthiGuyRef.child("latitude").addValueEventListener(new ValueEventListener() {
+        nduthiGuyRef[0].child("latitude").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 nduthiLat = dataSnapshot.getValue(Double.class);
@@ -254,7 +257,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
             }
         });
 
-        nduthiGuyRef.child("longitude").addValueEventListener(new ValueEventListener() {
+        nduthiGuyRef[0].child("longitude").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 nduthiLng = dataSnapshot.getValue(Double.class);
@@ -284,98 +287,164 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
 
                 //Toast.makeText(GeoFireActivity.this, "lat: "+ myLat + " long: " + myLong, Toast.LENGTH_SHORT).show();
 
-                try {
+                loggedInUserLoc = new LatLng(myLat, myLong);
+                nduthiGuyLoc = new LatLng(nduthiLat, nduthiLng);
 
-                    loggedInUserLoc = new LatLng(myLat, myLong);
-                    nduthiGuyLoc = new LatLng(nduthiLat, nduthiLng);
+                distance = distance(nduthiGuyLoc.latitude,nduthiGuyLoc.longitude, loggedInUserLoc.latitude, loggedInUserLoc.longitude, "K");
+                //Toast.makeText(GeoFireActivity.this, "Distance: " + distance, Toast.LENGTH_SHORT).show();
+                distance = distance * 1000; //Convert distance to meters
 
-                    myCurrent.remove(); //Remove previous marker
-                    myArea.remove(); //Remove previous circle
-
-                    providerCurrent.remove();
-
-                    providerCurrent = mMap.addMarker(new MarkerOptions().position(nduthiGuyLoc).title("Nduthi")
-                            .snippet("Extra info")
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.nduthi_guy))
-                            .flat(true));
-
-                    myCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("My Location"));
-
-                    //Radius around my area
-                    myArea = mMap.addCircle(new CircleOptions().center(loggedInUserLoc)
-                            .radius(200)//in meters
-                    .strokeColor(Color.BLUE)
-                    .fillColor(0x220000FF)
-                    .strokeWidth(5.0f));
-
-                    distance = distance(nduthiGuyLoc.latitude,nduthiGuyLoc.longitude, loggedInUserLoc.latitude, loggedInUserLoc.longitude, "K");
-                    //Toast.makeText(GeoFireActivity.this, "Distance: " + distance, Toast.LENGTH_SHORT).show();
-                    distance = distance * 1000; //Convert distance to meters
-                    //If person making delivery is within 500m radius, send notification
-                    //mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
 
                     if(accType.equals("1")){//Customer
-                        message = "Has nduthi delivered your order?";
-                        callMsg = "Call nduthi guy?";
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nduthiLat,nduthiLng), zoomLevel));
-                        if(distance < 200 && notifSent == false){
-                            sendNotification("Order is "+distance+"m away");
-                            notifSent = true;
+
+                        try {
+                            //If person making delivery is within 500m radius, send notification
+                            //mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
+                            message = "Has nduthi delivered your order?";
+                            callMsg = "Call nduthi guy?";
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nduthiLat, nduthiLng), zoomLevel));
+                            if (distance < 200 && notifSent == false) {
+                                sendNotification("Order is " + distance + "m away");
+                                notifSent = true;
+                            }
+
+                            myCurrent.remove(); //Remove previous marker
+                            myArea.remove(); //Remove previous circle
+
+                            providerCurrent.remove();
+
+                            providerCurrent = mMap.addMarker(new MarkerOptions().position(nduthiGuyLoc).title("Nduthi")
+                                    .snippet("Extra info")
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.nduthi_guy))
+                                    .flat(true));
+
+                            myCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("My Location"));
+
+                            //Radius around my area
+                            myArea = mMap.addCircle(new CircleOptions().center(loggedInUserLoc)
+                                    .radius(200)//in meters
+                                    .strokeColor(Color.BLUE)
+                                    .fillColor(0x220000FF)
+                                    .strokeWidth(5.0f));
+
+                        } catch (Exception e){
+                            //Toast.makeText(GeoFireActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+                            Log.d("dish", "GeoFireActivity: " + e);
+                            loggedInUserLoc = new LatLng(-1.281647, 36.822638); //Default Nairobi
+                            myCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("Default Location").snippet("Error fetching your location"));
+                            providerCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("Default Location").snippet("Error fetching your location"));
+
+                            //Radius around my area
+                            myArea = mMap.addCircle(new CircleOptions().center(loggedInUserLoc)
+                                    .radius(500)//in meters
+                                    .strokeColor(Color.BLUE)
+                                    .fillColor(0x220000FF)
+                                    .strokeWidth(5.0f));
+                            //mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-1.281647, 36.822638), zoomLevel));
                         }
                     }
 
                     if(accType.equals("2")) {//provider
-                        //track both nduthi and customer
-                    }
+                        setTitle("Track Customer");
 
-                    if(accType.equals("3")){//nduthi
-                        message = "Have you successfully made the delivery?";
-                        callMsg = "Call customer?";
+                        try {
+                            message = "Have you successfully made the delivery?";
+                            callMsg = "Call customer?";
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nduthiLat, nduthiLng), zoomLevel));
+                            if (distance < 200 && notifSent == false) {
+                                sendNotification("Customer is " + distance + "m away");
+                                notifSent = true;
+                            }
 
-                        if(distance < 200 && notifSent == false){
-                            sendNotification("Customer is "+distance+"m away");
-                            notifSent = true;
+                            loggedInUserLoc = new LatLng(myLat, myLong);
+                            nduthiGuyLoc = new LatLng(nduthiLat, nduthiLng);
+
+                            myCurrent.remove(); //Remove previous marker
+                            myArea.remove(); //Remove previous circle
+
+                            providerCurrent.remove();
+
+                            providerCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("My Location")
+                                    .snippet("Extra info")
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.nduthi_guy))
+                                    .flat(true));
+
+                            myCurrent = mMap.addMarker(new MarkerOptions().position(nduthiGuyLoc).title("Customer Location"));
+
+                            //Radius around my area
+                            myArea = mMap.addCircle(new CircleOptions().center(nduthiGuyLoc)
+                                    .radius(200)//in meters
+                                    .strokeColor(Color.BLUE)
+                                    .fillColor(0x220000FF)
+                                    .strokeWidth(5.0f));
+
+                        } catch (Exception e){
+                            //Toast.makeText(GeoFireActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+                            Log.d("dish", "GeoFireActivity: " + e);
+                            loggedInUserLoc = new LatLng(-1.281647, 36.822638); //Default Nairobi
+                            myCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("Default Location").snippet("Error fetching your location"));
+                            providerCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("Default Location").snippet("Error fetching your location"));
+
+                            //Radius around my area
+                            myArea = mMap.addCircle(new CircleOptions().center(loggedInUserLoc)
+                                    .radius(500)//in meters
+                                    .strokeColor(Color.BLUE)
+                                    .fillColor(0x220000FF)
+                                    .strokeWidth(5.0f));
+                            //mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-1.281647, 36.822638), zoomLevel));
                         }
-                        myCurrent.remove();
-                        providerCurrent.remove();
-                        myArea.remove();
+                        }
 
-                        myCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("My Location")
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.nduthi_guy))
-                                .flat(true));
+                    if(accType.equals("3")) {//nduthi
+                        setTitle("Track Customer");
 
-                        providerCurrent = mMap.addMarker(new MarkerOptions().position(nduthiGuyLoc).title("Customer Location")
-                                .snippet("Extra info"));
+                        try {
+                            message = "Have you successfully made the delivery?";
+                            callMsg = "Call customer?";
 
-                        //Radius around customer's area
-                        myArea = mMap.addCircle(new CircleOptions().center(nduthiGuyLoc)
-                                .radius(200)//in meters
-                                .strokeColor(Color.BLUE)
-                                .fillColor(0x220000FF)
-                                .strokeWidth(5.0f));
-                        //track customer
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nduthiLat,nduthiLng), zoomLevel));
+                            if (distance < 200 && notifSent == false) {
+                                sendNotification("Customer is " + distance + "m away");
+                                notifSent = true;
+                            }
+                            myCurrent.remove();
+                            providerCurrent.remove();
+                            myArea.remove();
+
+                            myCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("My Location")
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.nduthi_guy))
+                                    .flat(true));
+
+                            providerCurrent = mMap.addMarker(new MarkerOptions().position(nduthiGuyLoc).title("Customer Location")
+                                    .snippet("Extra info"));
+
+                            //Radius around customer's area
+                            myArea = mMap.addCircle(new CircleOptions().center(nduthiGuyLoc)
+                                    .radius(200)//in meters
+                                    .strokeColor(Color.BLUE)
+                                    .fillColor(0x220000FF)
+                                    .strokeWidth(5.0f));
+                            //track customer
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nduthiLat, nduthiLng), zoomLevel));
+
+                        } catch (Exception e){
+                            //Toast.makeText(GeoFireActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+                            Log.d("dish", "GeoFireActivity: " + e);
+                            loggedInUserLoc = new LatLng(-1.281647, 36.822638); //Default Nairobi
+                            myCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("Default Location").snippet("Error fetching your location"));
+                            providerCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("Default Location").snippet("Error fetching your location"));
+
+                            //Radius around my area
+                            myArea = mMap.addCircle(new CircleOptions().center(loggedInUserLoc)
+                                    .radius(500)//in meters
+                                    .strokeColor(Color.BLUE)
+                                    .fillColor(0x220000FF)
+                                    .strokeWidth(5.0f));
+                            //mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-1.281647, 36.822638), zoomLevel));
+                        }
                     }
-
-
-                }catch (Exception e){
-                    //Toast.makeText(GeoFireActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
-                    Log.d("dish", "GeoFireActivity: " + e);
-                    loggedInUserLoc = new LatLng(-1.281647, 36.822638); //Default Nairobi
-                    myCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("Default Location").snippet("Error fetching your location"));
-                    providerCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("Default Location").snippet("Error fetching your location"));
-
-                    //Radius around my area
-                    myArea = mMap.addCircle(new CircleOptions().center(loggedInUserLoc)
-                            .radius(500)//in meters
-                            .strokeColor(Color.BLUE)
-                            .fillColor(0x220000FF)
-                            .strokeWidth(5.0f));
-                    //mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-1.281647, 36.822638), zoomLevel));
-                }
-
-
 
             }
 
@@ -399,7 +468,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d("dishi", "GeoFireActivity: "+ databaseError);
+                Log.d("dishiTag", "GeoFireActivity: "+ databaseError);
             }
         });
 

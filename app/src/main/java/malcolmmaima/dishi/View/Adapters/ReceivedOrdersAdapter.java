@@ -1,6 +1,7 @@
 package malcolmmaima.dishi.View.Adapters;
 
 import android.Manifest;
+import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -42,7 +44,9 @@ import malcolmmaima.dishi.Model.MyCartDetails;
 import malcolmmaima.dishi.Model.ReceivedOrders;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.AddMenu;
+import malcolmmaima.dishi.View.Map.GeoFireActivity;
 import malcolmmaima.dishi.View.MyCart;
+import malcolmmaima.dishi.View.OrderStatus;
 
 public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAdapter.MyHolder>{
 
@@ -264,21 +268,25 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                                     //Toast.makeText(context, "Order status: " + status, Toast.LENGTH_SHORT).show();
                                     if(status[position].equals("confirmed")){
                                         holder.acceptBtn.setText("Cancel");
+                                        holder.trackCustomer.setVisibility(View.VISIBLE);
                                     }
 
                                     if(status[position].equals("cancelled")){
                                         holder.acceptBtn.setText("Confirm");
+                                        holder.trackCustomer.setVisibility(View.INVISIBLE);
                                     }
 
                                     if(status[position].equals("pending")){
                                         holder.acceptBtn.setText("Confirm");
+                                        holder.trackCustomer.setVisibility(View.VISIBLE);
                                     }
 
                                     if(status[position].equals("abort")){
                                         holder.acceptBtn.setText("Aborted");
                                         holder.acceptBtn.setEnabled(false);
                                         holder.deleteItem.setVisibility(View.VISIBLE);
-                                        // after this will put a timer below, max 2 mins then delete aborted order from list
+                                        holder.trackCustomer.setVisibility(View.INVISIBLE);
+                                        // after this will put a timer, max 2 mins then delete aborted order from list
                                     }
                             } catch (Exception e){
 
@@ -314,6 +322,18 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                         snackbar.show();
                     }
                 });
+            }
+        });
+
+        holder.trackCustomer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+
+                Intent slideactivity = new Intent(context, GeoFireActivity.class);
+                slideactivity.putExtra("nduthi_phone", receivedOrders.getCustomerNumber());
+                Bundle bndlanimation =
+                        ActivityOptions.makeCustomAnimation(context, R.anim.animation,R.anim.animation2).toBundle();
+                context.startActivity(slideactivity, bndlanimation);
             }
         });
 
@@ -560,7 +580,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
         TextView foodPrice , foodDescription, foodName, providerName, distAway;
         ImageView foodPic;
         Button acceptBtn, callBtn;
-        ImageButton deleteItem;
+        ImageButton deleteItem, trackCustomer;
 
         public MyHolder(View itemView) {
             super(itemView);
@@ -573,6 +593,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
             providerName = itemView.findViewById(R.id.providerName);
             distAway = itemView.findViewById(R.id.distanceAway);
             deleteItem = itemView.findViewById(R.id.deleteBtn);
+            trackCustomer = itemView.findViewById(R.id.trackCustomer);
 
         }
     }
