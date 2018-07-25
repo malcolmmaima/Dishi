@@ -97,7 +97,7 @@
             android:scaleType="centerCrop"
             android:background="@drawable/ic_location_black_48dp"
             android:layout_marginRight="10dp"
-            android:visibility="visible"
+            android:visibility="invisible"
 
             />
 
