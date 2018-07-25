@@ -11,6 +11,7 @@ public class MyCartDetails {
     public String imageURL;
     public String status;
     public String payType;
+    public Boolean sent;
     public String key; //When deleting menu items from firebase, this key value will help delete individual items from the 'mymenu' node
 
     public String getName() {

@@ -41,6 +41,7 @@ import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.AddMenu;
 import malcolmmaima.dishi.View.MyCart;
 
+import static malcolmmaima.dishi.R.drawable.ic_check_circle_black_48dp;
 import static malcolmmaima.dishi.R.drawable.ic_delivered_order;
 import static malcolmmaima.dishi.R.drawable.ic_highlight_off_white_48dp;
 import static malcolmmaima.dishi.R.drawable.ic_order_in_transit;
@@ -212,10 +213,13 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
             Glide.with(context).load(ic_pending_order).into(holder.orderStat);
         }
 
-        else if(myCartDetails.status.equals("confirmed")){
+        if(myCartDetails.status.equals("confirmed")){
             Glide.with(context).load(ic_delivered_order).into(holder.orderStat);
         }
-        else {
+        if(myCartDetails.status.equals("delivered")){
+            Glide.with(context).load(ic_check_circle_black_48dp).into(holder.orderStat);
+        }
+        if(myCartDetails.status.equals("transit")) {
             Glide.with(context).load(ic_order_in_transit).into(holder.orderStat);
         }
 

@@ -48,6 +48,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Random;
 
+import malcolmmaima.dishi.Model.MyCartDetails;
 import malcolmmaima.dishi.R;
 
 public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -63,8 +64,8 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
     Double nduthiLat, nduthiLng;
     boolean notifSent = false;
     VerticalSeekBar zoomMap;
-    DatabaseReference myRef;
-    String myPhone, accType, nduthi_phone, message, callMsg;
+    DatabaseReference myRef, pendingOrders, providerRef, ordersHistory;
+    String myPhone, accType, nduthi_phone, message, callMsg, temp;
     ProgressDialog progressDialog;
 
     @Override
@@ -84,6 +85,9 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
         myPhone = user.getPhoneNumber(); //Current logged in user phone number
 
         nduthi_phone = getIntent().getStringExtra("nduthi_phone");
+
+        pendingOrders = FirebaseDatabase.getInstance().getReference(myPhone + "/pending");
+        ordersHistory = FirebaseDatabase.getInstance().getReference(myPhone + "/history");
 
         message = "Order delivered?";
         callMsg = "Call?";
@@ -127,7 +131,50 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                         //set three option buttons
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                //Update respective fireB nodes
+
+                                pendingOrders.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                        for (final DataSnapshot orderStat : dataSnapshot.getChildren()) {
+                                            final MyCartDetails myCartDetails = orderStat.getValue(MyCartDetails.class);
+
+                                            if(myCartDetails.status.equals("confirmed")){
+                                                myCartDetails.key = orderStat.getKey();
+                                                myCartDetails.status = "delivered";
+                                                myCartDetails.sent = true;
+
+                                                providerRef = FirebaseDatabase.getInstance().getReference(myCartDetails.getProviderNumber() + "/deliveries");
+
+                                                //Update provider's node
+                                                providerRef.child(myCartDetails.key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        //Move already delivered order to history db node
+                                                        ordersHistory.child(myCartDetails.key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void aVoid) {
+                                                                //then delete it from pendind orders node
+                                                                pendingOrders.child(myCartDetails.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                    @Override
+                                                                    public void onSuccess(Void aVoid) {
+                                                                        Toast.makeText(GeoFireActivity.this, "Done!", Toast.LENGTH_SHORT).show();
+                                                                    }
+                                                                });
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                            }
+
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
                             }
                         }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
@@ -182,7 +229,11 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
             public void onProgressChanged(SeekBar seekBar, final int progress, boolean fromUser) {
                 //Synchronize the filter settings in realtime to firebase for a more personalized feel
                 zoomLevel = progress;
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(zoomLevel), 2000, null);
+                try {
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(zoomLevel), 2000, null);
+                } catch (Exception e){
+
+                }
                 myRef.child("zoom_filter").setValue(progress).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -296,12 +347,16 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
 
                 //Toast.makeText(GeoFireActivity.this, "lat: "+ myLat + " long: " + myLong, Toast.LENGTH_SHORT).show();
 
-                loggedInUserLoc = new LatLng(myLat, myLong);
-                nduthiGuyLoc = new LatLng(nduthiLat, nduthiLng);
+                try {
+                    loggedInUserLoc = new LatLng(myLat, myLong);
+                    nduthiGuyLoc = new LatLng(nduthiLat, nduthiLng);
 
-                distance = distance(nduthiGuyLoc.latitude,nduthiGuyLoc.longitude, loggedInUserLoc.latitude, loggedInUserLoc.longitude, "K");
-                //Toast.makeText(GeoFireActivity.this, "Distance: " + distance, Toast.LENGTH_SHORT).show();
-                distance = distance * 1000; //Convert distance to meters
+                    distance = distance(nduthiGuyLoc.latitude, nduthiGuyLoc.longitude, loggedInUserLoc.latitude, loggedInUserLoc.longitude, "K");
+                    //Toast.makeText(GeoFireActivity.this, "Distance: " + distance, Toast.LENGTH_SHORT).show();
+                    distance = distance * 1000; //Convert distance to meters
+                } catch(Exception e){
+
+                }
 
 
                 try {
@@ -343,7 +398,6 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                             loggedInUserLoc = new LatLng(-1.281647, 36.822638); //Default Nairobi
                             myCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("Default Location").snippet("Error fetching your location"));
                             providerCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("Default Location").snippet("Error fetching your location"));
-
                             //Radius around my area
                             myArea = mMap.addCircle(new CircleOptions().center(loggedInUserLoc)
                                     .radius(500)//in meters
