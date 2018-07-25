@@ -57,12 +57,11 @@ public class RestaurantMenuFragment extends Fragment {
                              Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.fragment_restaurant_menu, container, false);
         // Assigning Id to ProgressDialog.
-        //progressDialog = new ProgressDialog(getContext());
+        progressDialog = new ProgressDialog(getContext());
         // Setting progressDialog Title.
-        //progressDialog.setTitle("Loading...");
+        progressDialog.setMessage("Loading...");
         // Showing progressDialog.
-        //progressDialog.show();
-        //progressDialog.setCancelable(false);
+        progressDialog.show();
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         myPhone = user.getPhoneNumber(); //Current logged in user phone number
@@ -89,6 +88,9 @@ public class RestaurantMenuFragment extends Fragment {
                 }
 
                 if(!list.isEmpty() && list.size() > listSize){
+                    if(progressDialog.isShowing()){
+                        progressDialog.dismiss();
+                    }
                     RestaurantMenuAdapter recycler = new RestaurantMenuAdapter(getContext(),list);
                     RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
                     recyclerview.setLayoutManager(layoutmanager);
@@ -98,6 +100,9 @@ public class RestaurantMenuFragment extends Fragment {
                 }
 
                 else {
+                    if(progressDialog.isShowing()){
+                        progressDialog.dismiss();
+                    }
                     RestaurantMenuAdapter recycler = new RestaurantMenuAdapter(getContext(),list);
                     RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
                     recyclerview.setLayoutManager(layoutmanager);
@@ -114,7 +119,9 @@ public class RestaurantMenuFragment extends Fragment {
                 // Failed to read value
                 //  Log.w(TAG, "Failed to read value.", error.toException());
 
-                progressDialog.dismiss();
+                if(progressDialog.isShowing()){
+                    progressDialog.dismiss();
+                }
 
                 Toast.makeText(getActivity(), "Failed, " + error, Toast.LENGTH_SHORT).show();
             }

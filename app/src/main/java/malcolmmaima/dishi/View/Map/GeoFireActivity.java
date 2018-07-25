@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -59,18 +60,22 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
     Circle myArea;
     Double distance;
     int zoomLevel;
-    Double trcLat;
-    Double trcLng;
     Double nduthiLat, nduthiLng;
     boolean notifSent = false;
     VerticalSeekBar zoomMap;
     DatabaseReference myRef;
-    String myPhone, accType, nduthi_phone, customer_phone, message, callMsg;
+    String myPhone, accType, nduthi_phone, message, callMsg;
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_geo_fire);
+        progressDialog = new ProgressDialog(GeoFireActivity.this);
+
+        progressDialog.setMessage("Loading...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
 
         callNduthi = findViewById(R.id.callNduthi);
         confirmOrd = findViewById(R.id.confirmOrd);
@@ -231,6 +236,10 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
+        if(progressDialog.isShowing()){
+            progressDialog.dismiss();
+        }
+
         mMap = googleMap;
         final DatabaseReference mylocationRef;
         final DatabaseReference[] nduthiGuyRef = new DatabaseReference[1];
@@ -295,6 +304,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                 distance = distance * 1000; //Convert distance to meters
 
 
+                try {
                     if(accType.equals("1")){//Customer
 
                         try {
@@ -444,7 +454,9 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                             //mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
                             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-1.281647, 36.822638), zoomLevel));
                         }
-                    }
+                    } } catch (Exception e){
+
+                }
 
             }
 

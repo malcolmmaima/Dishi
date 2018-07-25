@@ -3,6 +3,7 @@ package malcolmmaima.dishi.View.Adapters;
 import android.Manifest;
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -68,6 +69,9 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
 
 
     public void onBindViewHolder(final MyHolder holder, final int position) {
+
+        final ProgressDialog progressDialog = new ProgressDialog(context);
+
         final ReceivedOrders receivedOrders = listdata.get(position);
 
         final DatabaseReference mylocationRef, myOrdersRef, customerOrder, customerLocationRef, orderStatus, deliveriesRef, customerName;
@@ -381,6 +385,9 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                             //set three option buttons
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
+                                    progressDialog.setMessage("cancelling...");
+                                    progressDialog.setCancelable(false);
+                                    progressDialog.show();
 
                                     receivedOrders.status = "cancelled";
                                     receivedOrders.sent = false;
@@ -400,7 +407,9 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                                                     deliveriesRef.child(receivedOrders.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                                                         @Override
                                                         public void onSuccess(Void aVoid) {
-
+                                                            if(progressDialog.isShowing()){
+                                                                progressDialog.dismiss();
+                                                            }
                                                         }
                                                     }).addOnFailureListener(new OnFailureListener() {
                                                         @Override
@@ -408,6 +417,9 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                                                             // Uh-oh, an error occurred!
                                                             Toast.makeText(context, "Error: " + exception, Toast.LENGTH_SHORT)
                                                                     .show();
+                                                            if(progressDialog.isShowing()){
+                                                                progressDialog.dismiss();
+                                                            }
                                                         }
                                                     });
                                                 }
@@ -417,6 +429,9 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                                                         public void onFailure(@NonNull Exception e) {
                                                             // Write failed
                                                             Toast.makeText(context, "Failed: " + e.toString() + ". Try again!", Toast.LENGTH_LONG).show();
+                                                            if(progressDialog.isShowing()){
+                                                                progressDialog.dismiss();
+                                                            }
                                                         }
                                                     });
                                         }
@@ -426,6 +441,9 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                                                 public void onFailure(@NonNull Exception e) {
                                                     // Write failed
                                                     Toast.makeText(context, "Failed: " + e.toString() + ". Try again!", Toast.LENGTH_LONG).show();
+                                                    if(progressDialog.isShowing()){
+                                                        progressDialog.dismiss();
+                                                    }
                                                 }
                                             });
 
@@ -454,6 +472,10 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
 
+                                progressDialog.setMessage("accepting...");
+                                progressDialog.setCancelable(false);
+                                progressDialog.show();
+
                                 receivedOrders.status = "confirmed";
                                 receivedOrders.sent = false;
                                 //Change my order status to confirmed
@@ -476,7 +498,9 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                                                         myOrdersRef.child(receivedOrders.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                                                             @Override
                                                             public void onSuccess(Void aVoid) {
-
+                                                                if(progressDialog.isShowing()){
+                                                                    progressDialog.dismiss();
+                                                                }
                                                             }
                                                         }).addOnFailureListener(new OnFailureListener() {
                                                             @Override
@@ -484,6 +508,9 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                                                                 // Uh-oh, an error occurred!
                                                                 Toast.makeText(context, "Error: " + exception, Toast.LENGTH_SHORT)
                                                                         .show();
+                                                                if(progressDialog.isShowing()){
+                                                                    progressDialog.dismiss();
+                                                                }
                                                             }
                                                         });
 
@@ -496,6 +523,10 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                                                     public void onFailure(@NonNull Exception e) {
                                                         // Write failed
                                                         Toast.makeText(context, "Failed: " + e.toString() + ". Try again!", Toast.LENGTH_LONG).show();
+
+                                                        if(progressDialog.isShowing()){
+                                                            progressDialog.dismiss();
+                                                        }
                                                     }
                                                 });
                                     }
@@ -505,6 +536,9 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                                             public void onFailure(@NonNull Exception e) {
                                                 // Write failed
                                                 Toast.makeText(context, "Failed: " + e.toString() + ". Try again!", Toast.LENGTH_LONG).show();
+                                                if(progressDialog.isShowing()){
+                                                    progressDialog.dismiss();
+                                                }
                                             }
                                         });
 

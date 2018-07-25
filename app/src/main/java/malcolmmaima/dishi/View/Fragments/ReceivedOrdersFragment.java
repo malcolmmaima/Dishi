@@ -66,6 +66,13 @@ public class ReceivedOrdersFragment extends Fragment {
                              Bundle savedInstanceState) {
         final View v =  inflater.inflate(R.layout.fragment_received_orders, container, false);
 
+        // Assigning Id to ProgressDialog.
+        progressDialog = new ProgressDialog(getContext());
+        // Setting progressDialog Title.
+        progressDialog.setMessage("Loading...");
+        // Showing progressDialog.
+        progressDialog.show();
+
         user = FirebaseAuth.getInstance().getCurrentUser();
         myPhone = user.getPhoneNumber(); //Current logged in user phone number
         db = FirebaseDatabase.getInstance();
@@ -113,6 +120,9 @@ public class ReceivedOrdersFragment extends Fragment {
 
                 //Refresh list
                 if(!list.isEmpty() && list.size() > listSize){
+                    if(progressDialog.isShowing()){
+                        progressDialog.dismiss();
+                    }
                     ReceivedOrdersAdapter recycler = new ReceivedOrdersAdapter(getContext(),list);
                     RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
                     recyclerview.setLayoutManager(layoutmanager);
@@ -122,6 +132,9 @@ public class ReceivedOrdersFragment extends Fragment {
                 }
 
                 else {
+                    if(progressDialog.isShowing()){
+                        progressDialog.dismiss();
+                    }
                     ReceivedOrdersAdapter recycler = new ReceivedOrdersAdapter(getContext(),list);
                     RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
                     recyclerview.setLayoutManager(layoutmanager);
@@ -161,7 +174,9 @@ public class ReceivedOrdersFragment extends Fragment {
                 // Failed to read value
                 //  Log.w(TAG, "Failed to read value.", error.toException());
 
-                progressDialog.dismiss();
+                if(progressDialog.isShowing()){
+                    progressDialog.dismiss();
+                }
 
                 Toast.makeText(getActivity(), "Failed, " + error, Toast.LENGTH_SHORT).show();
             }
