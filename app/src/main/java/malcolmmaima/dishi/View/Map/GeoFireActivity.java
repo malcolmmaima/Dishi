@@ -411,7 +411,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
 
                     if(accType.equals("2")) {//provider
                         setTitle("Track Customer");
-
+                        confirmOrd.setVisibility(View.INVISIBLE);
                         try {
                             message = "Have you successfully made the delivery?";
                             callMsg = "Call customer?";
@@ -463,7 +463,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
 
                     if(accType.equals("3")) {//nduthi
                         setTitle("Track Customer");
-
+                        confirmOrd.setVisibility(View.INVISIBLE);
                         try {
                             message = "Have you successfully made the delivery?";
                             callMsg = "Call customer?";
