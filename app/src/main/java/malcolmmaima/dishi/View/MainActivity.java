@@ -233,8 +233,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                         progressDialog.setTitle("Verifying");
                         progressDialog.setCancelable(false);
                         progressDialog.show();
-                        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, codeed.getText().toString().trim());
-                        signInWithPhoneAuthCredential(credential);
+                        try {
+                            PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, codeed.getText().toString().trim());
+                            signInWithPhoneAuthCredential(credential);
+                        } catch (Exception e){ }
                     }
                     if (mVerified) {
                         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();

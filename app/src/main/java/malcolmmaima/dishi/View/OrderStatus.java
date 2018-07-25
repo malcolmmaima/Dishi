@@ -339,9 +339,6 @@ public class OrderStatus extends AppCompatActivity {
 
             if (id == R.id.cancel_order) {
                 //Toast.makeText(this, "order status: "+ order_status, Toast.LENGTH_LONG).show();
-                if(order_status.equals("delivered")){
-                    Toast.makeText(this, "Your orders have been delivered!", Toast.LENGTH_SHORT).show();
-                }
                 if(order_status.equals("confirmed")){
                     final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(OrderStatus.this)
                             //set message, title, and icon

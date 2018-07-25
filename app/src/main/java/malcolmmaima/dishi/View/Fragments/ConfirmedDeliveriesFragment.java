@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -50,7 +51,7 @@ public class ConfirmedDeliveriesFragment extends Fragment {
     TextView emptyTag,totalItems, totalFee;
     Button confirmBtn;
 
-    DatabaseReference dbRef, myDeliveries;
+    DatabaseReference dbRef, myDeliveries, deliveryHistory;
     FirebaseDatabase db;
     FirebaseUser user;
 
@@ -81,6 +82,7 @@ public class ConfirmedDeliveriesFragment extends Fragment {
         db = FirebaseDatabase.getInstance();
         dbRef = db.getReference(myPhone);
         myDeliveries = db.getReference(myPhone + "/deliveries");
+        deliveryHistory = db.getReference(myPhone + "/history");
         recyclerview = v.findViewById(R.id.rview);
         emptyTag = v.findViewById(R.id.empty_tag);
         confirmBtn = v.findViewById(R.id.confirmBtn);
@@ -91,16 +93,31 @@ public class ConfirmedDeliveriesFragment extends Fragment {
         myDeliveries.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                int counter = 0;
                 list = new ArrayList<>();
                 int listSize = list.size(); //Bug fix, kept on refreshing menu on data change due to realtime location data.
                 //Will use this to determine if the list of menu items has changed, only refresh then
 
                 // StringBuffer stringbuffer = new StringBuffer();
                 for(DataSnapshot dataSnapshot1 :dataSnapshot.getChildren()){
-                    ReceivedOrders receivedOrders = dataSnapshot1.getValue(ReceivedOrders.class); //Assign values to model
-                    receivedOrders.key = dataSnapshot1.getKey(); //Get item keys, useful when performing delete operations
-                    list.add(receivedOrders);
+                    final ReceivedOrders receivedOrders = dataSnapshot1.getValue(ReceivedOrders.class); //Assign values to model
+                    if(receivedOrders.status.equals("delivered")){
+                        //delete from deliveries node and append to history node
+                        receivedOrders.key = dataSnapshot1.getKey(); //Get item keys, useful when performing delete operations
+                        deliveryHistory.child(receivedOrders.key).setValue(receivedOrders).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                //delete
+                                myDeliveries.child(receivedOrders.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        //successful
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        list.add(receivedOrders);
+                    }
                     //progressDialog.dismiss();
                 }
 
