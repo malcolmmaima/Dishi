@@ -146,6 +146,7 @@ public class OrderStatus extends AppCompatActivity {
 
                         if(myCartDetails.status.equals("confirmed")){
                             order_status = "confirmed";
+                            trackBtn.setEnabled(true);
                         }
                         myBasket.add(myCartDetails);
                         trackRestaurant = myCartDetails.providerNumber;
@@ -158,9 +159,6 @@ public class OrderStatus extends AppCompatActivity {
                         if(progressDialog.isShowing()){
                             progressDialog.dismiss();
                         }
-                    }
-                    else {
-                        trackBtn.setEnabled(true);
                     }
                     totalFee.setText("Ksh: " + temp);
                     totalItems.setText("Items: " + myBasket.size());
@@ -348,7 +346,7 @@ public class OrderStatus extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
 
             if (id == R.id.cancel_order) {
-                //Toast.makeText(this, "order status: "+ order_status, Toast.LENGTH_LONG).show();
+               //Toast.makeText(this, "order status: "+ order_status, Toast.LENGTH_LONG).show();
                 if(order_status.equals("confirmed")){
                     final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(OrderStatus.this)
                             //set message, title, and icon

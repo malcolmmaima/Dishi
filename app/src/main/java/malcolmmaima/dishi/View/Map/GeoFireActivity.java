@@ -166,9 +166,8 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int id) {
-                                                    // User clicked OK, so save the mSelectedItems results somewhere
-                                                    // or return them to the component that opened the dialog
-
+                                                    final Boolean[] finished = new Boolean[0];
+                                                    finished[0] = false;
                                                     //Loop through all the selected items list
                                                     for(int i = 0; i < mSelectedItems.size(); i++){
                                                         //Toast.makeText(GeoFireActivity.this, phoneNames[(int)mSelectedItems.get(i)]+" success!", Toast.LENGTH_SHORT).show();
@@ -200,7 +199,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                                                                                     pendingOrders.child(myCartDetails.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                                         @Override
                                                                                         public void onSuccess(Void aVoid) {
-                                                                                            Toast.makeText(GeoFireActivity.this, "Done!", Toast.LENGTH_SHORT).show();
+                                                                                            finished[0] = true;
                                                                                         }
                                                                                     });
                                                                                 }
@@ -215,11 +214,15 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                                                             }
                                                         }
 
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                            @Override
+                                                            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                    }
-                                });
+                                                            }
+                                                        });
+                                                    }
+
+                                                    if(finished[0] == true){
+                                                        Toast.makeText(GeoFireActivity.this, "Done!", Toast.LENGTH_SHORT).show();
                                                     }
                                                 }
                                             })
@@ -231,50 +234,6 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
 
                                     builder.create();
                                     builder.show();
-
-                                /*pendingOrders.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                                        for (final DataSnapshot orderStat : dataSnapshot.getChildren()) {
-                                            final MyCartDetails myCartDetails = orderStat.getValue(MyCartDetails.class);
-
-                                            if(myCartDetails.status.equals("confirmed")){
-                                                myCartDetails.key = orderStat.getKey();
-                                                myCartDetails.status = "delivered";
-                                                myCartDetails.sent = true;
-
-                                                providerRef = FirebaseDatabase.getInstance().getReference(myCartDetails.getProviderNumber() + "/deliveries");
-
-                                                //Update provider's node
-                                                providerRef.child(myCartDetails.key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                    @Override
-                                                    public void onSuccess(Void aVoid) {
-                                                        //Move already delivered order to history db node
-                                                        ordersHistory.child(myCartDetails.key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                            @Override
-                                                            public void onSuccess(Void aVoid) {
-                                                                //then delete it from pendind orders node
-                                                                pendingOrders.child(myCartDetails.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                    @Override
-                                                                    public void onSuccess(Void aVoid) {
-                                                                        Toast.makeText(GeoFireActivity.this, "Done!", Toast.LENGTH_SHORT).show();
-                                                                    }
-                                                                });
-                                                            }
-                                                        });
-                                                    }
-                                                });
-                                            }
-
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                    }
-                                });*/
                             }
                         }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
@@ -451,20 +410,21 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
 
                 //Toast.makeText(GeoFireActivity.this, "lat: "+ myLat + " long: " + myLong, Toast.LENGTH_SHORT).show();
 
-                try {
-                    loggedInUserLoc = new LatLng(myLat, myLong);
-                    nduthiGuyLoc = new LatLng(nduthiLat, nduthiLng);
-
-                    distance = distance(nduthiGuyLoc.latitude, nduthiGuyLoc.longitude, loggedInUserLoc.latitude, loggedInUserLoc.longitude, "K");
-                    //Toast.makeText(GeoFireActivity.this, "Distance: " + distance, Toast.LENGTH_SHORT).show();
-                    distance = distance * 1000; //Convert distance to meters
-                } catch(Exception e){
-
-                }
-
 
                 try {
                     if(accType.equals("1")) {//Customer
+
+                        try {
+                            loggedInUserLoc = new LatLng(myLat, myLong);
+                            nduthiGuyLoc = new LatLng(nduthiLat, nduthiLng);
+
+                            distance = distance(nduthiGuyLoc.latitude, nduthiGuyLoc.longitude, loggedInUserLoc.latitude, loggedInUserLoc.longitude, "K");
+                            //Toast.makeText(GeoFireActivity.this, "Distance: " + distance, Toast.LENGTH_SHORT).show();
+                            distance = distance * 1000; //Convert distance to meters
+                        } catch(Exception e){
+
+                        }
+
                         try{
                             phoneNumbers = getIntent().getStringArrayExtra("phoneNumbers");
 
@@ -560,6 +520,16 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                     }
 
                     if(accType.equals("2")) {//provider
+                        try {
+                            loggedInUserLoc = new LatLng(myLat, myLong);
+                            nduthiGuyLoc = new LatLng(nduthiLat, nduthiLng);
+
+                            distance = distance(nduthiGuyLoc.latitude, nduthiGuyLoc.longitude, loggedInUserLoc.latitude, loggedInUserLoc.longitude, "K");
+                            //Toast.makeText(GeoFireActivity.this, "Distance: " + distance, Toast.LENGTH_SHORT).show();
+                            distance = distance * 1000; //Convert distance to meters
+                        } catch(Exception e){
+
+                        }
                         setTitle("Track Customer");
                         confirmOrd.setVisibility(View.INVISIBLE);
                         try {
@@ -616,6 +586,17 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                         }
 
                     if(accType.equals("3")) {//nduthi
+
+                        try {
+                            loggedInUserLoc = new LatLng(myLat, myLong);
+                            nduthiGuyLoc = new LatLng(nduthiLat, nduthiLng);
+
+                            distance = distance(nduthiGuyLoc.latitude, nduthiGuyLoc.longitude, loggedInUserLoc.latitude, loggedInUserLoc.longitude, "K");
+                            //Toast.makeText(GeoFireActivity.this, "Distance: " + distance, Toast.LENGTH_SHORT).show();
+                            distance = distance * 1000; //Convert distance to meters
+                        } catch(Exception e){
+
+                        }
                         setTitle("Track Customer");
                         confirmOrd.setVisibility(View.INVISIBLE);
                         try {
