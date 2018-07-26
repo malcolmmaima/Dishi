@@ -67,6 +67,7 @@ public class OrderStatus extends AppCompatActivity {
     FirebaseUser user;
     String order_status;
     FirebaseAuth mAuth;
+    String[] phoneNumbers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,6 +118,7 @@ public class OrderStatus extends AppCompatActivity {
         totalItems = findViewById(R.id.totalItems);
         totalFee = findViewById(R.id.totalFee);
         trackBtn = findViewById(R.id.trackOrder);
+        trackBtn.setEnabled(false);
 
         final ProgressDialog progressDialog = new ProgressDialog(OrderStatus.this);
         progressDialog.setMessage("loading...");
@@ -129,13 +131,19 @@ public class OrderStatus extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 try {
                     myBasket = new ArrayList<>();
+                    phoneNumbers = new String[(int) dataSnapshot.getChildrenCount()];
                     int temp = 0;
+                    int counter = 0;
 
                     for (DataSnapshot mycart : dataSnapshot.getChildren()) {
                         MyCartDetails myCartDetails = mycart.getValue(MyCartDetails.class);
                         myCartDetails.key = mycart.getKey();
                         String prices = myCartDetails.getPrice();
                         temp = Integer.parseInt(prices) + temp;
+
+                        phoneNumbers[counter] = myCartDetails.providerNumber;
+                        counter++;
+
                         if(myCartDetails.status.equals("confirmed")){
                             order_status = "confirmed";
                         }
@@ -301,6 +309,7 @@ public class OrderStatus extends AppCompatActivity {
                         trackNduthi = trackRestaurant;
                         Intent slideactivity = new Intent(OrderStatus.this, GeoFireActivity.class);
                         slideactivity.putExtra("nduthi_phone", trackNduthi);
+                        slideactivity.putExtra("phoneNumbers", phoneNumbers);
                         Bundle bndlanimation =
                                 ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
                         startActivity(slideactivity, bndlanimation);
@@ -310,6 +319,7 @@ public class OrderStatus extends AppCompatActivity {
                 else {
                     Intent slideactivity = new Intent(OrderStatus.this, GeoFireActivity.class);
                     slideactivity.putExtra("nduthi_phone", trackNduthi);
+                    slideactivity.putExtra("phoneNumbers", phoneNumbers);
                     Bundle bndlanimation =
                             ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
                     startActivity(slideactivity, bndlanimation);

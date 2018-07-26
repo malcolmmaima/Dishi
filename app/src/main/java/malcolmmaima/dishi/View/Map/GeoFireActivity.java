@@ -46,6 +46,10 @@ import com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Random;
 
 import malcolmmaima.dishi.Model.MyCartDetails;
@@ -67,6 +71,8 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
     DatabaseReference myRef, pendingOrders, providerRef, ordersHistory;
     String myPhone, accType, nduthi_phone, message, callMsg, temp;
     ProgressDialog progressDialog;
+    String[] phoneNumbers, phoneNames;
+    List<String> names;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,7 +128,6 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
         confirmOrd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(v.getContext())
                         //set message, title, and icon
                         .setTitle("Confirm Order Delivery")
@@ -132,7 +137,102 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
 
-                                pendingOrders.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                                    final ArrayList mSelectedItems = new ArrayList();  // Where we track the selected items
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(GeoFireActivity.this);
+                                    // Set the dialog title
+                                    builder.setTitle("Delivered Successfully")
+                                            .setCancelable(false)
+                                            .setIcon(R.drawable.nduthi_guy)
+                                            // Specify the list array, the items to be selected by default (null for none),
+                                            // and the listener through which to receive callbacks when items are selected
+                                            .setMultiChoiceItems(phoneNames, null,
+                                                    new DialogInterface.OnMultiChoiceClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialog, int which,
+                                                                            boolean isChecked) {
+                                                            if (isChecked) {
+                                                                // If the user checked the item, add it to the selected items
+                                                                mSelectedItems.add(which);
+                                                                //Toast.makeText(GeoFireActivity.this, "phone: "+ phoneNumbers[which], Toast.LENGTH_SHORT).show();
+
+                                                            } else if (mSelectedItems.contains(which)) {
+                                                                // Else, if the item is already in the array, remove it
+                                                                mSelectedItems.remove(Integer.valueOf(which));
+                                                            }
+                                                        }
+                                                    })
+                                            // Set the action buttons
+                                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int id) {
+                                                    // User clicked OK, so save the mSelectedItems results somewhere
+                                                    // or return them to the component that opened the dialog
+
+                                                    //Loop through all the selected items list
+                                                    for(int i = 0; i < mSelectedItems.size(); i++){
+                                                        //Toast.makeText(GeoFireActivity.this, phoneNames[(int)mSelectedItems.get(i)]+" success!", Toast.LENGTH_SHORT).show();
+                                                        providerRef = FirebaseDatabase.getInstance().getReference(phoneNumbers[(int)mSelectedItems.get(i)] + "/deliveries");
+
+                                                        //check in my pending node for items
+                                                        pendingOrders.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                                            for (final DataSnapshot orderStat : dataSnapshot.getChildren()) {
+                                                                final MyCartDetails myCartDetails = orderStat.getValue(MyCartDetails.class);
+
+                                                                //If item status is confirmed, means it is in transit
+                                                                if(myCartDetails.status.equals("confirmed")){
+                                                                    myCartDetails.key = orderStat.getKey();
+                                                                    myCartDetails.status = "delivered";
+                                                                    myCartDetails.sent = true;
+
+                                                                    //Update provider's node
+                                                                    providerRef.child(myCartDetails.key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                        @Override
+                                                                        public void onSuccess(Void aVoid) {
+                                                                            //Move already delivered order to history db node
+                                                                            ordersHistory.child(myCartDetails.key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                @Override
+                                                                                public void onSuccess(Void aVoid) {
+                                                                                    //then delete it from pending orders node
+                                                                                    pendingOrders.child(myCartDetails.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                        @Override
+                                                                                        public void onSuccess(Void aVoid) {
+                                                                                            Toast.makeText(GeoFireActivity.this, "Done!", Toast.LENGTH_SHORT).show();
+                                                                                        }
+                                                                                    });
+                                                                                }
+                                                                            });
+                                                                        }
+                                                                    });
+                                                                } else {//Order of the ticked delivery individual has not been confirmed
+                                                                    Toast.makeText(GeoFireActivity.this, myCartDetails.provider + " has not confirmed your order!", Toast.LENGTH_SHORT).show();
+
+                                                                }
+
+                                                            }
+                                                        }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+                                                    }
+                                                }
+                                            })
+                                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int id) {
+                                                }
+                                            });
+
+                                    builder.create();
+                                    builder.show();
+
+                                /*pendingOrders.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -174,7 +274,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                                     public void onCancelled(@NonNull DatabaseError databaseError) {
 
                                     }
-                                });
+                                });*/
                             }
                         }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
@@ -286,10 +386,14 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        confirmOrd.setEnabled(false);
+        callNduthi.setEnabled(false);
 
         if(progressDialog.isShowing()){
             progressDialog.dismiss();
         }
+
+        names = new ArrayList<String>();
 
         mMap = googleMap;
         final DatabaseReference mylocationRef;
@@ -360,13 +464,57 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
 
 
                 try {
-                    if(accType.equals("1")){//Customer
+                    if(accType.equals("1")) {//Customer
+                        try{
+                            phoneNumbers = getIntent().getStringArrayExtra("phoneNumbers");
+
+                            /*
+                             * convert array to list and then add all
+                             * elements to LinkedHashSet. LinkedHashSet
+                             * will automatically remove all duplicate elements.
+                             */
+                            LinkedHashSet<String> phones =
+                                    new LinkedHashSet<String>(Arrays.asList(phoneNumbers));
+
+                            //create array from the LinkedHashSet
+                            String[] newArray = phones.toArray(new String[ phones.size() ]);
+
+                            phoneNumbers = newArray;
+
+                            DatabaseReference phoneNamesRef;
+                            phoneNames = new String[phoneNumbers.length];
+
+                            for(int i = 0; i< phoneNumbers.length; i++){
+                                phoneNamesRef = FirebaseDatabase.getInstance().getReference(phoneNumbers[i]);
+
+                                phoneNamesRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        String name = dataSnapshot.getValue(String.class);
+                                        if(!names.contains(name)){
+                                            names.add(name);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+
+                            phoneNames = names.toArray(new String[names.size()]);
+
+                        }catch (Exception e){}
 
                         try {
+
+                            confirmOrd.setEnabled(true);
+                            callNduthi.setEnabled(true);
                             //If person making delivery is within 500m radius, send notification
                             //mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
-                            message = "Has nduthi delivered your order?";
-                            callMsg = "Call nduthi guy?";
+                            message = "Has nduthi or provider delivered your order?";
+                            callMsg = "Call delivery guy?";
                             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nduthiLat, nduthiLng), zoomLevel));
                             if (distance < 200 && notifSent == false) {
                                 sendNotification("Order is " + distance + "m away");
@@ -393,6 +541,8 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                                     .strokeWidth(5.0f));
 
                         } catch (Exception e){
+                            confirmOrd.setEnabled(false);
+                            callNduthi.setEnabled(false);
                             //Toast.makeText(GeoFireActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                             Log.d("dish", "GeoFireActivity: " + e);
                             loggedInUserLoc = new LatLng(-1.281647, 36.822638); //Default Nairobi
@@ -413,6 +563,8 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                         setTitle("Track Customer");
                         confirmOrd.setVisibility(View.INVISIBLE);
                         try {
+                            confirmOrd.setEnabled(true);
+                            callNduthi.setEnabled(true);
                             message = "Have you successfully made the delivery?";
                             callMsg = "Call customer?";
                             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nduthiLat, nduthiLng), zoomLevel));
@@ -444,6 +596,8 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                                     .strokeWidth(5.0f));
 
                         } catch (Exception e){
+                            confirmOrd.setEnabled(false);
+                            callNduthi.setEnabled(false);
                             //Toast.makeText(GeoFireActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                             Log.d("dish", "GeoFireActivity: " + e);
                             loggedInUserLoc = new LatLng(-1.281647, 36.822638); //Default Nairobi
@@ -465,6 +619,8 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                         setTitle("Track Customer");
                         confirmOrd.setVisibility(View.INVISIBLE);
                         try {
+                            confirmOrd.setEnabled(true);
+                            callNduthi.setEnabled(true);
                             message = "Have you successfully made the delivery?";
                             callMsg = "Call customer?";
 
@@ -493,6 +649,8 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nduthiLat, nduthiLng), zoomLevel));
 
                         } catch (Exception e){
+                            confirmOrd.setEnabled(false);
+                            callNduthi.setEnabled(false);
                             //Toast.makeText(GeoFireActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                             Log.d("dish", "GeoFireActivity: " + e);
                             loggedInUserLoc = new LatLng(-1.281647, 36.822638); //Default Nairobi
