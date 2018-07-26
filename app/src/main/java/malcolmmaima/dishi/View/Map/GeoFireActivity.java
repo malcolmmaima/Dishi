@@ -166,8 +166,6 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int id) {
-                                                    final Boolean[] finished = new Boolean[0];
-                                                    finished[0] = false;
                                                     //Loop through all the selected items list
                                                     for(int i = 0; i < mSelectedItems.size(); i++){
                                                         //Toast.makeText(GeoFireActivity.this, phoneNames[(int)mSelectedItems.get(i)]+" success!", Toast.LENGTH_SHORT).show();
@@ -199,7 +197,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                                                                                     pendingOrders.child(myCartDetails.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                                         @Override
                                                                                         public void onSuccess(Void aVoid) {
-                                                                                            finished[0] = true;
+
                                                                                         }
                                                                                     });
                                                                                 }
@@ -207,7 +205,8 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                                                                         }
                                                                     });
                                                                 } else {//Order of the ticked delivery individual has not been confirmed
-                                                                    Toast.makeText(GeoFireActivity.this, myCartDetails.provider + " has not confirmed your order!", Toast.LENGTH_SHORT).show();
+                                                                    Toast.makeText(GeoFireActivity.this, myCartDetails.provider
+                                                                            + " has not confirmed your order for " + myCartDetails.getName(), Toast.LENGTH_SHORT).show();
 
                                                                 }
 
@@ -219,10 +218,6 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
 
                                                             }
                                                         });
-                                                    }
-
-                                                    if(finished[0] == true){
-                                                        Toast.makeText(GeoFireActivity.this, "Done!", Toast.LENGTH_SHORT).show();
                                                     }
                                                 }
                                             })

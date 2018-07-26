@@ -481,19 +481,21 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                                                                                             if(progressDialog.isShowing()){
                                                                                                 progressDialog.dismiss();
                                                                                             }
+
                                                                                             Snackbar snackbar = Snackbar
-                                                                                                    .make(findViewById(R.id.parentlayout), "Orders sent! Check Order status", Snackbar.LENGTH_LONG);
+                                                                                                    .make(findViewById(R.id.parentlayout), "Orders sent! Check Order status", Snackbar.LENGTH_INDEFINITE)
+                                                                                                    .setActionTextColor(getResources().getColor(R.color.colorPrimary))
+                                                                                                    .setAction("OK", new View.OnClickListener() {
+                                                                                                        @Override
+                                                                                                        public void onClick(View view) {
+                                                                                                            Intent slideactivity = new Intent(MyCart.this, OrderStatus.class);
+                                                                                                            Bundle bndlanimation =
+                                                                                                                    ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                                                                                                            startActivity(slideactivity, bndlanimation);
+                                                                                                        }
+                                                                                                    });
 
                                                                                             snackbar.show();
-                                                                                            if(snackbar.isShown()){
-
-                                                                                                    progressDialog.dismiss();
-                                                                                                    Intent slideactivity = new Intent(MyCart.this, OrderStatus.class);
-                                                                                                    Bundle bndlanimation =
-                                                                                                            ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
-                                                                                                    startActivity(slideactivity, bndlanimation);
-
-                                                                                            }
 
                                                                                         }
 
