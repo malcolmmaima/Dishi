@@ -87,7 +87,11 @@ public class UserProfileFragment extends Fragment {
                     //Error
                     if(progressDialog.isShowing()){
                         progressDialog.dismiss();
-                        Toast.makeText(getContext(), "failed to load profile picture. try again", Toast.LENGTH_SHORT).show();
+                        try {
+                            Toast.makeText(getContext(), "failed to load profile picture. try again", Toast.LENGTH_SHORT).show();
+                        } catch (Exception ee){
+
+                        }
                     }
                 }
 

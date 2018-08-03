@@ -54,6 +54,8 @@ import java.util.Random;
 
 import malcolmmaima.dishi.Model.MyCartDetails;
 import malcolmmaima.dishi.R;
+import malcolmmaima.dishi.View.MainActivity;
+import malcolmmaima.dishi.View.MyAccountNduthi;
 
 public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -73,9 +75,21 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
     ProgressDialog progressDialog;
     String[] phoneNumbers, phoneNames;
     List<String> names;
+    FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        mAuth = FirebaseAuth.getInstance();
+
+        if(mAuth.getInstance().getCurrentUser() == null){
+
+            //User is not signed in, send them back to verification page
+            Toast.makeText(this, "Not logged in!", Toast.LENGTH_LONG).show();
+            startActivity(new Intent(GeoFireActivity.this, MainActivity.class)
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));//Load Main Activity and clear activity stack
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_geo_fire);
         progressDialog = new ProgressDialog(GeoFireActivity.this);
