@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -24,10 +25,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -37,10 +41,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.rey.material.widget.Switch;
 
 import java.io.IOException;
 
+import malcolmmaima.dishi.Model.DishiUser;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.customfonts.EditText_Roboto_Regular;
 
@@ -56,6 +62,7 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
     Switch notifications;
     String myPhone;
     String account_type;
+    String temp;
 
     String [] profilePicActions = {"View Profile Picture","Change Profile Picture"};
 
@@ -73,6 +80,7 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
     int Image_Request_Code = 7;
 
     ProgressDialog progressDialog ;
+    Boolean saved;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -279,8 +287,9 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
         // Apply the adapter to the spinner
         accType.setAdapter(adapter);
         accType.setOnItemSelectedListener(SettingsActivity.this);
+        accType.setSelection(0);
 
-        databaseReference.child("account_type").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("account_type").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -291,16 +300,24 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
 
                     String account = dataSnapshot.getValue(String.class);
                     if(account.equals("1")){
+                        account_type = "1";
                         accType.setSelection(1);
+                        temp = "1";
                     }
                     if(account.equals("2")){
+                        account_type = "2";
                         accType.setSelection(2);
+                        temp = "2";
                     }
                     if(account.equals("3")){
+                        account_type = "3";
                         accType.setSelection(3);
+                        temp = "3";
                     }
                     if(account.equals("4")){
+                        account_type = "4";
                         accType.setSelection(4);
+                        temp = "4";
                     }
                 } catch (Exception e){
                     accType.setSelection(0);
@@ -480,6 +497,107 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
         }
     }
 
+    public void saveData() {
+        saved = false;
+        progressDialog.setTitle("Saving...");
+        progressDialog.show();
+
+            //Check if user has selected new profile pic
+            if (FilePathUri != null) {
+
+                //user has selected new pic
+
+                final StorageReference storageReference2nd = storageReference.child(Storage_Path + "/" + myPhone + "/" + System.currentTimeMillis() + "." + GetFileExtension(FilePathUri));
+
+                // Adding addOnSuccessListener to second StorageReference.
+                storageReference2nd.putFile(FilePathUri)
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                //Get image URL: //Here we get the image url from the firebase storage
+                                storageReference2nd.getDownloadUrl().addOnSuccessListener(new OnSuccessListener() {
+
+                                    @Override
+                                    public void onSuccess(Object o) {
+                                        databaseReference.child("profilepic").setValue(o.toString()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                if (progressDialog.isShowing()) {
+                                                    progressDialog.dismiss();
+                                                }
+                                            }
+                                        });
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception exception) {
+                                        if (progressDialog.isShowing()) {
+                                            progressDialog.dismiss();
+                                        }
+
+                                    }
+                                });
+                            }
+                        });
+            }
+
+        //save username
+        if (!userName.getText().toString().equals("")) {
+            databaseReference.child("name").setValue(userName.getText().toString());
+        }
+
+        //save user bio
+        if (!userBio.getText().toString().equals("")) {
+            databaseReference.child("bio").setValue(userBio.getText().toString());
+        }
+
+        //save email
+        String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+
+        //Check if email uses the appropriate email pattern
+        if (!userEmail.equals(emailPattern)) {
+            databaseReference.child("email").setValue(userEmail.getText().toString());
+        } else { userEmail.setError("Invalid Email"); }
+
+        //save gender
+        if (gender.getCheckedRadioButtonId() != -1) {
+
+            int userGender = gender.getCheckedRadioButtonId();
+            // find the radio button by returned id
+            RadioButton radioButton = findViewById(userGender);
+
+            String gender = radioButton.getText().toString();
+            databaseReference.child("gender").setValue(gender);
+        }
+
+        Boolean switchState = notifications.isChecked();
+        databaseReference.child("notifications").setValue(switchState.toString());
+
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                saved = true;
+                if (progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+
+                Snackbar snackbar = Snackbar
+                        .make(findViewById(R.id.parentlayout), "Saved", Snackbar.LENGTH_LONG);
+
+                snackbar.show();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                saved = false;
+                Snackbar snackbar = Snackbar
+                        .make(findViewById(R.id.parentlayout), "Failed", Snackbar.LENGTH_LONG);
+
+                snackbar.show();
+            }
+        });
+    }
+
     // Creating Method to get the selected image file Extension from File Path URI.
     public String GetFileExtension(Uri uri) {
 
@@ -508,14 +626,57 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
 
         //noinspection SimplifiableIfStatement
         if(id == R.id.action_save){
-            Toast.makeText(SettingsActivity.this, "Save Settings", Toast.LENGTH_LONG).show();
+            try {
+                saveData();
+            }
+            catch (Exception e){
+                Toast.makeText(this, "Error " + e.toString(), Toast.LENGTH_SHORT).show();
+            }
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        account_type = Integer.toString(position);
+
+        try {
+            if (!account_type.equals(Integer.toString(position))) {
+                //User has selected new account type. Prompt!
+                account_type = Integer.toString(position);
+
+                //Note for future: check if there's active order before allowing acc change
+
+                AlertDialog changeAcc = new AlertDialog.Builder(SettingsActivity.this)
+                        //set message, title, and icon
+                        .setTitle("Account change")
+                        .setMessage("Are you sure you want to change your account type?")
+                        //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
+                        //set three option buttons
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                //save account type
+                                if (!account_type.equals("0")) {
+                                    databaseReference.child("account_type").setValue(account_type).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Toast.makeText(SettingsActivity.this, "You will be redirected to your new account type on re-loading app", Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                }
+                            }
+                        }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                account_type = temp; //Revert to original account type
+
+                            }
+                        })//setNegativeButton
+
+                        .create();
+                changeAcc.show();
+            }
+        } catch (Exception e){
+
+        }
     }
 
     @Override

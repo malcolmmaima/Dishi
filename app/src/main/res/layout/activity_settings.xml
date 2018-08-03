@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".View.SettingsActivity">
+    tools:context=".View.SettingsActivity"
+    android:id="@+id/parentlayout">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -109,7 +110,9 @@
                             android:cursorVisible="true"
                             android:paddingTop="15dp"
                             android:paddingRight="5dp"
-                            android:paddingLeft="10dp"/>
+                            android:paddingLeft="10dp"
+                            android:imeOptions="actionDone"
+                            android:singleLine="true"/>
 
                     </RelativeLayout>
 
@@ -144,6 +147,8 @@
                             android:paddingRight="5dp"
                             android:paddingTop="15dp"
                             android:paddingLeft="10dp"
+                            android:imeOptions="actionDone"
+                            android:singleLine="true"
                             />
 
                     </RelativeLayout>
@@ -175,7 +180,9 @@
                             android:paddingTop="15dp"
                             android:paddingRight="5dp"
                             android:paddingLeft="10dp"
-                            android:layout_gravity="center"/>
+                            android:layout_gravity="center"
+                            android:imeOptions="actionDone"
+                            android:singleLine="true"/>
 
                     </RelativeLayout>
 
