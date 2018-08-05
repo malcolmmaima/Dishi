@@ -85,7 +85,6 @@ public class ConfirmedDeliveriesFragment extends Fragment {
         deliveryHistory = db.getReference(myPhone + "/history");
         recyclerview = v.findViewById(R.id.rview);
         emptyTag = v.findViewById(R.id.empty_tag);
-        confirmBtn = v.findViewById(R.id.confirmBtn);
         totalFee = v.findViewById(R.id.totalFee);
         totalItems = v.findViewById(R.id.totalItems);
 

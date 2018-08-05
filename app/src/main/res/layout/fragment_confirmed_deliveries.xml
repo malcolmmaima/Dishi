@@ -34,20 +34,6 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/totalFee"/>
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:gravity="center|right">
-            <Button
-                android:text="Navigate"
-                android:backgroundTint="@color/colorPrimary"
-                android:id="@+id/confirmBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        </RelativeLayout>
-
     </RelativeLayout>
 
     <TextView

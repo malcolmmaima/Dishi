@@ -76,8 +76,31 @@ public class NearbyRestaurantsFragment extends Fragment {
         recyclerview = v.findViewById(R.id.rview);
         emptyTag = v.findViewById(R.id.empty_tag);
 
+        final int[] initial_filter = new int[1];
+        final int[] distanceThreshold = {0};
+        final int[] location_filter = new int[1];
+
+        dbRef.child("location-filter").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                try {
+                    location_filter[0] = dataSnapshot.getValue(Integer.class);
+
+                    //Toast.makeText(context, "Fetch: " + location_filter, Toast.LENGTH_SHORT).show();
+                } catch (Exception e){
+                    location_filter[0] = 0;
+                    //Toast.makeText(context, "Fetch: " + location_filter, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         //Search for restaurants (account type 2)
-        restaurants.addValueEventListener(new ValueEventListener() {
+        restaurants.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 list = new ArrayList<>();

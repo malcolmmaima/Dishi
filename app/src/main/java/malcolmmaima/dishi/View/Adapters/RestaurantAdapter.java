@@ -1,6 +1,13 @@
 package malcolmmaima.dishi.View.Adapters;
 
+import android.app.ActivityOptions;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,9 +18,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import malcolmmaima.dishi.Model.RestaurantDetails;
 import malcolmmaima.dishi.R;
+import malcolmmaima.dishi.View.MainActivity;
+import malcolmmaima.dishi.View.MyAccountRestaurant;
 
 public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.MyHolder> {
 
@@ -39,6 +58,115 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.My
         holder.restaurantName.setText(restaurantDetails.getName());
 
         holder.likeImageView.setTag(R.drawable.ic_like);
+
+        final Double[] dist = new Double[listdata.size()];
+        //Lets create a Double[] array containing my lat/lon
+        final Double[] mylat = new Double[listdata.size()];
+        final Double[] mylon = new Double[listdata.size()];
+
+        //Lets create a Double[] array containing the provider lat/lon
+        final Double[] provlat = new Double[listdata.size()];
+        final Double[] provlon = new Double[listdata.size()];
+
+        final DatabaseReference mylocationRef, providerRef, dbRef;
+        FirebaseDatabase db;
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String myPhone = user.getPhoneNumber(); //Current logged in user phone number
+
+        // Assign FirebaseStorage instance to storageReference.
+
+        db = FirebaseDatabase.getInstance();
+        mylocationRef = db.getReference(myPhone + "/location"); //loggedin user location reference
+        providerRef = db.getReference(restaurantDetails.phone + "/location"); //food item provider location reference
+        dbRef = db.getReference(myPhone);
+
+        //My latitude longitude coordinates
+        mylocationRef.child("latitude").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                mylat[position] = dataSnapshot.getValue(Double.class);
+                ////////
+                mylocationRef.child("longitude").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        mylon[position] = dataSnapshot.getValue(Double.class);
+                        //Toast.makeText(context, "(my lat): " + mylat[position], Toast.LENGTH_SHORT).show();
+                        try {
+                            dist[position] = distance(provlat[position], provlon[position], mylat[position], mylon[position], "K");
+                            //Toast.makeText(context,  "dist: (" + dist[position] + ")m to " + orderDetails.providerName, Toast.LENGTH_SHORT).show();
+
+                            if(dist[position] < 1.0){
+                                holder.distAway.setText(dist[position]*1000 + " m away");
+                            } else {
+                                notifyDataSetChanged();
+                                //notifyItemInserted(position);
+                                holder.distAway.setText(dist[position] + " km away");
+
+                            }
+                        } catch (Exception e){
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+                ///////
+                //Toast.makeText(context, "(my lat): " + mylat[position], Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        //Item provider latitude longitude coordinates
+        providerRef.child("latitude").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                provlat[position] = dataSnapshot.getValue(Double.class);
+                //Toast.makeText(context, "(my lat): " + mylat[position], Toast.LENGTH_SHORT).show();
+
+                ////////
+                providerRef.child("longitude").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        provlon[position] = dataSnapshot.getValue(Double.class);
+                        //Toast.makeText(context, "(my lat): " + mylat[position], Toast.LENGTH_SHORT).show();
+                        try {
+                            dist[position] = distance(provlat[position], provlon[position], mylat[position], mylon[position], "K");
+                            //Toast.makeText(context,  "dist: (" + dist[position] + ")m to " + orderDetails.providerName, Toast.LENGTH_SHORT).show();
+
+                            if(dist[position] < 1.0){
+                                holder.distAway.setText(dist[position]*1000 + " m away");
+                            } else {
+                                //notifyItemInserted(position);
+                                holder.distAway.setText(dist[position] + " km away");
+
+                            }
+                        } catch (Exception e){
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+                ///////
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         try {
             //Loading image from Glide library.
@@ -70,6 +198,46 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.My
             }
         });
 
+        holder.callRestaurant.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(v.getContext())
+                        //set message, title, and icon
+                        .setTitle("Call Customer")
+                        .setMessage("Call " + restaurantDetails.getName() + "?")
+                        //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
+                        //set three option buttons
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                String phone = restaurantDetails.phone;
+                                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null));
+                                context.startActivity(intent);
+                            }
+                        }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                //do nothing
+
+                            }
+                        })//setNegativeButton
+
+                        .create();
+                myQuittingDialogBox.show();
+            }
+        });
+
+        holder.profilePic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(context, "load view restaurant activity", Toast.LENGTH_SHORT).show();
+                //Slide to new activity
+                //Intent slideactivity = new Intent(context, ViewRestaurant.class)
+                //        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                //Bundle bndlanimation =
+                //        ActivityOptions.makeCustomAnimation(context, R.anim.animation,R.anim.animation2).toBundle();
+                //context.startActivity(slideactivity, bndlanimation);
+            }
+        });
+
 
 
         holder.shareImageView.setOnClickListener(new View.OnClickListener() {
@@ -80,6 +248,47 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.My
         });
     }
 
+    public static double distance(double lat1, double lon1, double lat2, double lon2, String unit) {
+        double theta = lon1 - lon2;
+        double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
+        dist = Math.acos(dist);
+        dist = rad2deg(dist);
+        dist = dist * 60 * 1.1515;
+        if (unit == "K") {
+            dist = dist * 1.609344;
+        } else if (unit == "N") {
+            dist = dist * 0.8684;
+        }
+
+        return round(dist, 2);
+    }
+
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    /*::	This function converts decimal degrees to radians			:*/
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    public static double deg2rad(double deg) {
+        return (deg * Math.PI / 180.0);
+    }
+
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    /*::	This function converts radians to decimal degrees			:*/
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    public static double rad2deg(double rad) {
+        return (rad * 180 / Math.PI);
+    }
+
+
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    /*::	This function converts a double to N places					 :*/
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    private static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(Double.toString(value));
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
+
     @Override
     public int getItemCount() {
         return listdata.size();
@@ -87,8 +296,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.My
 
     class MyHolder extends RecyclerView.ViewHolder{
         TextView restaurantName, distAway;
-        ImageView profilePic, likeImageView, shareImageView;
-        Button call;
+        ImageView profilePic, likeImageView, shareImageView, callRestaurant;
 
         public MyHolder(View itemView) {
             super(itemView);
@@ -97,7 +305,8 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.My
             shareImageView = itemView.findViewById(R.id.shareImageView);
             profilePic = itemView.findViewById(R.id.coverImageView);
             restaurantName = itemView.findViewById(R.id.titleTextView);
-            //distAway = itemView.findViewById(R.id.distanceAway);
+            distAway = itemView.findViewById(R.id.distanceAway);
+            callRestaurant = itemView.findViewById(R.id.callRestaurant);
 
         }
     }
