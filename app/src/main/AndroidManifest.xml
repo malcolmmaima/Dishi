@@ -41,7 +41,6 @@
             android:name=".Controller.TrackingService"
             android:enabled="true"
             android:exported="true" />
-
         <service android:name=".Controller.NotificationService" />
 
         <activity android:name=".View.OrderStatus" />
@@ -56,7 +55,7 @@
         <activity
             android:name=".View.Map.GeoFireActivity"
             android:label="@string/title_activity_geo_fire" />
-
+        <activity android:name=".View.Adapters.RestaurantAdapter"></activity>
     </application>
 
 </manifest>
