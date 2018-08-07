@@ -49,7 +49,6 @@ public class ConfirmedDeliveriesFragment extends Fragment {
     RecyclerView recyclerview;
     String myPhone;
     TextView emptyTag,totalItems, totalFee;
-    Button confirmBtn;
 
     DatabaseReference dbRef, myDeliveries, deliveryHistory;
     FirebaseDatabase db;
@@ -179,45 +178,12 @@ public class ConfirmedDeliveriesFragment extends Fragment {
 
                 //Toast.makeText(getContext(), "TOTAL: " + temp, Toast.LENGTH_SHORT).show();
                 //Toast.makeText(getContext(), "Items: " + myBasket.size(), Toast.LENGTH_SHORT).show();
-                if(list.size() == 0) {
-                    confirmBtn.setEnabled(false);
-                }
-                else {
-                    confirmBtn.setEnabled(true);
-                }
                 totalFee.setText("Ksh: " + temp);
                 totalItems.setText("Items: " + list.size());
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-
-        confirmBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                /*
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-                    builder.setTitle("Customers")
-                            .setItems(R.array.accounts, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // The 'which' argument contains the index position
-                                    // of the selected item
-                                    Toast.makeText(getContext(), "clicked " + users[which], Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                    builder.create();
-                    builder.show();
-
-
-                Intent slideactivity = new Intent(getContext(), GeoFireActivity.class);
-                slideactivity.putExtra("customer_phone", "+254778256039");
-                Bundle bndlanimation =
-                        ActivityOptions.makeCustomAnimation(getContext(), R.anim.animation,R.anim.animation2).toBundle();
-                startActivity(slideactivity, bndlanimation); */
 
             }
         });
