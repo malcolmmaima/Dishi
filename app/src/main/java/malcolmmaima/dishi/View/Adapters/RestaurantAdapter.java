@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -68,7 +69,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.My
         final Double[] provlat = new Double[listdata.size()];
         final Double[] provlon = new Double[listdata.size()];
 
-        final DatabaseReference mylocationRef, providerRef, dbRef;
+        final DatabaseReference mylocationRef, providerRef, myFavourites, dbRef;
         FirebaseDatabase db;
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -80,6 +81,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.My
         mylocationRef = db.getReference(myPhone + "/location"); //loggedin user location reference
         providerRef = db.getReference(restaurantDetails.phone + "/location"); //food item provider location reference
         dbRef = db.getReference(myPhone);
+        myFavourites = db.getReference(myPhone + "/restaurant_favs");
 
         //My latitude longitude coordinates
         mylocationRef.child("latitude").addValueEventListener(new ValueEventListener() {
@@ -176,23 +178,58 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.My
 
         }
 
+        myFavourites.child(restaurantDetails.phone).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String phone = dataSnapshot.getValue(String.class);
+                try {
+                    if (phone.equals("fav")) {
+                        holder.likeImageView.setTag(R.drawable.ic_liked);
+                        holder.likeImageView.setImageResource(R.drawable.ic_liked);
+                    } else {
+                        holder.likeImageView.setTag(R.drawable.ic_like);
+                        holder.likeImageView.setImageResource(R.drawable.ic_like);
+                    }
+                } catch (Exception e){
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         holder.likeImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 int id = (int)holder.likeImageView.getTag();
                 if( id == R.drawable.ic_like){
+                    //Add to my favourites
+                    myFavourites.child(restaurantDetails.phone).setValue("fav").addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            holder.likeImageView.setTag(R.drawable.ic_liked);
+                            holder.likeImageView.setImageResource(R.drawable.ic_liked);
+                            //Toast.makeText(context,restaurantDetails.getName()+" added to favourites",Toast.LENGTH_SHORT).show();
+                        }
+                    });
 
-                    holder.likeImageView.setTag(R.drawable.ic_liked);
-                    holder.likeImageView.setImageResource(R.drawable.ic_liked);
-
-                    Toast.makeText(context,restaurantDetails.getName()+" added to favourites",Toast.LENGTH_SHORT).show();
 
                 } else{
 
-                    holder.likeImageView.setTag(R.drawable.ic_like);
-                    holder.likeImageView.setImageResource(R.drawable.ic_like);
-                    Toast.makeText(context,restaurantDetails.getName()+" removed from favourites",Toast.LENGTH_SHORT).show();
+                    //Remove from my favourites
+                    myFavourites.child(restaurantDetails.phone).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            holder.likeImageView.setTag(R.drawable.ic_like);
+                            holder.likeImageView.setImageResource(R.drawable.ic_like);
+                            //Toast.makeText(context,restaurantDetails.getName()+" removed from favourites",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
                 }
 
             }

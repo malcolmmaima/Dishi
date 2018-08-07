@@ -271,10 +271,156 @@ public class NearbyRestaurantsFragment extends Fragment {
                 } catch (Exception e){
                     recyclerview.setVisibility(v.INVISIBLE);
                     emptyTag.setVisibility(v.VISIBLE);
-                    emptyTag.setText("Error");
+                    emptyTag.setText("Try again");
                 }
             }
         }.start();
+
+        emptyTag.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                progressDialog.setMessage("loading...");
+                progressDialog.show();
+
+                recyclerview.setVisibility(v.INVISIBLE);
+                emptyTag.setVisibility(v.VISIBLE);
+
+                //Search for restaurants (account type 2)
+                restaurants.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        list = new ArrayList<>();
+                        //Loop through all users
+                        for (DataSnapshot users : dataSnapshot.getChildren()){
+
+                            //loop through each user and find out if they're a restaurant
+                            for(DataSnapshot restaurant : users.getChildren()){
+                                if(restaurant.getKey().equals("account_type")){
+                                    String accType = restaurant.getValue(String.class);
+                                    if(accType.equals("2")){
+                                        //Assign details to our Model
+                                        final RestaurantDetails restaurantDetails = users.getValue(RestaurantDetails.class);
+                                        restaurantDetails.phone = users.getKey().toString();
+                                        //Toast.makeText(getContext(), "details: " + restaurantDetails.getName(), Toast.LENGTH_SHORT).show();
+
+                                        //Compute restaurant's distance
+                                        providerRef = db.getReference(restaurantDetails.phone);
+                                        //Item provider latitude longitude coordinates
+                                        providerRef.child("location").addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                                for(DataSnapshot providerLoc : dataSnapshot.getChildren()){
+
+                                                    try {
+                                                        if(providerLoc.getKey().equals("longitude")){
+                                                            provlon[0] = providerLoc.getValue(Double.class);
+                                                            //Toast.makeText(getContext(), "(prov lat): " + provlon[0], Toast.LENGTH_SHORT).show();
+                                                        }
+
+                                                        if(providerLoc.getKey().equals("latitude")){
+                                                            provlat[0] = providerLoc.getValue(Double.class);
+                                                            //Toast.makeText(getContext(), "(prov lon): " + provlat[0], Toast.LENGTH_SHORT).show();
+                                                        }
+
+
+                                                    } catch (Exception e){
+                                                        Toast.makeText(getContext(), "" + e, Toast.LENGTH_SHORT).show();
+                                                    }
+                                                }
+                                    /*
+                                    Toast.makeText(getContext(), "Thresh: " + distanceThreshold[0] + "Km. You are " + distance(myLat[0], myLong[0], provlat[0], provlon[0], "K")
+                                            + " Km away from " + orderDetails.getName(), Toast.LENGTH_SHORT).show();
+                                    */
+
+                                                //If the distance between me and the provider of the product is above the distance threshold(filter), then
+                                                //dont add it to the recycler view list else add it
+                                                try {
+
+                                                    if(filter > distance(myLat[0], myLong[0], provlat[0], provlon[0], "K")){
+                                                        if(restaurantDetails.phone.equals(myPhone) == false){ //make sure my menus are not on my filter
+
+                                                            //filter duplicates from the list
+                                                            if(list.contains(restaurantDetails)){
+                                                                // is present ... :) so do nothing
+                                                                //list.remove(restaurantDetails);
+                                                            } else { list.add(restaurantDetails); }
+                                                        }
+
+                                                    } } catch (Exception e){
+                                                    //Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                            }
+                                        });
+
+                                        list.add(restaurantDetails); //wierd app behavior, works but once I comment this out list throws an exception
+
+                                    }
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+                new CountDownTimer(5000, 1000) {
+                    public void onTick(long millisUntilFinished) {
+                        //Toast.makeText(getContext(), "seconds remaining: " + millisUntilFinished / 1000, Toast.LENGTH_SHORT).show();
+                    }
+
+                    public void onFinish() {
+                        //Toast.makeText(getContext(), "done!", Toast.LENGTH_SHORT).show();
+                        progressDialog.dismiss();
+                        try {
+                            if (!list.isEmpty()) {
+                                if(progressDialog.isShowing()){
+                                    progressDialog.dismiss();
+                                }
+                                recyclerview.setVisibility(View.VISIBLE);
+                                RestaurantAdapter recycler = new RestaurantAdapter(getContext(), list);
+                                RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
+                                recyclerview.setLayoutManager(layoutmanager);
+                                recyclerview.setItemAnimator(new SlideInLeftAnimator());
+
+                                recycler.notifyDataSetChanged();
+
+                                recyclerview.getItemAnimator().setAddDuration(1000);
+                                recyclerview.getItemAnimator().setRemoveDuration(1000);
+                                recyclerview.getItemAnimator().setMoveDuration(1000);
+                                recyclerview.getItemAnimator().setChangeDuration(1000);
+
+                                recyclerview.setAdapter(recycler);
+                                emptyTag.setVisibility(v.INVISIBLE);
+                                added = false;
+                            } else {
+                                if(progressDialog.isShowing()){
+                                    progressDialog.dismiss();
+                                }
+                                recyclerview.setVisibility(v.INVISIBLE);
+                                emptyTag.setVisibility(v.VISIBLE);
+                                emptyTag.setText("Try again");
+                            }
+                        } catch (Exception e){
+                            recyclerview.setVisibility(v.INVISIBLE);
+                            emptyTag.setVisibility(v.VISIBLE);
+                            emptyTag.setText("Try again");
+                        }
+                    }
+                }.start();
+            }
+        });
 
         return v;
     }
