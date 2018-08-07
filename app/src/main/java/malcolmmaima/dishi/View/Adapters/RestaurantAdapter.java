@@ -34,6 +34,7 @@ import malcolmmaima.dishi.Model.RestaurantDetails;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.MainActivity;
 import malcolmmaima.dishi.View.MyAccountRestaurant;
+import malcolmmaima.dishi.View.ViewRestaurant;
 
 public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.MyHolder> {
 
@@ -69,19 +70,20 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.My
         final Double[] provlat = new Double[listdata.size()];
         final Double[] provlon = new Double[listdata.size()];
 
-        final DatabaseReference mylocationRef, providerRef, myFavourites, dbRef;
+        final DatabaseReference mylocationRef, providerRef, myFavourites, providerFavs, restaurantRef;
         FirebaseDatabase db;
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        String myPhone = user.getPhoneNumber(); //Current logged in user phone number
+        final String myPhone = user.getPhoneNumber(); //Current logged in user phone number
 
         // Assign FirebaseStorage instance to storageReference.
 
         db = FirebaseDatabase.getInstance();
         mylocationRef = db.getReference(myPhone + "/location"); //loggedin user location reference
         providerRef = db.getReference(restaurantDetails.phone + "/location"); //food item provider location reference
-        dbRef = db.getReference(myPhone);
+        providerFavs = db.getReference(restaurantDetails.phone + "/favourites");
         myFavourites = db.getReference(myPhone + "/restaurant_favs");
+        restaurantRef = db.getReference(restaurantDetails.phone);
 
         //My latitude longitude coordinates
         mylocationRef.child("latitude").addValueEventListener(new ValueEventListener() {
@@ -178,6 +180,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.My
 
         }
 
+        //On laoding adapter fetch the like status
         myFavourites.child(restaurantDetails.phone).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -201,6 +204,24 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.My
             }
         });
 
+        restaurantRef.child("favourites").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    int likesTotal = (int) dataSnapshot.getChildrenCount();
+                    holder.likes.setText(""+likesTotal);
+                } catch (Exception e){
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         holder.likeImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -213,19 +234,32 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.My
                         public void onSuccess(Void aVoid) {
                             holder.likeImageView.setTag(R.drawable.ic_liked);
                             holder.likeImageView.setImageResource(R.drawable.ic_liked);
+
+                            providerFavs.child(myPhone).setValue("fav").addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    //Add favourite to restaurant's node as well
+                                }
+                            });
                             //Toast.makeText(context,restaurantDetails.getName()+" added to favourites",Toast.LENGTH_SHORT).show();
                         }
                     });
 
 
                 } else{
-
                     //Remove from my favourites
                     myFavourites.child(restaurantDetails.phone).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
                             holder.likeImageView.setTag(R.drawable.ic_like);
                             holder.likeImageView.setImageResource(R.drawable.ic_like);
+
+                            providerFavs.child(myPhone).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    //remove favourite from restaurant's node as well
+                                }
+                            });
                             //Toast.makeText(context,restaurantDetails.getName()+" removed from favourites",Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -240,7 +274,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.My
             public void onClick(View v) {
                 final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(v.getContext())
                         //set message, title, and icon
-                        .setTitle("Call Customer")
+                        .setTitle("Call Restaurant")
                         .setMessage("Call " + restaurantDetails.getName() + "?")
                         //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
                         //set three option buttons
@@ -265,13 +299,14 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.My
         holder.profilePic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, "load view restaurant activity", Toast.LENGTH_SHORT).show();
                 //Slide to new activity
-                //Intent slideactivity = new Intent(context, ViewRestaurant.class)
-                //        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                //Bundle bndlanimation =
-                //        ActivityOptions.makeCustomAnimation(context, R.anim.animation,R.anim.animation2).toBundle();
-                //context.startActivity(slideactivity, bndlanimation);
+                Intent slideactivity = new Intent(context, ViewRestaurant.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                slideactivity.putExtra("restaurant_phone", restaurantDetails.phone);
+                Bundle bndlanimation =
+                        ActivityOptions.makeCustomAnimation(context, R.anim.animation,R.anim.animation2).toBundle();
+                context.startActivity(slideactivity, bndlanimation);
             }
         });
 
@@ -332,7 +367,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.My
     }
 
     class MyHolder extends RecyclerView.ViewHolder{
-        TextView restaurantName, distAway;
+        TextView restaurantName, distAway, likes;
         ImageView profilePic, likeImageView, shareImageView, callRestaurant;
 
         public MyHolder(View itemView) {
@@ -344,6 +379,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.My
             restaurantName = itemView.findViewById(R.id.titleTextView);
             distAway = itemView.findViewById(R.id.distanceAway);
             callRestaurant = itemView.findViewById(R.id.callRestaurant);
+            likes = itemView.findViewById(R.id.likesTotal);
 
         }
     }

@@ -147,7 +147,6 @@ public class UserProfileFragment extends Fragment {
                         progressDialog.dismiss();
                     }
                 } catch (Exception e){
-                    Toast.makeText(getContext(), "Error: " + e, Toast.LENGTH_SHORT).show();
                     if(progressDialog.isShowing()){
                         progressDialog.dismiss();
                     }

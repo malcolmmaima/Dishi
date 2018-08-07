@@ -129,9 +129,9 @@
                 />
 
                 <Button
-                    android:layout_width="wrap_content"
+                    android:layout_width="50dp"
                     android:layout_height="wrap_content"
-                    android:text="Call"
+                    android:background="@drawable/ic_phone_black_24dp"
                     android:id="@+id/callCustomer"
                     android:layout_toLeftOf="@id/viewBtn"/>
             </RelativeLayout>

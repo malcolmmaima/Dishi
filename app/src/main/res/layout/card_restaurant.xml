@@ -95,6 +95,13 @@
                     android:padding="5dp"
                     android:src="@drawable/ic_like" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:id="@+id/likesTotal"
+                    />
+
                 <ImageView
                     android:id="@+id/callRestaurant"
                     android:layout_width="40dp"
