@@ -84,7 +84,6 @@ public class ViewRestaurant extends AppCompatActivity {
             }
         });
 
-        restaurantPic = findViewById(R.id.coverImageView);
         favourite = findViewById(R.id.likeImageView);
         callBtn = findViewById(R.id.callRestaurant);
         shareRest = findViewById(R.id.shareImageView);
@@ -92,7 +91,6 @@ public class ViewRestaurant extends AppCompatActivity {
         favourite.setTag(R.drawable.ic_like);
 
         distAway = findViewById(R.id.distanceAway);
-        restaurantName = findViewById(R.id.titleTextView);
         likes = findViewById(R.id.likesTotal);
 
         //Initializing viewPager
@@ -148,7 +146,6 @@ public class ViewRestaurant extends AppCompatActivity {
             finish();
         }
 
-        setTitle("Restaurant");
         restaurantRef = FirebaseDatabase.getInstance().getReference(restaurantPhone);
         myFavourites = FirebaseDatabase.getInstance().getReference(myPhone);
         providerFavs = FirebaseDatabase.getInstance().getReference(restaurantPhone + "/favourites");
@@ -161,11 +158,8 @@ public class ViewRestaurant extends AppCompatActivity {
                 restaurantDetails.phone = restaurantPhone;
 
                 try {
-                    //Loading image from Glide library.
-                    Glide.with(ViewRestaurant.this).load(restaurantDetails.getProfilepic()).into(restaurantPic);
-                    restaurantName.setText(restaurantDetails.getName());
                     RestaurantName = restaurantDetails.getName();
-                    Log.d("glide", "onBindViewHolder: imageUrl: " + restaurantDetails.getProfilepic());
+                    setTitle(RestaurantName);
                 } catch (Exception e){
 
                 }

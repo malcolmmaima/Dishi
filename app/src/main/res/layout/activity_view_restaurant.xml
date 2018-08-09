@@ -16,188 +16,159 @@
         android:layout_height="@dimen/actionBarSize">
     </android.support.v7.widget.Toolbar>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/toolbar"
-            >
+    <RelativeLayout
+        android:id="@+id/restcover"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar"
+        >
 
-            <android.support.v7.widget.CardView
-                android:id="@+id/card_view"
+        <android.support.v7.widget.CardView
+            android:id="@+id/card_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            card_view:cardCornerRadius="4dp"
+            tools:context=".View.Adapters.RestaurantAdapter">
+
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                card_view:cardCornerRadius="4dp"
-                tools:context=".View.Adapters.RestaurantAdapter">
-
+                android:orientation="vertical"
+                android:weightSum="4">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dip"
+                    android:layout_weight="3.2"
                     android:orientation="vertical"
-                    android:weightSum="4">
+                    >
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/interactive"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.8"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/locationTag"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:scaleType="centerCrop"
+                        android:layout_margin="10dp"
+                        android:background="@drawable/ic_location_black_48dp"
+                        android:layout_marginRight="10dp"
+
+                        />
+
+                    <TextView
+                        android:id="@+id/distanceAway"
+                        android:layout_toRightOf="@id/locationTag"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" 0 m away"
+                        android:layout_marginLeft="-10dp"
+                        android:layout_marginTop="10dp"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="0dip"
-                        android:layout_weight="3.2"
-                        android:orientation="vertical">
+                        android:layout_height="wrap_content"
+                        android:gravity="center|right"
+                        >
 
-                        <FrameLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_gravity="center_horizontal">
-
-                            <ImageView
-                                android:id="@+id/coverImageView"
-                                android:layout_width="match_parent"
-                                android:layout_height="200dp"
-                                android:layout_gravity="center"
-                                android:scaleType="centerCrop"
-                                />
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="left|bottom"
-                                android:background="@android:drawable/screen_background_dark_transparent"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:id="@+id/titleTextView"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:padding="16dp"
-                                    android:textSize="20dp"
-                                    android:textColor="#FFFFFF"
-                                    android:text="Restaurant"
-                                    android:textStyle="bold" />
-                            </LinearLayout>
-                        </FrameLayout>
-                    </LinearLayout>
-
-
-                    <LinearLayout
-                        android:id="@+id/interactive"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dip"
-                        android:layout_weight="0.8"
-                        android:orientation="horizontal">
-
-                        <ImageButton
-                            android:id="@+id/locationTag"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:scaleType="centerCrop"
-                            android:layout_margin="10dp"
-                            android:background="@drawable/ic_location_black_48dp"
-                            android:layout_marginRight="10dp"
-
-                            />
+                        <ImageView
+                            android:id="@+id/likeImageView"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:padding="5dp"
+                            android:src="@drawable/ic_like" />
 
                         <TextView
-                            android:id="@+id/distanceAway"
-                            android:layout_toRightOf="@id/locationTag"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text=" 0 m away"
-                            android:layout_marginLeft="-10dp"
-                            android:layout_marginTop="10dp"/>
+                            android:text="0"
+                            android:id="@+id/likesTotal"
+                            />
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center|right"
-                            >
+                        <ImageView
+                            android:id="@+id/callRestaurant"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:padding="5dp"
+                            android:src="@drawable/ic_phone_black_24dp" />
 
-                            <ImageView
-                                android:id="@+id/likeImageView"
-                                android:layout_width="40dp"
-                                android:layout_height="40dp"
-                                android:padding="5dp"
-                                android:src="@drawable/ic_like" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="0"
-                                android:id="@+id/likesTotal"
-                                />
-
-                            <ImageView
-                                android:id="@+id/callRestaurant"
-                                android:layout_width="40dp"
-                                android:layout_height="40dp"
-                                android:padding="5dp"
-                                android:src="@drawable/ic_phone_black_24dp" />
-
-                            <ImageView
-                                android:id="@+id/shareImageView"
-                                android:layout_width="40dp"
-                                android:layout_height="40dp"
-                                android:padding="5dp"
-                                android:src="@drawable/ic_share" />
-
-                        </LinearLayout>
+                        <ImageView
+                            android:id="@+id/shareImageView"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:padding="5dp"
+                            android:src="@drawable/ic_share" />
 
                     </LinearLayout>
 
                 </LinearLayout>
-            </android.support.v7.widget.CardView>
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:layout_below="@id/card_view"
-                >
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
 
-                <android.support.design.widget.TabLayout
-                    android:id="@+id/tablayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:tabBackground="@color/browser_actions_bg_grey"
-                    app:tabGravity="fill"
-                    app:tabMode="fixed"
-                    app:tabIndicatorColor="@color/colorAccent"
-                    app:tabSelectedTextColor="@color/colorPrimary"
-                    app:tabTextColor="@color/browser_actions_bg_grey">
+    </RelativeLayout>
 
-                    <android.support.design.widget.TabItem
-                        android:id="@+id/tab1"
-                        android:icon="@drawable/ic_food_menu"
-                        android:text="Menu"
-                        android:layout_width="50dp"
-                        android:layout_height="30dp"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_below="@id/restcover"
+        tools:ignore="NotSibling">
 
-                    <android.support.design.widget.TabItem
-                        android:id="@+id/tab2"
-                        android:icon="@drawable/ic_question_answer_black_48dp"
-                        android:layout_width="50dp"
-                        android:layout_height="30dp"
-                        android:text="Reviews" />
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tablayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabBackground="@color/browser_actions_bg_grey"
+            app:tabGravity="fill"
+            app:tabMode="fixed"
+            app:tabIndicatorColor="@color/colorAccent"
+            app:tabSelectedTextColor="@color/colorPrimary"
+            app:tabTextColor="@color/browser_actions_bg_grey">
 
-                    <android.support.design.widget.TabItem
-                        android:id="@+id/tab3"
-                        android:icon="@drawable/ic_trending_up_black_48dp"
-                        android:text="Stats"
-                        android:layout_width="50dp"
-                        android:layout_height="30dp"/>
+            <android.support.design.widget.TabItem
+                android:id="@+id/tab1"
+                android:icon="@drawable/ic_food_menu"
+                android:text="Menu"
+                android:layout_width="50dp"
+                android:layout_height="30dp"/>
 
-                </android.support.design.widget.TabLayout>
+            <android.support.design.widget.TabItem
+                android:id="@+id/tab2"
+                android:icon="@drawable/ic_question_answer_black_48dp"
+                android:layout_width="50dp"
+                android:layout_height="30dp"
+                android:text="Reviews" />
 
-                <android.support.v4.view.ViewPager
-                    android:id="@+id/viewpager"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/tablayout"
-                    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                    android:layout_alignParentBottom="true">
+            <android.support.design.widget.TabItem
+                android:id="@+id/tab3"
+                android:icon="@drawable/ic_trending_up_black_48dp"
+                android:text="Stats"
+                android:layout_width="50dp"
+                android:layout_height="30dp"/>
 
-                </android.support.v4.view.ViewPager>
+        </android.support.design.widget.TabLayout>
 
-            </RelativeLayout>
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tablayout"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:layout_alignParentBottom="true">
 
-        </RelativeLayout>
+        </android.support.v4.view.ViewPager>
+
+    </RelativeLayout>
 
 </RelativeLayout>
