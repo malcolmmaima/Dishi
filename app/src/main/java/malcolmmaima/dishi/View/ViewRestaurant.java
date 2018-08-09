@@ -5,6 +5,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -29,6 +31,8 @@ import java.math.RoundingMode;
 
 import malcolmmaima.dishi.Model.RestaurantDetails;
 import malcolmmaima.dishi.R;
+import malcolmmaima.dishi.View.Adapters.ViewPagerAdapter;
+import malcolmmaima.dishi.View.Fragments.RestaurantMenu;
 
 public class ViewRestaurant extends AppCompatActivity {
     FirebaseAuth mAuth;
@@ -37,6 +41,19 @@ public class ViewRestaurant extends AppCompatActivity {
     TextView restaurantName, distAway, likes;
     String RestaurantName;
     Double provlat, provlon, mylat, mylon, dist;
+
+    //This is our tablayout
+    private TabLayout tabLayout;
+
+    //This is our viewPager
+    private ViewPager viewPager;
+
+    ViewPagerAdapter adapter;
+
+    //Fragments
+    RestaurantMenu restaurantMenu;
+    RestaurantMenu restaurantReviews;
+    RestaurantMenu restaurantStats;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +94,49 @@ public class ViewRestaurant extends AppCompatActivity {
         distAway = findViewById(R.id.distanceAway);
         restaurantName = findViewById(R.id.titleTextView);
         likes = findViewById(R.id.likesTotal);
+
+        //Initializing viewPager
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager.setOffscreenPageLimit(3);
+        setupViewPager(viewPager);
+
+        //Initializing the tablayout
+        tabLayout = (TabLayout) findViewById(R.id.tablayout);
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition(),false);
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                tabLayout.getTabAt(position).select();
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String myPhone = user.getPhoneNumber(); //Current logged in user phone number
@@ -318,6 +378,19 @@ public class ViewRestaurant extends AppCompatActivity {
             }
 
         });
+    }
+
+    private void setupViewPager(ViewPager viewPager)
+    {
+        adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        restaurantMenu = new RestaurantMenu();
+        restaurantReviews = new RestaurantMenu();
+        restaurantStats = new RestaurantMenu();
+
+        adapter.addFragment(restaurantMenu,"Menu");
+        adapter.addFragment(restaurantReviews,"Reviews");
+        adapter.addFragment(restaurantStats,"Stats");
+        viewPager.setAdapter(adapter);
     }
 
     public static double distance(double lat1, double lon1, double lat2, double lon2, String unit) {

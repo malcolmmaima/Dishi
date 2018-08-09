@@ -332,7 +332,6 @@ public class NearbyRestaurantsFragment extends Fragment {
                                     Toast.makeText(getContext(), "Thresh: " + distanceThreshold[0] + "Km. You are " + distance(myLat[0], myLong[0], provlat[0], provlon[0], "K")
                                             + " Km away from " + orderDetails.getName(), Toast.LENGTH_SHORT).show();
                                     */
-
                                                 //If the distance between me and the provider of the product is above the distance threshold(filter), then
                                                 //dont add it to the recycler view list else add it
                                                 try {
@@ -362,11 +361,8 @@ public class NearbyRestaurantsFragment extends Fragment {
 
                                     }
                                 }
-
                             }
-
                         }
-
                     }
 
                     @Override
