@@ -252,7 +252,6 @@ public class CustomerOrderFragment extends Fragment {
                         int counter = 0;
                         try {
                             list = new ArrayList<>();
-                            users = new ArrayList<>();
 
                             // StringBuffer stringbuffer = new StringBuffer();
 

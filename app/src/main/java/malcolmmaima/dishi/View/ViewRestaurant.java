@@ -39,7 +39,7 @@ public class ViewRestaurant extends AppCompatActivity {
     DatabaseReference restaurantRef, myFavourites, providerFavs;
     ImageView restaurantPic, favourite, callBtn, shareRest;
     TextView restaurantName, distAway, likes;
-    String RestaurantName;
+    String RestaurantName, phone;
     Double provlat, provlon, mylat, mylon, dist;
 
     //This is our tablayout
@@ -101,7 +101,7 @@ public class ViewRestaurant extends AppCompatActivity {
         setupViewPager(viewPager);
 
         //Initializing the tablayout
-        tabLayout = (TabLayout) findViewById(R.id.tablayout);
+        tabLayout = findViewById(R.id.tablayout);
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -147,6 +147,7 @@ public class ViewRestaurant extends AppCompatActivity {
             Toast.makeText(this, "Error fetching restaurant, try again!", Toast.LENGTH_LONG).show();
             finish();
         }
+
         setTitle("Restaurant");
         restaurantRef = FirebaseDatabase.getInstance().getReference(restaurantPhone);
         myFavourites = FirebaseDatabase.getInstance().getReference(myPhone);
@@ -386,6 +387,14 @@ public class ViewRestaurant extends AppCompatActivity {
         restaurantMenu = new RestaurantMenu();
         restaurantReviews = new RestaurantMenu();
         restaurantStats = new RestaurantMenu();
+
+        phone = getIntent().getStringExtra("restaurant_phone");
+
+        //Pass the phone number to menu adapter
+        Bundle data = new Bundle();//bundle instance
+        data.putString("phone", phone);//string to pass with a key value
+        data.putString("name","");
+        restaurantMenu.setArguments(data);//Set bundle data to fragment
 
         adapter.addFragment(restaurantMenu,"Menu");
         adapter.addFragment(restaurantReviews,"Reviews");
