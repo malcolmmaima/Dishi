@@ -142,7 +142,7 @@ public class NearbyRestaurantsFragment extends Fragment {
         });
 
         //Search for restaurants (account type 2)
-        restaurants.addValueEventListener(new ValueEventListener() {
+        restaurants.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 list = new ArrayList<>();
@@ -213,8 +213,12 @@ public class NearbyRestaurantsFragment extends Fragment {
 
                                     }
                                 });
-
-                                list.add(restaurantDetails); //wierd app behavior, works but once I comment this out list throws an exception
+                                //filter duplicates from the list
+                                if(list.contains(restaurantDetails)){
+                                    // is present ... :) so do nothing
+                                    //list.remove(restaurantDetails);
+                                } else { list.add(restaurantDetails); }
+                                //list.add(restaurantDetails); //wierd app behavior, works but once I comment this out list throws an exception
 
                             }
                         }
@@ -231,7 +235,7 @@ public class NearbyRestaurantsFragment extends Fragment {
             }
         });
 
-        new CountDownTimer(5000, 1000) {
+        new CountDownTimer(3000, 1000) {
             public void onTick(long millisUntilFinished) {
                 //Toast.makeText(getContext(), "seconds remaining: " + millisUntilFinished / 1000, Toast.LENGTH_SHORT).show();
             }
@@ -338,7 +342,6 @@ public class NearbyRestaurantsFragment extends Fragment {
 
                                                     if(filter > distance(myLat[0], myLong[0], provlat[0], provlon[0], "K")){
                                                         if(restaurantDetails.phone.equals(myPhone) == false){ //make sure my menus are not on my filter
-
                                                             //filter duplicates from the list
                                                             if(list.contains(restaurantDetails)){
                                                                 // is present ... :) so do nothing
@@ -357,7 +360,13 @@ public class NearbyRestaurantsFragment extends Fragment {
                                             }
                                         });
 
-                                        list.add(restaurantDetails); //wierd app behavior, works but once I comment this out list throws an exception
+                                        //filter duplicates from the list
+                                        if(list.contains(restaurantDetails)){
+                                            // is present ... :) so do nothing
+                                            //list.remove(restaurantDetails);
+                                        } else { list.add(restaurantDetails); }
+
+                                        //list.add(restaurantDetails); //wierd app behavior, works but once I comment this out list throws an exception
 
                                     }
                                 }
@@ -371,7 +380,7 @@ public class NearbyRestaurantsFragment extends Fragment {
                     }
                 });
 
-                new CountDownTimer(5000, 1000) {
+                new CountDownTimer(3000, 1000) {
                     public void onTick(long millisUntilFinished) {
                         //Toast.makeText(getContext(), "seconds remaining: " + millisUntilFinished / 1000, Toast.LENGTH_SHORT).show();
                     }

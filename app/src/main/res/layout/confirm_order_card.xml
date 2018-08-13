@@ -67,6 +67,7 @@
             android:text="Food Description"
             android:id="@+id/foodDescription"
             android:layout_marginLeft="5dp"
+            android:layout_marginRight="20dp"
             android:layout_below="@id/foodName"
             android:layout_toRightOf="@id/foodPic"
             android:layout_toEndOf="@id/foodPic"
@@ -97,7 +98,7 @@
             android:scaleType="centerCrop"
             android:background="@drawable/ic_location_black_48dp"
             android:layout_marginRight="10dp"
-            android:visibility="invisible"
+            android:visibility="visible"
 
             />
 
@@ -162,7 +163,7 @@
 
                     <Button
                         android:id="@+id/callBtn"
-                        android:layout_width="50dp"
+                        android:layout_width="40dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:scaleType="centerCrop"

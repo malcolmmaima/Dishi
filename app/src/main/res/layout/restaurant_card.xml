@@ -74,21 +74,10 @@
 
 
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Something here"
-        android:id="@+id/textExtra"
-        android:layout_marginLeft="5dp"
-        android:layout_below="@id/foodDescription"
-        android:layout_toRightOf="@id/foodPic"
-        android:textColor="#666"/>
-
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/textExtra"
+        android:layout_below="@id/foodDescription"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_toRightOf="@id/foodPic"
