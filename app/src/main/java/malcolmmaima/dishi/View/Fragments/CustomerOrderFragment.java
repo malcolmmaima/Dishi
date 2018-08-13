@@ -353,7 +353,7 @@ public class CustomerOrderFragment extends Fragment {
                     }
                 });
 
-                new CountDownTimer(5000, 1000) {
+                new CountDownTimer(3000, 1000) {
                     public void onTick(long millisUntilFinished) {
                         //Toast.makeText(getContext(), "seconds remaining: " + millisUntilFinished / 1000, Toast.LENGTH_SHORT).show();
                     }
@@ -543,7 +543,7 @@ public class CustomerOrderFragment extends Fragment {
                 progressDialog.setCancelable(false);
                 progressDialog.show();
 
-                new CountDownTimer(5000, 1000) {
+                new CountDownTimer(3000, 1000) {
                     public void onTick(long millisUntilFinished) {
                         //Toast.makeText(getContext(), "seconds remaining: " + millisUntilFinished / 1000, Toast.LENGTH_SHORT).show();
                     }
@@ -601,7 +601,7 @@ public class CustomerOrderFragment extends Fragment {
     }
 
     public void starttimer() {
-        new CountDownTimer(5000, 1000) {
+        new CountDownTimer(3000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 Toast.makeText(getContext(), "seconds remaining: " + millisUntilFinished / 1000, Toast.LENGTH_SHORT).show();

@@ -57,7 +57,9 @@
             android:label="@string/title_activity_geo_fire" />
         <activity android:name=".View.Adapters.RestaurantAdapter" />
         <activity android:name=".View.ViewRestaurant" />
-        <activity android:name=".View.Fragments.RestaurantMenu"></activity>
+        <activity android:name=".View.Fragments.RestaurantMenu" />
+        <activity android:name=".View.Fragments.RestaurantReviews" />
+        <activity android:name=".View.Fragments.RestaurantStats"></activity>
     </application>
 
 </manifest>

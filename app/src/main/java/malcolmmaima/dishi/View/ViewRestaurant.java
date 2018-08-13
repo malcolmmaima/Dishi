@@ -33,6 +33,8 @@ import malcolmmaima.dishi.Model.RestaurantDetails;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.Adapters.ViewPagerAdapter;
 import malcolmmaima.dishi.View.Fragments.RestaurantMenu;
+import malcolmmaima.dishi.View.Fragments.RestaurantReviews;
+import malcolmmaima.dishi.View.Fragments.RestaurantStats;
 
 public class ViewRestaurant extends AppCompatActivity {
     FirebaseAuth mAuth;
@@ -52,8 +54,8 @@ public class ViewRestaurant extends AppCompatActivity {
 
     //Fragments
     RestaurantMenu restaurantMenu;
-    RestaurantMenu restaurantReviews;
-    RestaurantMenu restaurantStats;
+    RestaurantReviews restaurantReviews;
+    RestaurantStats restaurantStats;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -379,8 +381,8 @@ public class ViewRestaurant extends AppCompatActivity {
     {
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
         restaurantMenu = new RestaurantMenu();
-        restaurantReviews = new RestaurantMenu();
-        restaurantStats = new RestaurantMenu();
+        restaurantReviews = new RestaurantReviews();
+        restaurantStats = new RestaurantStats();
 
         phone = getIntent().getStringExtra("restaurant_phone");
 
