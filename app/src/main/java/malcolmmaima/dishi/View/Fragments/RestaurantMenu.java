@@ -1,6 +1,8 @@
 package malcolmmaima.dishi.View.Fragments;
 
+import android.app.ActivityOptions;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,11 +14,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.rey.material.widget.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,14 +29,20 @@ import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import malcolmmaima.dishi.Model.OrderDetails;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.Adapters.CustomerOrderAdapter;
+import malcolmmaima.dishi.View.MainActivity;
+import malcolmmaima.dishi.View.MyAccountRestaurant;
+import malcolmmaima.dishi.View.MyCart;
+
+import static com.firebase.ui.auth.AuthUI.getApplicationContext;
 
 public class RestaurantMenu extends android.support.v4.app.Fragment {
 
-    DatabaseReference menuItemsRef, restaurantRootRef;
+    DatabaseReference menuItemsRef, restaurantRootRef, myCart;
     List<OrderDetails> list;
     RecyclerView recyclerview;
-    TextView emptyTag;
-    String restaurantName;
+    TextView emptyTag, cartSize;
+    String restaurantName, myPhone;
+    android.support.design.widget.FloatingActionButton myCartBtn;
 
     public RestaurantMenu() {
         // Required empty public constructor
@@ -54,13 +64,47 @@ public class RestaurantMenu extends android.support.v4.app.Fragment {
         final View v =  inflater.inflate(R.layout.fragment_view_restaurants_menu, container, false);
         recyclerview = v.findViewById(R.id.rview);
         emptyTag = v.findViewById(R.id.empty_tag);
+        myCartBtn = v.findViewById(R.id.myCart);
+        cartSize = v.findViewById(R.id.cartSize);
         restaurantName = "";
 
+        myCartBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Slide to new activity
+                Intent slideactivity = new Intent(getContext(), MyCart.class);
+                Bundle bndlanimation =
+                        ActivityOptions.makeCustomAnimation(getContext(), R.anim.animation,R.anim.animation2).toBundle();
+                startActivity(slideactivity, bndlanimation);
+            }
+        });
+
         try {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            myPhone = user.getPhoneNumber(); //Current logged in user phone number
 
             final String getPhone = getArguments().getString("phone");//get phone value from parent activity
             menuItemsRef = FirebaseDatabase.getInstance().getReference(getPhone + "/mymenu");
+            myCart = FirebaseDatabase.getInstance().getReference(myPhone + "/mycart");
             restaurantRootRef = FirebaseDatabase.getInstance().getReference(getPhone);
+
+            myCart.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    try {
+                        int cartItemsSize = (int) dataSnapshot.getChildrenCount();
+                        cartSize.setText(""+cartItemsSize);
+
+                        } catch (Exception e){
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
 
             restaurantRootRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
