@@ -24,8 +24,8 @@
 
         <com.alexzh.circleimageview.CircleImageView
             android:id="@+id/profilePic"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:src="@drawable/default_profile"
             app:view_shadowRadius="2dp"
             app:view_shadowDx="2dp"
@@ -45,6 +45,46 @@
             android:layout_marginLeft="5dp"
             android:layout_toRightOf="@id/profilePic"
             android:layout_toLeftOf="@+id/foodPrice"/>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            >
+
+            <ImageView
+                android:id="@+id/thumbsUp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/ic_thumb_up_black_48dp"/>
+
+            <TextView
+                android:id="@+id/upCounter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:layout_toRightOf="@id/thumbsUp"
+                android:textSize="20dp"
+                android:layout_margin="2dp"/>
+
+            <ImageView
+                android:layout_below="@id/thumbsUp"
+                android:id="@+id/thumbsDown"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/ic_thumb_down_black_48dp"/>
+
+            <TextView
+                android:id="@+id/downCounter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:layout_below="@id/upCounter"
+                android:layout_toRightOf="@id/thumbsDown"
+                android:textSize="20dp"
+                android:layout_margin="2dp"/>
+        </RelativeLayout>
 
 
         <TextView

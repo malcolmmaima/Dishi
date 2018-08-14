@@ -105,8 +105,6 @@ public class RestaurantReviewAdapter extends RecyclerView.Adapter<RestaurantRevi
             distAway = itemView.findViewById(R.id.distanceAway);
             userReview = itemView.findViewById(R.id.userReview);
             profilePic = itemView.findViewById(R.id.profilePic);
-
-
         }
     }
 }
