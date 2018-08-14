@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    card_view:cardCornerRadius="5dp"
+    android:focusableInTouchMode="true"
+    card_view:view_shadowDx="2dp"
+    card_view:view_shadowDy="0dp"
+    card_view:view_borderWidth="2dp"
+    card_view:view_borderColor="#cccccc">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:orientation="horizontal"
+        android:padding="5dp"
+        >
+
+        <com.alexzh.circleimageview.CircleImageView
+            android:id="@+id/profilePic"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/default_profile"
+            app:view_shadowRadius="2dp"
+            app:view_shadowDx="2dp"
+            app:view_shadowDy="0dp"
+            app:view_borderWidth="2dp"
+            app:view_borderColor="#cccccc"
+            android:scaleType="fitXY"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorAccent"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Profile name"
+            android:id="@+id/profileName"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@id/profilePic"
+            android:layout_toLeftOf="@+id/foodPrice"/>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Review..."
+            android:id="@+id/userReview"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="20dp"
+            android:layout_below="@id/profileName"
+            android:layout_toRightOf="@id/profilePic"
+            android:layout_toEndOf="@id/profilePic"
+            android:textColor="#666"/>
+
+        <RelativeLayout
+            android:id="@+id/cardActions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/userReview"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_toRightOf="@id/profilePic"
+            android:gravity="center|left">
+
+            <ImageButton
+                android:id="@+id/locationTag"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="5dp"
+                android:scaleType="centerCrop"
+                android:background="@drawable/ic_location_black_48dp"
+                android:layout_marginRight="10dp"
+
+                />
+
+            <TextView
+                android:id="@+id/distanceAway"
+                android:layout_toRightOf="@id/locationTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text=" 0 m away"
+                android:layout_marginLeft="-10dp"
+                android:layout_marginRight="5dp"/>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+</android.support.v7.widget.CardView>
