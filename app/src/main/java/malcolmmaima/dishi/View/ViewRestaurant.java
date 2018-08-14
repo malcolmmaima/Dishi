@@ -387,11 +387,12 @@ public class ViewRestaurant extends AppCompatActivity {
 
         phone = getIntent().getStringExtra("restaurant_phone");
 
-        //Pass the phone number to menu adapter
+        //Pass the phone number to the adapters
         Bundle data = new Bundle();//bundle instance
         data.putString("phone", phone);//string to pass with a key value
-        data.putString("name","");
         restaurantMenu.setArguments(data);//Set bundle data to fragment
+        restaurantReviews.setArguments(data);
+        restaurantStats.setArguments(data);
 
         adapter.addFragment(restaurantMenu,"Menu");
         adapter.addFragment(restaurantReviews,"Reviews");
