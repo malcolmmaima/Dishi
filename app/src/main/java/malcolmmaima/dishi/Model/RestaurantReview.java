@@ -4,6 +4,7 @@ public class RestaurantReview {
     public String phone;
     public String review;
     public String restaurantphone;
+    public String key;
 
     public String getPhone() {
         return phone;

@@ -148,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 // This callback is invoked in an invalid request for verification is made,
                 // for instance if the the phone number format is not valid.
                 Log.w("TAG", "onVerificationFailed", e);
+                fabbutton.setTag(getResources().getString(R.string.tag_send));
 
                 if (e instanceof FirebaseAuthInvalidCredentialsException) {
                     if(progressDialog.isShowing()){
@@ -236,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                         try {
                             PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, codeed.getText().toString().trim());
                             signInWithPhoneAuthCredential(credential);
-                        } catch (Exception e){ }
+                        } catch (Exception e){ fabbutton.setTag(getResources().getString(R.string.tag_verify)); }
                     }
                     if (mVerified) {
                         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();

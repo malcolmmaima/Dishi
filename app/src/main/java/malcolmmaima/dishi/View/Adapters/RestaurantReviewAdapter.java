@@ -1,7 +1,10 @@
 package malcolmmaima.dishi.View.Adapters;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -11,8 +14,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -25,6 +31,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
+import malcolmmaima.dishi.Model.MyCartDetails;
 import malcolmmaima.dishi.Model.RestaurantDetails;
 import malcolmmaima.dishi.Model.RestaurantReview;
 import malcolmmaima.dishi.R;
@@ -33,7 +40,7 @@ public class RestaurantReviewAdapter extends RecyclerView.Adapter<RestaurantRevi
 
     Context context;
     List<RestaurantReview> listdata;
-    DatabaseReference customerNode, mylocationRef, providerRef;
+    DatabaseReference customerNode, mylocationRef, providerRef, reviewNode;
 
     public RestaurantReviewAdapter(Context context, List<RestaurantReview> listdata) {
         this.listdata = listdata;
@@ -59,6 +66,7 @@ public class RestaurantReviewAdapter extends RecyclerView.Adapter<RestaurantRevi
         customerNode = FirebaseDatabase.getInstance().getReference(restaurantReview.getPhone());
         mylocationRef = FirebaseDatabase.getInstance().getReference(myPhone + "/location");
         providerRef = FirebaseDatabase.getInstance().getReference(restaurantReview.getRestaurantphone() + "/location");
+        reviewNode = FirebaseDatabase.getInstance().getReference(restaurantReview.getRestaurantphone() + "/customer_reviews");
 
         final Double[] dist = new Double[listdata.size()];
         //Lets create a Double[] array containing my lat/lon
@@ -71,6 +79,43 @@ public class RestaurantReviewAdapter extends RecyclerView.Adapter<RestaurantRevi
 
         final String profilePic[] = new String[listdata.size()];
         final String profileName[] = new String[listdata.size()];
+
+        //Allow user to delete their reviews by showing delete button only if that review belongs to them
+        if(myPhone.equals(restaurantReview.getPhone())){
+            holder.deleteBtn.setVisibility(View.VISIBLE);
+
+            holder.deleteBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final AlertDialog deleteDialogBox = new AlertDialog.Builder(v.getContext())
+                            //set message, title, and icon
+                            .setMessage("Delete review?")
+                            //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
+                            //set three option buttons
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    reviewNode.child(restaurantReview.key).removeValue();
+
+                                }
+                            })//setPositiveButton
+
+
+                            .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    //Do not delete
+                                    //Toast.makeText(context, "No", Toast.LENGTH_SHORT).show();
+
+                                }
+                            })//setNegativeButton
+
+                            .create();
+                    deleteDialogBox.show();
+                }
+            });
+        }
+        else {
+            holder.deleteBtn.setVisibility(View.INVISIBLE);
+        }
 
         holder.userReview.setText(restaurantReview.getReview());
 
@@ -91,11 +136,14 @@ public class RestaurantReviewAdapter extends RecyclerView.Adapter<RestaurantRevi
                             //Toast.makeText(context,  "dist: (" + dist[position] + ")m to " + orderDetails.providerName, Toast.LENGTH_SHORT).show();
 
                             if(dist[position] < 1.0){
-                                holder.distAway.setText(dist[position]*1000 + " m away");
+                                //holder.distAway.setText(dist[position]*1000 + " m away");
+                                holder.distAway.setVisibility(View.INVISIBLE);
+
                             } else {
                                 notifyDataSetChanged();
                                 //notifyItemInserted(position);
-                                holder.distAway.setText(dist[position] + " km away");
+                                //holder.distAway.setText(dist[position] + " km away");
+                                holder.distAway.setVisibility(View.INVISIBLE);
 
                             }
                         } catch (Exception e){
@@ -136,10 +184,12 @@ public class RestaurantReviewAdapter extends RecyclerView.Adapter<RestaurantRevi
                             //Toast.makeText(context,  "dist: (" + dist[position] + ")m to " + orderDetails.providerName, Toast.LENGTH_SHORT).show();
 
                             if(dist[position] < 1.0){
-                                holder.distAway.setText(dist[position]*1000 + " m away");
+                                //holder.distAway.setText(dist[position]*1000 + " m away");
+                                holder.distAway.setVisibility(View.INVISIBLE);
                             } else {
                                 //notifyItemInserted(position);
-                                holder.distAway.setText(dist[position] + " km away");
+                                //holder.distAway.setText(dist[position] + " km away");
+                                holder.distAway.setVisibility(View.INVISIBLE);
 
                             }
                         } catch (Exception e){
@@ -245,7 +295,7 @@ public class RestaurantReviewAdapter extends RecyclerView.Adapter<RestaurantRevi
 
     class MyHolder extends RecyclerView.ViewHolder{
         TextView customerName, distAway, userReview;
-        ImageView profilePic;
+        ImageView profilePic, deleteBtn;
 
         public MyHolder(View itemView) {
             super(itemView);
@@ -254,6 +304,7 @@ public class RestaurantReviewAdapter extends RecyclerView.Adapter<RestaurantRevi
             distAway = itemView.findViewById(R.id.distanceAway);
             userReview = itemView.findViewById(R.id.userReview);
             profilePic = itemView.findViewById(R.id.profilePic);
+            deleteBtn = itemView.findViewById(R.id.deleteBtn);
         }
     }
 }

@@ -212,7 +212,7 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
 
             @Override
             public  void onClick(final View view){
-                final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(view.getContext())
+                final AlertDialog addCartDialogBox = new AlertDialog.Builder(view.getContext())
                         //set message, title, and icon
                         .setTitle("Add to cart")
                         .setMessage("Add "+ orderDetails.getName() + " to cart?")
@@ -265,7 +265,7 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
                         })//setNegativeButton
 
                         .create();
-                myQuittingDialogBox.show();
+                addCartDialogBox.show();
                 }
         });
     }

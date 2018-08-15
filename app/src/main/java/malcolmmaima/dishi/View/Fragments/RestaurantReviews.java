@@ -105,6 +105,7 @@ public class RestaurantReviews extends android.support.v4.app.Fragment {
                     for(DataSnapshot reviews : dataSnapshot.getChildren()){
                         RestaurantReview restaurantReview = reviews.getValue(RestaurantReview.class);
                         restaurantReview.setRestaurantphone(getPhone);
+                        restaurantReview.key = reviews.getKey();
                         list.add(restaurantReview);
                         //Toast.makeText(getContext(), restaurantReview.getPhone() + ": " + restaurantReview.getReview(), Toast.LENGTH_SHORT).show();
                     }
