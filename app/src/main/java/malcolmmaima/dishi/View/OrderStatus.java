@@ -372,7 +372,7 @@ public class OrderStatus extends AppCompatActivity {
                     final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(OrderStatus.this)
                             //set message, title, and icon
                             .setTitle("Cancel Order")
-                            .setMessage("Are you sure you want to cancel your order?")
+                            .setMessage("Are you sure you want to cancel your entire order?")
                             //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
                             //set three option buttons
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -449,27 +449,30 @@ public class OrderStatus extends AppCompatActivity {
                                     });
 
 
-                                    confirmedNduthi.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            Collections.reverse(nduthiConfirmed);
-                                            ShoppingListAdapter recycler = new ShoppingListAdapter(OrderStatus.this, nduthiConfirmed);
-                                            RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
-                                            recyclerView2.setLayoutManager(layoutmanager);
-                                            recyclerView2.setItemAnimator(new DefaultItemAnimator());
-                                            recyclerView2.setAdapter(recycler);
+                                    try {
+                                        confirmedNduthi.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                ShoppingListAdapter recycler = new ShoppingListAdapter(OrderStatus.this, nduthiConfirmed);
+                                                RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
+                                                recyclerView2.setLayoutManager(layoutmanager);
+                                                recyclerView2.setItemAnimator(new DefaultItemAnimator());
+                                                recyclerView2.setAdapter(recycler);
 
-                                            RecyclerView.LayoutManager layoutmanager2 = new LinearLayoutManager(OrderStatus.this);
-                                            recyclerview.setLayoutManager(layoutmanager2);
-                                            recyclerview.setItemAnimator(new DefaultItemAnimator());
-                                            recyclerview.setAdapter(recycler);
+                                                RecyclerView.LayoutManager layoutmanager2 = new LinearLayoutManager(OrderStatus.this);
+                                                recyclerview.setLayoutManager(layoutmanager2);
+                                                recyclerview.setItemAnimator(new DefaultItemAnimator());
+                                                recyclerview.setAdapter(recycler);
 
-                                            emptyTag.setVisibility(VISIBLE);
-                                            if(progressDialog.isShowing()){
-                                                progressDialog.dismiss();
+                                                emptyTag.setVisibility(VISIBLE);
+                                                if (progressDialog.isShowing()) {
+                                                    progressDialog.dismiss();
+                                                }
                                             }
-                                        }
-                                    });
+                                        });
+                                    } catch (Exception e){
+
+                                    }
                                 }
                             })//setPositiveButton
 

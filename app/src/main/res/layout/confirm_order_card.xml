@@ -67,13 +67,26 @@
             android:text="Food Description"
             android:id="@+id/foodDescription"
             android:layout_marginLeft="5dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginRight="35dp"
             android:layout_below="@id/foodName"
             android:layout_toRightOf="@id/foodPic"
             android:layout_toEndOf="@id/foodPic"
             android:textColor="#666"/>
 
 
+        <ImageButton
+            android:id="@+id/customerTag"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="5dp"
+            android:scaleType="centerCrop"
+            android:background="@drawable/ic_account_circle_white_48dp"
+            android:backgroundTint="@color/colorPrimary"
+            android:layout_marginRight="0dp"
+            android:layout_toRightOf="@id/foodPic"
+            android:layout_below="@id/foodDescription"
+
+            />
 
         <TextView
             android:layout_width="wrap_content"
@@ -81,9 +94,10 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="Customer name"
             android:id="@+id/providerName"
-            android:layout_marginLeft="5dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginTop="5dp"
             android:layout_below="@id/foodDescription"
-            android:layout_toRightOf="@id/foodPic"
+            android:layout_toRightOf="@id/customerTag"
             android:textColor="#666"/>
 
         <ImageButton
@@ -164,7 +178,7 @@
                     <Button
                         android:id="@+id/callBtn"
                         android:layout_width="40dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="40dp"
                         android:layout_marginTop="10dp"
                         android:scaleType="centerCrop"
                         android:layout_marginRight="5dp"
