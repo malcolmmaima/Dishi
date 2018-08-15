@@ -37,6 +37,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import malcolmmaima.dishi.Model.MyCartDetails;
@@ -212,6 +213,7 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                 totalItems.setText("Items: " + myBasket.size());
 
                     if (!myBasket.isEmpty()) {
+                        Collections.reverse(myBasket);
                         MyCartAdapter recycler = new MyCartAdapter(MyCart.this, myBasket);
                         RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(MyCart.this);
                         recyclerview.setLayoutManager(layoutmanager);

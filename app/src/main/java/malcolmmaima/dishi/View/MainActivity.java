@@ -328,10 +328,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             dbRef.child("verified").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    Boolean verified = dataSnapshot.getValue(Boolean.class);
+
+                    String verified = dataSnapshot.getValue(String.class);
 
                     Toast.makeText(MainActivity.this, "Verified: " + verified, Toast.LENGTH_LONG).show();
-                    if (verified == true) {
+                    if (verified.equals("true")) {
                         //User is verified, so we need to check their account type and redirect accordingly
                         dbRef.child("account_type").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
@@ -380,7 +381,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                                 ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation, R.anim.animation2).toBundle();
                         startActivity(slideactivity, bndlanimation);
                     }
-
                 }
 
                 @Override
@@ -533,6 +533,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                             Log.w("TAG", "signInWithCredential:failure", task.getException());
                             if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
                                 // The verification code entered was invalid
+                                fabbutton.setTag(getResources().getString(R.string.tag_send));
                                 Snackbar snackbar = Snackbar
                                         .make((LinearLayout) findViewById(R.id.parentlayout), "Invalid Code ! Please enter correct Code", Snackbar.LENGTH_LONG);
 

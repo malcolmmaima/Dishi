@@ -21,6 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import malcolmmaima.dishi.Model.ProductDetails;
@@ -91,6 +92,7 @@ public class RestaurantMenuFragment extends Fragment {
                     if(progressDialog.isShowing()){
                         progressDialog.dismiss();
                     }
+                    Collections.reverse(list);
                     RestaurantMenuAdapter recycler = new RestaurantMenuAdapter(getContext(),list);
                     RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
                     recyclerview.setLayoutManager(layoutmanager);

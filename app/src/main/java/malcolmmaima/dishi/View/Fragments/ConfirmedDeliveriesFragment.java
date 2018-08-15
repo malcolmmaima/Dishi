@@ -30,6 +30,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import malcolmmaima.dishi.Model.MyCartDetails;
@@ -124,6 +125,7 @@ public class ConfirmedDeliveriesFragment extends Fragment {
                     if(progressDialog.isShowing()){
                         progressDialog.dismiss();
                     }
+                    Collections.reverse(list);
                     ReceivedOrdersAdapter recycler = new ReceivedOrdersAdapter(getContext(),list);
                     RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
                     recyclerview.setLayoutManager(layoutmanager);

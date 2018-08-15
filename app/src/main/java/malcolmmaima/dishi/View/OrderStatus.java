@@ -37,6 +37,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import malcolmmaima.dishi.Model.DishiUser;
@@ -168,6 +169,7 @@ public class OrderStatus extends AppCompatActivity {
                         if (progressDialog.isShowing()) {
                             progressDialog.dismiss();
                         }
+                        Collections.reverse(myBasket);
                         OrderStatAdapter recycler = new OrderStatAdapter(OrderStatus.this, myBasket);
                         RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
                         recyclerview.setLayoutManager(layoutmanager);
@@ -232,7 +234,6 @@ public class OrderStatus extends AppCompatActivity {
                                 if (progressDialog.isShowing()) {
                                     progressDialog.dismiss();
                                 }
-
                                 ShoppingListAdapter recycler = new ShoppingListAdapter(OrderStatus.this, nduthiConfirmed);
                                 RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
                                 recyclerView2.setLayoutManager(layoutmanager);
@@ -266,6 +267,7 @@ public class OrderStatus extends AppCompatActivity {
                                 if (progressDialog.isShowing()) {
                                     progressDialog.dismiss();
                                 }
+                                Collections.reverse(nduthiConfirmed);
                                 ShoppingListAdapter recycler = new ShoppingListAdapter(OrderStatus.this, nduthiConfirmed);
                                 RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
                                 recyclerView2.setLayoutManager(layoutmanager);
@@ -450,6 +452,7 @@ public class OrderStatus extends AppCompatActivity {
                                     confirmedNduthi.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
+                                            Collections.reverse(nduthiConfirmed);
                                             ShoppingListAdapter recycler = new ShoppingListAdapter(OrderStatus.this, nduthiConfirmed);
                                             RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(OrderStatus.this);
                                             recyclerView2.setLayoutManager(layoutmanager);

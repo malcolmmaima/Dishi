@@ -23,6 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.rey.material.widget.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
@@ -134,6 +135,7 @@ public class RestaurantMenu extends android.support.v4.app.Fragment {
 
                     try {
                         if (!list.isEmpty()) {
+                            Collections.reverse(list);
                             recyclerview.setVisibility(View.VISIBLE);
                             CustomerOrderAdapter recycler = new CustomerOrderAdapter(getContext(), list);
                             RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());

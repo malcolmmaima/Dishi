@@ -259,6 +259,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                     holder.acceptBtn.setText("Aborted");
                     holder.acceptBtn.setEnabled(false);
                     holder.deleteItem.setVisibility(View.VISIBLE);
+                    holder.trackCustomer.setVisibility(View.INVISIBLE);
                     // after this will put a timer below, max 2 mins then delete aborted order from list
                 }
                 } catch (Exception e){
