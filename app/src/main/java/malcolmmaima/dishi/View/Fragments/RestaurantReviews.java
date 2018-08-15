@@ -104,6 +104,7 @@ public class RestaurantReviews extends android.support.v4.app.Fragment {
                     list = new ArrayList<>();
                     for(DataSnapshot reviews : dataSnapshot.getChildren()){
                         RestaurantReview restaurantReview = reviews.getValue(RestaurantReview.class);
+                        restaurantReview.setRestaurantphone(getPhone);
                         list.add(restaurantReview);
                         //Toast.makeText(getContext(), restaurantReview.getPhone() + ": " + restaurantReview.getReview(), Toast.LENGTH_SHORT).show();
                     }
@@ -128,7 +129,7 @@ public class RestaurantReviews extends android.support.v4.app.Fragment {
                         } else {
                             recyclerview.setVisibility(v.INVISIBLE);
                             emptyTag.setVisibility(v.VISIBLE);
-                            emptyTag.setText("EMPTY");
+                            emptyTag.setText("NO REVIEWS");
                         }
                     }
 

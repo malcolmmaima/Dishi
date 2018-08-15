@@ -3,6 +3,7 @@ package malcolmmaima.dishi.Model;
 public class RestaurantReview {
     public String phone;
     public String review;
+    public String restaurantphone;
 
     public String getPhone() {
         return phone;
@@ -18,5 +19,13 @@ public class RestaurantReview {
 
     public void setReview(String review) {
         this.review = review;
+    }
+
+    public String getRestaurantphone() {
+        return restaurantphone;
+    }
+
+    public void setRestaurantphone(String restaurantphone) {
+        this.restaurantphone = restaurantphone;
     }
 }
