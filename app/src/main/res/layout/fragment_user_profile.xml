@@ -49,27 +49,6 @@
                 android:elevation="4dp"
                 android:paddingBottom="24dp">
 
-<!-- Add user button
-                <ImageView
-                    android:id="@+id/add_friend"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_toLeftOf="@+id/drop_down_option_menu"
-                    android:src="@drawable/ic_action_user_add" />
-
-                <ImageView
-                    android:id="@+id/drop_down_option_menu"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginTop="16dp"
-                    android:src="@drawable/ic_action_overflow" />
-
-                    -->
-
                 <TextView
                     android:id="@+id/user_profile_name"
                     android:layout_width="wrap_content"
@@ -87,10 +66,86 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/user_profile_name"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="12dp"
                     android:text="Some short bio bleh bleh"
                     android:textColor="#fff"
                     android:textSize="14sp" />
+
+                <LinearLayout
+                    android:id="@+id/linearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/user_profile_short_bio"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="11dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tv1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="3260"
+                            android:textColor="@color/colorAccent"
+                            android:textSize="24sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Orders"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="#A9A9A9" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="11dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tv2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="20M"
+                            android:textColor="@color/colorAccent"
+                            android:textSize="24sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Followers"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+                <View
+                    android:id="@+id/line"
+                    android:layout_marginTop="10dp"
+                    android:layout_below="@id/linearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#A9A9A9" />
+
             </RelativeLayout>
 
 

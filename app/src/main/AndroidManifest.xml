@@ -60,7 +60,8 @@
         <activity android:name=".View.Fragments.RestaurantMenu" />
         <activity android:name=".View.Fragments.RestaurantReviews" />
         <activity android:name=".View.Fragments.RestaurantStats" />
-        <activity android:name=".View.Adapters.RestaurantReviewAdapter"></activity>
+        <activity android:name=".View.Adapters.RestaurantReviewAdapter" />
+        <activity android:name=".View.ViewProfile"></activity>
     </application>
 
 </manifest>

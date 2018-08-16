@@ -191,7 +191,7 @@ public class NearbyRestaurantsFragment extends Fragment {
 
                                         //If the distance between me and the provider of the product is above the distance threshold(filter), then
                                         //dont add it to the recycler view list else add it
-                                        /* Needs optimization, only fetch those near you using filter distance DB reference from FB DB
+                                        /* Needs optimization, only fetch those near you using filter distance DB reference from Firebase DB
                                         try {
 
                                             if(filter > distance(myLat[0], myLong[0], provlat[0], provlon[0], "K")){
@@ -339,6 +339,7 @@ public class NearbyRestaurantsFragment extends Fragment {
                                     */
                                                 //If the distance between me and the provider of the product is above the distance threshold(filter), then
                                                 //dont add it to the recycler view list else add it
+                                                /* Needs optimization, only fetch those near you using filter distance DB reference from Firebase DB
                                                 try {
 
                                                     if(filter > distance(myLat[0], myLong[0], provlat[0], provlon[0], "K")){
@@ -352,7 +353,7 @@ public class NearbyRestaurantsFragment extends Fragment {
 
                                                     } } catch (Exception e){
                                                     //Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
-                                                }
+                                                } */
                                             }
 
                                             @Override
