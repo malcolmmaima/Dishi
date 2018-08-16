@@ -208,7 +208,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
                     customername[position] = dataSnapshot.getValue(String.class);
-                    holder.providerName.setText("Customer: " + customername[position]);
+                    holder.providerName.setText(customername[position]);
 
                 } catch (Exception e){
                     //Toast.makeText(context, "Error: " + e, Toast.LENGTH_SHORT).show();
