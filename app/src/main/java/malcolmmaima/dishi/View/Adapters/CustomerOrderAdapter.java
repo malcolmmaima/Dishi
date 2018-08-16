@@ -1,8 +1,11 @@
 package malcolmmaima.dishi.View.Adapters;
 
+import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
@@ -39,6 +42,8 @@ import malcolmmaima.dishi.Model.ProductDetails;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.AddMenu;
 import malcolmmaima.dishi.View.MyCart;
+import malcolmmaima.dishi.View.ViewProfile;
+import malcolmmaima.dishi.View.ViewRestaurant;
 
 public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdapter.MyHolder>{
 
@@ -207,6 +212,20 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
         } catch (Exception e){
 
         }
+
+        holder.providerName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Slide to new activity
+                Intent slideactivity = new Intent(context, ViewProfile.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                slideactivity.putExtra("phone", orderDetails.providerNumber);
+                Bundle bndlanimation =
+                        ActivityOptions.makeCustomAnimation(context, R.anim.animation,R.anim.animation2).toBundle();
+                context.startActivity(slideactivity, bndlanimation);
+            }
+        });
 
         holder.orderBtn.setOnClickListener(new View.OnClickListener(){
 

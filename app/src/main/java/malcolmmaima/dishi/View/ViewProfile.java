@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Toast;
 
 import malcolmmaima.dishi.R;
 
@@ -32,7 +33,13 @@ public class ViewProfile extends AppCompatActivity {
         //topToolBar.setLogo(R.drawable.logo);
         //topToolBar.setLogoDescription(getResources().getString(R.string.logo_desc));
 
+        final String providerPhone = getIntent().getStringExtra("phone");
 
+        if(providerPhone.equals(null) || providerPhone == null || providerPhone.equals("null")){
+            Toast.makeText(this, "Error fetching provider details, try again!", Toast.LENGTH_LONG).show();
+            finish();
+        }
 
+        Toast.makeText(this, "phone: " + providerPhone, Toast.LENGTH_LONG).show();
     }
 }
