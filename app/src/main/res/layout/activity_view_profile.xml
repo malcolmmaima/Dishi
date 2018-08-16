@@ -76,7 +76,8 @@
                         android:layout_marginTop="10dp"
                         android:background="@drawable/follow_user_button"
                         android:text="Follow me"
-                        android:textColor="#ffff" />
+                        android:textColor="#ffff"
+                        android:tag="follow"/>
 
                     <TextView
                         android:id="@+id/user_profile_name"
@@ -117,7 +118,7 @@
                             android:orientation="vertical">
 
                             <TextView
-                                android:id="@+id/tv1"
+                                android:id="@+id/orders"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="center"
@@ -149,11 +150,11 @@
                             android:orientation="vertical">
 
                             <TextView
-                                android:id="@+id/tv2"
+                                android:id="@+id/followers"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="center"
-                                android:text="20M"
+                                android:text="0"
                                 android:textColor="@color/colorAccent"
                                 android:textSize="24sp" />
 
