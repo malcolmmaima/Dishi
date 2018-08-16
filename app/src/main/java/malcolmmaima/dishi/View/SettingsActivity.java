@@ -22,6 +22,7 @@ import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -55,7 +56,7 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
     FirebaseAuth mAuth;
     private ImageView profile_pic;
 
-    EditText_Roboto_Regular userName, userBio, userEmail;
+    EditText userName, userBio, userEmail;
     RadioButton maleRd, femaleRd;
     RadioGroup gender;
     Spinner accType;

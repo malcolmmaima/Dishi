@@ -134,7 +134,7 @@
             app:tabMode="fixed"
             app:tabIndicatorColor="@color/colorAccent"
             app:tabSelectedTextColor="@color/colorPrimary"
-            app:tabTextColor="@color/browser_actions_bg_grey">
+            app:tabTextColor="@color/common_google_signin_btn_text_light_pressed">
 
             <android.support.design.widget.TabItem
                 android:id="@+id/tab1"

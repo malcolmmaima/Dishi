@@ -189,23 +189,7 @@ public class NearbyRestaurantsFragment extends Fragment {
                                             + " Km away from " + orderDetails.getName(), Toast.LENGTH_SHORT).show();
                                     */
 
-                                        //If the distance between me and the provider of the product is above the distance threshold(filter), then
-                                        //dont add it to the recycler view list else add it
-                                        try {
 
-                                            if(filter > distance(myLat[0], myLong[0], provlat[0], provlon[0], "K")){
-                                                if(restaurantDetails.phone.equals(myPhone) == false){ //make sure my menus are not on my filter
-
-                                                    //filter duplicates from the list
-                                                    if(list.contains(restaurantDetails)){
-                                                        // is present ... :) so do nothing
-                                                        //list.remove(restaurantDetails);
-                                                    } else { list.add(restaurantDetails); }
-                                                }
-
-                                            } } catch (Exception e){
-                                            //Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
-                                        }
                                     }
 
                                     @Override
@@ -213,11 +197,23 @@ public class NearbyRestaurantsFragment extends Fragment {
 
                                     }
                                 });
-                                //filter duplicates from the list
-                                if(list.contains(restaurantDetails)){
-                                    // is present ... :) so do nothing
-                                    //list.remove(restaurantDetails);
-                                } else { list.add(restaurantDetails); }
+                                //If the distance between me and the provider of the product is above the distance threshold(filter), then
+                                //dont add it to the recycler view list else add it
+                                try {
+
+                                    if(filter > distance(myLat[0], myLong[0], provlat[0], provlon[0], "K")){
+                                        if(restaurantDetails.phone.equals(myPhone) == false){ //make sure my menus are not on my filter
+
+                                            //filter duplicates from the list
+                                            if(list.contains(restaurantDetails)){
+                                                // is present ... :) so do nothing
+                                                //list.remove(restaurantDetails);
+                                            } else { list.add(restaurantDetails); }
+                                        }
+
+                                    } } catch (Exception e){
+                                    //Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                                }
                                 //list.add(restaurantDetails); //wierd app behavior, works but once I comment this out list throws an exception
 
                             }

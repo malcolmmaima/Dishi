@@ -88,123 +88,72 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-                        <malcolmmaima.dishi.customfonts.MyTextView_Roboto_Medium
-                            android:id="@+id/name"
-                            android:layout_weight="0.6"
-                            android:layout_width="100dp"
-                            android:layout_height="wrap_content"
-                            android:text="Name"
-                            android:textSize="20dp"
-                            android:layout_marginTop="20dp"
-                            android:layout_marginLeft="10dp"
-                            />
 
-                        <malcolmmaima.dishi.customfonts.EditText_Roboto_Regular
-                            android:id="@+id/userName"
-                            android:layout_toRightOf="@id/name"
-                            android:layout_weight="1.3"
+                        <android.support.design.widget.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="text"
-                            android:textSize="20dp"
-                            android:cursorVisible="true"
-                            android:paddingTop="15dp"
-                            android:paddingRight="5dp"
-                            android:paddingLeft="10dp"
-                            android:imeOptions="actionDone"
-                            android:singleLine="true"/>
+                            android:layout_marginTop="8dp"
+                            android:layout_marginBottom="8dp">
+                            <EditText
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="text"
+                                android:paddingBottom="15dp"
+                                android:id="@+id/userName"
+                                android:imeOptions="actionDone"/>
+
+                        </android.support.design.widget.TextInputLayout>
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <android.support.design.widget.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginBottom="8dp">
+                            <EditText
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="text"
+                                android:paddingBottom="15dp"
+                                android:id="@+id/userBio"
+                                android:imeOptions="actionDone"/>
+
+                        </android.support.design.widget.TextInputLayout>
 
                     </RelativeLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="0.1dp"
-                        android:background="#ACACAC"/>
 
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
-
-                        <malcolmmaima.dishi.customfonts.MyTextView_Roboto_Medium
-                            android:layout_width="100dp"
-                            android:layout_height="wrap_content"
-                            android:text="Profile Bio"
-                            android:layout_weight="0.6"
-                            android:textSize="18dp"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginTop="10dp"
-                            android:id="@+id/userBioTitle"/>
-                        <malcolmmaima.dishi.customfonts.EditText_Roboto_Regular
-                            android:id="@+id/userBio"
-                            android:layout_toRightOf="@id/userBioTitle"
-                            android:layout_weight="1.3"
+                        <android.support.design.widget.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="text"
-                            android:textSize="20dp"
-                            android:cursorVisible="true"
-                            android:paddingRight="5dp"
-                            android:paddingTop="15dp"
-                            android:paddingLeft="10dp"
-                            android:imeOptions="actionDone"
-                            android:singleLine="true"
-                            />
+                            android:layout_marginTop="8dp"
+                            android:layout_marginBottom="8dp">
+                            <EditText
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="textEmailAddress"
+                                android:paddingBottom="15dp"
+                                android:id="@+id/emailAddress"
+                                android:imeOptions="actionDone"/>
 
-                    </RelativeLayout>
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="0.1dp"
-                        android:background="#ACACAC"/>
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-                        <malcolmmaima.dishi.customfonts.MyTextView_Roboto_Medium
-                            android:id="@+id/emailTitle"
-                            android:layout_width="100dp"
-                            android:layout_weight="0.3"
-                            android:layout_height="wrap_content"
-                            android:text="Email"
-                            android:textSize="20dp"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginTop="10dp"/>
-                        <malcolmmaima.dishi.customfonts.EditText_Roboto_Regular
-                            android:id="@+id/emailAddress"
-                            android:layout_toRightOf="@id/emailTitle"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:inputType="textEmailAddress"
-                            android:paddingTop="15dp"
-                            android:paddingRight="5dp"
-                            android:paddingLeft="10dp"
-                            android:layout_gravity="center"
-                            android:imeOptions="actionDone"
-                            android:singleLine="true"/>
+                        </android.support.design.widget.TextInputLayout>
 
                     </RelativeLayout>
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="0.1dp"
-                        android:background="#ACACAC"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
-
-                        <malcolmmaima.dishi.customfonts.MyTextView_Roboto_Medium
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginBottom="10dp"
-                            android:layout_weight="0.3"
-                            android:text="Gender"
-                            android:textSize="20dp" />
 
 
                         <!-- Radio buttons under RelativeLayout -->
@@ -219,7 +168,6 @@
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
                                 android:gravity="center"
-                                android:layout_marginTop="10dp"
                                 android:layout_marginRight="15dp"
                                 >
 
@@ -246,11 +194,6 @@
 
                     </LinearLayout>
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="0.1dp"
-                        android:background="#ACACAC"/>
-
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -261,9 +204,8 @@
                             android:layout_marginLeft="10dp"
                             android:layout_marginTop="15dp"
                             android:layout_marginBottom="15dp"
-                            android:layout_weight="0.5"
                             android:text="Account Type"
-                            android:textSize="20dp"
+                            android:textSize="20sp"
                             android:id="@+id/accTypeTitle"/>
 
                         <Spinner
@@ -281,10 +223,6 @@
 
                     </RelativeLayout>
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="0.1dp"
-                        android:background="#ACACAC"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
