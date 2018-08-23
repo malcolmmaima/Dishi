@@ -94,7 +94,7 @@ public class NotificationService extends Service {
                 while(isRunning) {
                     try {
 
-                        checkConnection();
+                        isOnline();
 
                         Log.d(TAG, "Notification service running...");
 
@@ -229,14 +229,9 @@ public class NotificationService extends Service {
         if (netInfo != null && netInfo.isConnectedOrConnecting()) {
             return true;
         } else {
+            Toast.makeText(NotificationService.this, "You are not connected to the internet", Toast.LENGTH_SHORT).show();
             return false;
         }
     }
-    public void checkConnection(){
-        if(isOnline()){
-            //Toast.makeText(SplashActivity.this, "You are connected to Internet", Toast.LENGTH_SHORT).show();
-        }else{
-            Toast.makeText(NotificationService.this, "You are not connected to the internet", Toast.LENGTH_SHORT).show();
-        }
-    }
+
 }

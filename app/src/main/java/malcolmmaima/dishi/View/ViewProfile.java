@@ -1,6 +1,7 @@
 package malcolmmaima.dishi.View;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,7 +31,7 @@ public class ViewProfile extends AppCompatActivity {
     TextView userProfileName, profileBio, followersCounter, deliveriesCounter;
     ImageView profilePic;
     Button followUserBtn;
-    String myPhone;
+    String myPhone, picUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,12 +85,14 @@ public class ViewProfile extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
                     String ppic = dataSnapshot.getValue(String.class);
+                    picUrl = ppic;
                     //Loading image from Glide library.
                     Glide.with(ViewProfile.this).load(ppic).into(profilePic);
                     if(progressDialog.isShowing()){
                         progressDialog.dismiss();
                     }
                 } catch (Exception e){
+                    picUrl = "";
                     //Error
                     if(progressDialog.isShowing()){
                         progressDialog.dismiss();
@@ -232,6 +235,18 @@ public class ViewProfile extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
+            }
+        });
+
+        profilePic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent imgActivity = new Intent(ViewProfile.this, ViewPhoto.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                imgActivity.putExtra("link", picUrl);
+
+                startActivity(imgActivity);
             }
         });
 

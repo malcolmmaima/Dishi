@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#000000"
-    tools:context=".View.ViewMealPhoto">
+    tools:context=".View.ViewPhoto">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -28,6 +28,7 @@
 
         />
 
+    <!-- Will use later to make viewphoto more interactive -->
     <LinearLayout
         android:id="@+id/interactive"
         android:layout_width="match_parent"
@@ -35,7 +36,8 @@
         android:layout_weight="0.8"
         android:layout_marginTop="10dp"
         android:layout_alignParentBottom="true"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="invisible">
 
         <LinearLayout
             android:layout_width="match_parent"

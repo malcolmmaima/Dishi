@@ -63,7 +63,7 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
     Switch notifications;
     String myPhone;
     String account_type;
-    String temp;
+    String temp, picUrl;
 
     String [] profilePicActions = {"View Profile Picture","Change Profile Picture"};
 
@@ -416,6 +416,8 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
                     String ppic = dataSnapshot.getValue(String.class);
+
+                    picUrl = ppic;
                     //Loading image from Glide library.
                     Glide.with(SettingsActivity.this).load(ppic).into(profile_pic);
                     if(progressDialog.isShowing()){
@@ -453,7 +455,12 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
                 builder.setItems(profilePicActions, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 if(which == 0){
-                                    Toast.makeText(SettingsActivity.this, "View profile pic!", Toast.LENGTH_SHORT).show();
+                                    Intent imgActivity = new Intent(SettingsActivity.this, ViewPhoto.class)
+                                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                                    imgActivity.putExtra("link", picUrl);
+
+                                    startActivity(imgActivity);
                                 }
                                 if(which == 1){
                                     // Creating intent.
@@ -556,7 +563,7 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
         String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
         //Check if email uses the appropriate email pattern
-        if (!userEmail.getText().toString().equals("") && userEmail.equals(emailPattern)) {
+        if (!userEmail.getText().toString().equals("") || userEmail.equals(emailPattern)) {
             databaseReference.child("email").setValue(userEmail.getText().toString());
         } else { userEmail.setError("Invalid Email"); }
 

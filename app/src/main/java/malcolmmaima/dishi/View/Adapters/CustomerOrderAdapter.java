@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,19 +31,13 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import malcolmmaima.dishi.Model.MyCartDetails;
 import malcolmmaima.dishi.Model.OrderDetails;
-import malcolmmaima.dishi.Model.ProductDetails;
 import malcolmmaima.dishi.R;
-import malcolmmaima.dishi.View.AddMenu;
-import malcolmmaima.dishi.View.MyCart;
-import malcolmmaima.dishi.View.ViewMealPhoto;
+import malcolmmaima.dishi.View.ViewPhoto;
 import malcolmmaima.dishi.View.ViewProfile;
-import malcolmmaima.dishi.View.ViewRestaurant;
 
 public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdapter.MyHolder>{
 
@@ -231,7 +224,7 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
         holder.foodPic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent imgActivity = new Intent(context, ViewMealPhoto.class)
+                Intent imgActivity = new Intent(context, ViewPhoto.class)
                         .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
                 imgActivity.putExtra("link", orderDetails.getImageURL());
