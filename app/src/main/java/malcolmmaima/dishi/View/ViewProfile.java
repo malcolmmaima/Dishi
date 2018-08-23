@@ -27,7 +27,7 @@ public class ViewProfile extends AppCompatActivity {
 
     DatabaseReference providerRef, myRef;
 
-    TextView userProfileName, profileBio, followersCounter;
+    TextView userProfileName, profileBio, followersCounter, deliveriesCounter;
     ImageView profilePic;
     Button followUserBtn;
     String myPhone;
@@ -50,6 +50,7 @@ public class ViewProfile extends AppCompatActivity {
         profileBio = findViewById(R.id.user_profile_short_bio);
         followUserBtn = findViewById(R.id.btnFollow);
         followersCounter = findViewById(R.id.followers);
+        deliveriesCounter = findViewById(R.id.deliveries);
 
         Toolbar topToolBar = findViewById(R.id.toolbar);
         setSupportActionBar(topToolBar);
@@ -165,6 +166,22 @@ public class ViewProfile extends AppCompatActivity {
             }
         });
 
+        providerRef.child("history_deliveries").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    deliveriesCounter.setText(""+dataSnapshot.getChildrenCount());
+                } catch(Exception e){
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         providerRef.child("followers").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -243,8 +260,14 @@ public class ViewProfile extends AppCompatActivity {
                     myRef.child("following").child(providerPhone).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            followUserBtn.setText("FOLLOW");
-                            followUserBtn.setTag("follow");
+
+                            providerRef.child("followers").child(myPhone).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    followUserBtn.setText("FOLLOW");
+                                    followUserBtn.setTag("follow");
+                                }
+                            });
                         }
                     });
                 }

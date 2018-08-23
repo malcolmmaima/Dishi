@@ -42,6 +42,7 @@ import malcolmmaima.dishi.Model.ProductDetails;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.AddMenu;
 import malcolmmaima.dishi.View.MyCart;
+import malcolmmaima.dishi.View.ViewMealPhoto;
 import malcolmmaima.dishi.View.ViewProfile;
 import malcolmmaima.dishi.View.ViewRestaurant;
 
@@ -224,6 +225,20 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
                 Bundle bndlanimation =
                         ActivityOptions.makeCustomAnimation(context, R.anim.animation,R.anim.animation2).toBundle();
                 context.startActivity(slideactivity, bndlanimation);
+            }
+        });
+
+        holder.foodPic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent imgActivity = new Intent(context, ViewMealPhoto.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                imgActivity.putExtra("link", orderDetails.getImageURL());
+                imgActivity.putExtra("phone", orderDetails.providerNumber);
+                imgActivity.putExtra("key", orderDetails.key);
+
+                context.startActivity(imgActivity);
             }
         });
 

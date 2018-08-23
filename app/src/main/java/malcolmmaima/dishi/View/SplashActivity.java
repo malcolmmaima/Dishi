@@ -1,10 +1,17 @@
 package malcolmmaima.dishi.View;
 
 import android.app.ActivityOptions;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -15,8 +22,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import malcolmmaima.dishi.Controller.PreferenceManager;
 import malcolmmaima.dishi.R;
+import malcolmmaima.dishi.View.Adapters.CustomerOrderAdapter;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -30,6 +40,17 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+        new CountDownTimer(60000, 10000) { //Check connection status every 10 seconds and prompt user if not connected
+            public void onTick(long millisUntilFinished) {
+                //Toast.makeText(getContext(), "seconds remaining: " + millisUntilFinished / 1000, Toast.LENGTH_SHORT).show();
+                checkConnection();
+            }
+
+            public void onFinish() {
+                //Toast.makeText(getContext(), "done!", Toast.LENGTH_SHORT).show();
+            }
+        }.start();
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -157,6 +178,23 @@ public class SplashActivity extends AppCompatActivity {
 
 
 
+    }
+
+    protected boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public void checkConnection(){
+        if(isOnline()){
+            //Toast.makeText(SplashActivity.this, "You are connected to Internet", Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(SplashActivity.this, "You are not connected to the Internet", Toast.LENGTH_SHORT).show();
+        }
     }
 
 }

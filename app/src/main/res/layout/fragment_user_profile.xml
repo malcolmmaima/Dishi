@@ -88,18 +88,18 @@
                         android:orientation="vertical">
 
                         <TextView
-                            android:id="@+id/tv1"
+                            android:id="@+id/following"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:text="3260"
+                            android:text="0"
                             android:textColor="@color/colorAccent"
                             android:textSize="24sp" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Orders"
+                            android:text="Following"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
@@ -120,11 +120,11 @@
                         android:orientation="vertical">
 
                         <TextView
-                            android:id="@+id/tv2"
+                            android:id="@+id/followers"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:text="20M"
+                            android:text="0"
                             android:textColor="@color/colorAccent"
                             android:textSize="24sp" />
 

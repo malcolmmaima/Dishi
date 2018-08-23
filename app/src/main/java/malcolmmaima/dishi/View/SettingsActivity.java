@@ -556,7 +556,7 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
         String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
         //Check if email uses the appropriate email pattern
-        if (!userEmail.equals(emailPattern)) {
+        if (!userEmail.getText().toString().equals("") && userEmail.equals(emailPattern)) {
             databaseReference.child("email").setValue(userEmail.getText().toString());
         } else { userEmail.setError("Invalid Email"); }
 

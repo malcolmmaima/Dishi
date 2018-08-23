@@ -118,18 +118,18 @@
                             android:orientation="vertical">
 
                             <TextView
-                                android:id="@+id/orders"
+                                android:id="@+id/deliveries"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="center"
-                                android:text="3260"
+                                android:text="0"
                                 android:textColor="@color/colorAccent"
                                 android:textSize="24sp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Orders"
+                                android:text="Deliveries"
                                 android:textSize="18sp"
                                 android:textStyle="bold" />
 

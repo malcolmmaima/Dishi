@@ -6,6 +6,8 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -33,6 +35,7 @@ import malcolmmaima.dishi.Model.ReceivedOrders;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.Map.GeoFireActivity;
 import malcolmmaima.dishi.View.OrderStatus;
+import malcolmmaima.dishi.View.SplashActivity;
 
 public class NotificationService extends Service {
     private static final String TAG = "NotifService";
@@ -41,6 +44,7 @@ public class NotificationService extends Service {
     private NotificationServiceHandler notificationServiceHandler;
     int counter;
     boolean sent;
+    FirebaseAuth mAuth;
     @Override
     public void onCreate() {
         HandlerThread handlerthread = new HandlerThread("MyThread", Process.THREAD_PRIORITY_BACKGROUND);
@@ -50,6 +54,14 @@ public class NotificationService extends Service {
         isRunning = true;
         sent = false;
         counter = 0;
+
+        mAuth = FirebaseAuth.getInstance();
+
+        if (mAuth.getInstance().getCurrentUser() == null || mAuth.getInstance().getCurrentUser().getPhoneNumber() == null) {
+            NotificationManager nManager = ((NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE));
+            nManager.cancelAll();
+        }
+
     }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -81,6 +93,9 @@ public class NotificationService extends Service {
             synchronized (this) {
                 while(isRunning) {
                     try {
+
+                        checkConnection();
+
                         Log.d(TAG, "Notification service running...");
 
                         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -205,6 +220,23 @@ public class NotificationService extends Service {
             notification.icon |= Notification.BADGE_ICON_LARGE;
 
             manager.notify(new Random().nextInt(), notification);
+        }
+    }
+
+    protected boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public void checkConnection(){
+        if(isOnline()){
+            //Toast.makeText(SplashActivity.this, "You are connected to Internet", Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(NotificationService.this, "You are not connected to the internet", Toast.LENGTH_SHORT).show();
         }
     }
 }

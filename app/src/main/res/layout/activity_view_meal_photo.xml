@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#000000"
+    tools:context=".View.ViewMealPhoto">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:maxHeight="@dimen/actionBarSize"
+        android:background="#000000"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/actionBarSize"
+        >
+    </android.support.v7.widget.Toolbar>
+
+    <ImageView
+        android:layout_below="@id/toolbar"
+        android:id="@+id/imageView"
+        android:layout_width="fill_parent"
+        android:layout_height="400dp"
+        android:maxHeight="300dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/logo"
+        android:layout_centerInParent="true"
+
+        />
+
+    <LinearLayout
+        android:id="@+id/interactive"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.8"
+        android:layout_marginTop="10dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            >
+
+            <ImageView
+                android:id="@+id/likeImageView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="5dp"
+                android:src="@drawable/ic_like" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:id="@+id/likesTotal"
+                android:textColor="@color/colorPrimary"
+                />
+
+            <ImageView
+                android:id="@+id/callRestaurant"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="5dp"
+                android:src="@drawable/ic_phone_black_24dp" />
+
+            <ImageView
+                android:id="@+id/shareImageView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="5dp"
+                android:src="@drawable/ic_share" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

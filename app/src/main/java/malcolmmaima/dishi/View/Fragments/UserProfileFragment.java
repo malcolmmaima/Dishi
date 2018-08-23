@@ -39,7 +39,7 @@ public class UserProfileFragment extends Fragment {
     FirebaseDatabase db;
     FirebaseUser user;
 
-    TextView userProfileName, profileBio;
+    TextView userProfileName, profileBio, followersCounter, followingCounter;
     ImageView profilePic;
 
     List<DishiUser> userdata;
@@ -66,6 +66,8 @@ public class UserProfileFragment extends Fragment {
         userProfileName = v.findViewById(R.id.user_profile_name);
         profilePic = v.findViewById(R.id.user_profile_photo);
         profileBio = v.findViewById(R.id.user_profile_short_bio);
+        followersCounter = v.findViewById(R.id.followers);
+        followingCounter = v.findViewById(R.id.following);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         myPhone = user.getPhoneNumber(); //Current logged in user phone number
@@ -159,6 +161,56 @@ public class UserProfileFragment extends Fragment {
                 if(progressDialog.isShowing()){
                     progressDialog.dismiss();
                 }
+            }
+        });
+
+        dbRef.child("followers").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+
+                    //If followers are in the thousands them set to this format (1k followers)
+                    if((int)dataSnapshot.getChildrenCount() > 999){
+                        int thousandFollowers = (int) dataSnapshot.getChildrenCount();
+                        followersCounter.setText(thousandFollowers / 1000 + "K");
+                    }
+
+                    else {
+                        followersCounter.setText("" + dataSnapshot.getChildrenCount());
+                    }
+                } catch (Exception e){
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        dbRef.child("following").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+
+                    //If followers are in the thousands them set to this format (1k followers)
+                    if((int)dataSnapshot.getChildrenCount() > 999){
+                        int thousandFollowers = (int) dataSnapshot.getChildrenCount();
+                        followingCounter.setText(thousandFollowers / 1000 + "K");
+                    }
+
+                    else {
+                        followingCounter.setText("" + dataSnapshot.getChildrenCount());
+                    }
+                } catch (Exception e){
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
 

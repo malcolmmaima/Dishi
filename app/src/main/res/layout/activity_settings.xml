@@ -86,6 +86,8 @@
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
                         android:orientation="horizontal">
 
 
@@ -107,9 +109,11 @@
                         </RelativeLayout>
 
                         <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginRight="20dp"
+                            android:orientation="horizontal">
 
                         <android.support.design.widget.TextInputLayout
                             android:layout_width="match_parent"
@@ -131,6 +135,8 @@
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
                         android:orientation="horizontal">
                         <android.support.design.widget.TextInputLayout
                             android:layout_width="match_parent"
@@ -160,6 +166,7 @@
                         <RelativeLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginLeft="20dp"
                             >
 
                             <RadioGroup
@@ -197,6 +204,8 @@
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
                         android:orientation="horizontal">
                         <malcolmmaima.dishi.customfonts.MyTextView_Roboto_Medium
                             android:layout_width="wrap_content"
@@ -227,6 +236,8 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
                         android:orientation="horizontal">
 
                         <malcolmmaima.dishi.customfonts.MyTextView_Roboto_Medium

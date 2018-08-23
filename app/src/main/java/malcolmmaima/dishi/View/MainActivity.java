@@ -2,7 +2,10 @@ package malcolmmaima.dishi.View;
 
 import android.app.ActivityOptions;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -73,6 +76,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         // Assigning Id to ProgressDialog.
         progressDialog = new ProgressDialog(MainActivity.this);
 
+        checkConnection();
+
         if(mAuth.getInstance().getCurrentUser() != null){
 
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -86,10 +91,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     try {
-                        Boolean verified = dataSnapshot.getValue(Boolean.class);
+                        String verified = dataSnapshot.getValue(String.class);
 
                         Toast.makeText(MainActivity.this, "Verified: " + verified, Toast.LENGTH_LONG).show();
-                        if (verified == true) {
+                        if (verified.equals(true)) {
                             startActivity(new Intent(MainActivity.this, MyAccountRestaurant.class)
                                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                         } else {
@@ -103,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 }
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
+                    checkConnection();
                 }
             });
         }
@@ -205,6 +211,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         fabbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                checkConnection();
                 if (fabbutton.getTag().equals(getResources().getString(R.string.tag_send))) {
 
                     if (!phoneed.getText().toString().trim().isEmpty() && phoneed.getText().toString().trim().length() >= 9) {
@@ -229,6 +236,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 }
 
                 if (fabbutton.getTag().equals(getResources().getString(R.string.tag_verify))) {
+                    checkConnection();
                     if (!codeed.getText().toString().trim().isEmpty() && !mVerified) {
                         progressDialog.setMessage("Please wait...");
                         progressDialog.setTitle("Verifying");
@@ -292,6 +300,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         timertext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                checkConnection();
                 if (!phoneed.getText().toString().trim().isEmpty() && phoneed.getText().toString().trim().length() >= 9) {
                     resendVerificationCode(countryCode.getSelectedItem().toString() + phoneed.getText().toString().trim(), mResendToken);
                     mVerified = false;
@@ -314,7 +323,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     protected void onResume() {
         super.onResume();
-
+        checkConnection();
         try {
         if (mAuth.getInstance().getCurrentUser() != null) {
 
@@ -372,6 +381,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                             @Override
                             public void onCancelled(@NonNull DatabaseError databaseError) {
                                 //DB error, try again...if fails login again
+                                checkConnection();
                             }
                         });
                     } else {
@@ -385,6 +395,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
+                    checkConnection();
                 }
             });
         }
@@ -603,5 +614,23 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
+    }
+
+    protected boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void checkConnection(){
+        if(isOnline()){
+            //Toast.makeText(SplashActivity.this, "You are connected to Internet", Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(MainActivity.this, "You are not connected to the Internet", Toast.LENGTH_SHORT).show();
+        }
     }
 }

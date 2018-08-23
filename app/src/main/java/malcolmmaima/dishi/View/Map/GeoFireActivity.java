@@ -57,6 +57,7 @@ import java.util.Random;
 import malcolmmaima.dishi.Model.MyCartDetails;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.MainActivity;
+import malcolmmaima.dishi.View.MyAccountCustomer;
 import malcolmmaima.dishi.View.MyAccountNduthi;
 import malcolmmaima.dishi.View.MyCart;
 import malcolmmaima.dishi.View.OrderStatus;
@@ -74,7 +75,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
     Double nduthiLat, nduthiLng;
     boolean notifSent = false;
     VerticalSeekBar zoomMap;
-    DatabaseReference myRef, pendingOrders, providerRef, ordersHistory;
+    DatabaseReference myRef, pendingOrders, providerRef, providerOrderHistory, ordersHistory;
     String myPhone, accType, nduthi_phone, message, callMsg, temp;
     ProgressDialog progressDialog;
     String[] phoneNumbers, phoneNames;
@@ -188,7 +189,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                                                     for(int i = 0; i < mSelectedItems.size(); i++){
                                                         //Toast.makeText(GeoFireActivity.this, phoneNames[(int)mSelectedItems.get(i)]+" success!", Toast.LENGTH_SHORT).show();
                                                         providerRef = FirebaseDatabase.getInstance().getReference(phoneNumbers[(int)mSelectedItems.get(i)] + "/deliveries");
-
+                                                        providerOrderHistory = FirebaseDatabase.getInstance().getReference(phoneNumbers[(int)mSelectedItems.get(i)] + "/history_deliveries");
                                                         //check in my pending node for items
                                                         pendingOrders.addListenerForSingleValueEvent(new ValueEventListener() {
                                                         @Override
@@ -207,6 +208,10 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                                                                     providerRef.child(myCartDetails.key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                         @Override
                                                                         public void onSuccess(Void aVoid) {
+
+                                                                            //Create copy of order history for provider
+                                                                            providerOrderHistory.child(myCartDetails.key).setValue(myCartDetails);
+
                                                                             //Move already delivered order to history db node
                                                                             ordersHistory.child(myCartDetails.key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                                 @Override
@@ -222,7 +227,8 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                                                                                                     .setAction("FINISH", new View.OnClickListener() {
                                                                                                         @Override
                                                                                                         public void onClick(View view) {
-                                                                                                            Intent slideactivity = new Intent(GeoFireActivity.this, OrderStatus.class);
+                                                                                                            Intent slideactivity = new Intent(GeoFireActivity.this, MyAccountCustomer.class)
+                                                                                                                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                                                                                             Bundle bndlanimation =
                                                                                                                     ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
                                                                                                             startActivity(slideactivity, bndlanimation);
