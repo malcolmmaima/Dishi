@@ -80,10 +80,11 @@ public class NotificationService extends Service {
     }
     @Override
     public void onDestroy() {
-        isRunning = false;
+        isRunning = true; //for testing purposes, revert to false in production
         //Toast.makeText(this, "Notification service Completed or Stopped.", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "Notification service Stopped...");
     }
+
     private final class NotificationServiceHandler extends Handler {
         public NotificationServiceHandler(Looper looper) {
             super(looper);

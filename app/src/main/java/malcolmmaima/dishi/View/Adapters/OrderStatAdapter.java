@@ -1,10 +1,12 @@
 package malcolmmaima.dishi.View.Adapters;
 
+import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
@@ -40,6 +42,8 @@ import malcolmmaima.dishi.Model.ProductDetails;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.AddMenu;
 import malcolmmaima.dishi.View.MyCart;
+import malcolmmaima.dishi.View.ViewPhoto;
+import malcolmmaima.dishi.View.ViewProfile;
 
 import static malcolmmaima.dishi.R.drawable.ic_check_circle_black_48dp;
 import static malcolmmaima.dishi.R.drawable.ic_delivered_order;
@@ -229,7 +233,7 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
 
                 final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(v.getContext())
                         //set message, title, and icon
-                        .setTitle("Call Customer")
+                        .setTitle("Call Provider")
                         .setMessage("Call " + providerName[position] + "?")
                         //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
                         //set three option buttons
@@ -251,10 +255,37 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
             }
         });
 
+        holder.foodPic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent imgActivity = new Intent(context, ViewPhoto.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                imgActivity.putExtra("link", myCartDetails.getImageURL());
+
+                context.startActivity(imgActivity);
+            }
+        });
+
         holder.foodPrice.setText("Ksh "+myCartDetails.getPrice());
         holder.foodName.setText(myCartDetails.getName());
         holder.foodDescription.setText(myCartDetails.getDescription());
         holder.orderStatus.setText(myCartDetails.status);
+
+
+        holder.foodName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Slide to new activity
+                Intent slideactivity = new Intent(context, ViewProfile.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                slideactivity.putExtra("phone", myCartDetails.providerNumber);
+                Bundle bndlanimation =
+                        ActivityOptions.makeCustomAnimation(context, R.anim.animation,R.anim.animation2).toBundle();
+                context.startActivity(slideactivity, bndlanimation);
+            }
+        });
 
 
         try {
