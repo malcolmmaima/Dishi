@@ -223,14 +223,13 @@ public class NotificationService extends Service {
         }
     }
 
-    protected boolean isOnline() {
+    private void isOnline() {
         ConnectivityManager cm = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         if (netInfo != null && netInfo.isConnectedOrConnecting()) {
-            return true;
+            //is connected
         } else {
             Toast.makeText(NotificationService.this, "You are not connected to the internet", Toast.LENGTH_SHORT).show();
-            return false;
         }
     }
 
