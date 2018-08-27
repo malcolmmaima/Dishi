@@ -28,6 +28,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -57,6 +59,8 @@ public class ViewRequestItems extends AppCompatActivity {
     int totalPrice;
     String status;
     FirebaseAuth mAuth;
+
+    Double custlat, custlon, myLat, myLong, dist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -256,6 +260,10 @@ public class ViewRequestItems extends AppCompatActivity {
 
                                         }
                                     });
+
+                                    requestStatus.child("notification").setValue("false");
+
+
                                 }
                             }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
@@ -312,5 +320,123 @@ public class ViewRequestItems extends AppCompatActivity {
 
 
         });
+
+        customerDelRef.child("location").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for(DataSnapshot providerLoc : dataSnapshot.getChildren()){
+
+                    try {
+                        if(providerLoc.getKey().equals("longitude")){
+                            custlon = providerLoc.getValue(Double.class);
+                            //Toast.makeText(getContext(), "(prov lat): " + provlon[0], Toast.LENGTH_SHORT).show();
+                        }
+
+                        if(providerLoc.getKey().equals("latitude")){
+                            custlat = providerLoc.getValue(Double.class);
+                            //Toast.makeText(getContext(), "(prov lon): " + provlat[0], Toast.LENGTH_SHORT).show();
+                        }
+
+                        dist = distance(custlat, custlon, myLat, myLong, "K");
+                        //Toast.makeText(context,  "dist: (" + dist[position] + ")m to " + orderDetails.providerName, Toast.LENGTH_SHORT).show();
+
+                        if(dist < 1.0){
+                            distanceAway.setText(dist*1000 + " m away");
+                        } else {
+                            distanceAway.setText(dist + " km away");
+                        }
+
+
+                    } catch (Exception e){
+                        //Toast.makeText(context, "" + e, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        myRef.child("location").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for(DataSnapshot providerLoc : dataSnapshot.getChildren()){
+
+                    try {
+                        if(providerLoc.getKey().equals("longitude")){
+                            myLong = providerLoc.getValue(Double.class);
+                            //Toast.makeText(getContext(), "(prov lat): " + provlon[0], Toast.LENGTH_SHORT).show();
+                        }
+
+                        if(providerLoc.getKey().equals("latitude")){
+                            myLat = providerLoc.getValue(Double.class);
+                            //Toast.makeText(getContext(), "(prov lon): " + provlat[0], Toast.LENGTH_SHORT).show();
+                        }
+
+                        dist = distance(custlat, custlon, myLat, myLong, "K");
+                        //Toast.makeText(context,  "dist: (" + dist[position] + ")m to " + orderDetails.providerName, Toast.LENGTH_SHORT).show();
+
+                        if(dist < 1.0){
+                            distanceAway.setText(dist*1000 + " m away");
+                        } else {
+                            distanceAway.setText(dist + " km away");
+                        }
+
+
+                    } catch (Exception e){
+                        //Toast.makeText(context, "" + e, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public static double distance(double lat1, double lon1, double lat2, double lon2, String unit) {
+        double theta = lon1 - lon2;
+        double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
+        dist = Math.acos(dist);
+        dist = rad2deg(dist);
+        dist = dist * 60 * 1.1515;
+        if (unit == "K") {
+            dist = dist * 1.609344;
+        } else if (unit == "N") {
+            dist = dist * 0.8684;
+        }
+
+        return round(dist, 2);
+    }
+
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    /*::	This function converts decimal degrees to radians						 :*/
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    public static double deg2rad(double deg) {
+        return (deg * Math.PI / 180.0);
+    }
+
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    /*::	This function converts radians to decimal degrees						 :*/
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    public static double rad2deg(double rad) {
+        return (rad * 180 / Math.PI);
+    }
+
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    /*::	This function converts a double to N places					 :*/
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    private static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(Double.toString(value));
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 }

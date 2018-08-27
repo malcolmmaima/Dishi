@@ -450,6 +450,22 @@ public class OrderStatus extends AppCompatActivity {
 
 
                                     try {
+                                        //Update nduthi that user has cancelled order
+                                        confirmedNduthi.addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                for(DataSnapshot items : dataSnapshot.getChildren()){
+                                                    Toast.makeText(OrderStatus.this, "items: " + items.getKey(), Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                            }
+                                        });
+
+
                                         confirmedNduthi.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void aVoid) {

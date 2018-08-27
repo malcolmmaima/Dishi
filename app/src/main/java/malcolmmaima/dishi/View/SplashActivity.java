@@ -140,6 +140,11 @@ public class SplashActivity extends AppCompatActivity {
                                         startActivity(slideactivity, bndlanimation);
                                     }
 
+                                    else if (account_type.equals("X")){
+                                        Toast.makeText(SplashActivity.this, "Your account has been disabled", Toast.LENGTH_LONG).show();
+
+                                    }
+
                                     else { // Others
                                         Toast.makeText(SplashActivity.this, "'Others' account still in development", Toast.LENGTH_LONG).show();
                                     }

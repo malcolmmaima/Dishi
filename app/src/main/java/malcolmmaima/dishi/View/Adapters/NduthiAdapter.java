@@ -233,7 +233,7 @@ public class NduthiAdapter extends RecyclerView.Adapter<NduthiAdapter.MyHolder>{
                                             requestNduthi.phone = myPhone;
                                             requestNduthi.profilepic = profilepic[0];
                                             nduthiRideReqs.child(key).setValue(requestNduthi);
-                                            requestRideRef.child(key).setValue(requestNduthi).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            requestRideRef.child(myPhone).setValue(requestNduthi).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                 @Override
                                                 public void onSuccess(Void aVoid) {
                                                     //Send the items I want to the nduthi guy so he can view them as well
@@ -254,6 +254,8 @@ public class NduthiAdapter extends RecyclerView.Adapter<NduthiAdapter.MyHolder>{
                                                                         holder.selectBtn.setEnabled(false);
                                                                         holder.selectBtn.setText("Sent");
 
+
+
                                                                         final AlertDialog requestSentBox = new AlertDialog.Builder(v.getContext())
                                                                                 //set message, title, and icon
                                                                                 .setTitle("Request sent")
@@ -268,7 +270,11 @@ public class NduthiAdapter extends RecyclerView.Adapter<NduthiAdapter.MyHolder>{
                                                                                     }
                                                                                 })
                                                                                 .create();
-                                                                        requestSentBox.show();
+                                                                        if(requestSentBox.isShowing()){
+                                                                            //do nothing
+                                                                        } else {
+                                                                            requestSentBox.show();
+                                                                        }
 
                                                                     }
                                                                 });

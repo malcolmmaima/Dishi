@@ -346,23 +346,23 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                         dbRef.child("account_type").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                int account_type = dataSnapshot.getValue(Integer.class);
+                                String account_type = dataSnapshot.getValue(String.class);
 
-                                if (account_type == 1) { //Customer account
+                                if (account_type.equals("1")) { //Customer account
                                     Toast.makeText(MainActivity.this, "Customer Account", Toast.LENGTH_LONG).show();
                                     Intent slideactivity = new Intent(MainActivity.this, MyAccountCustomer.class)
                                             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     Bundle bndlanimation =
                                             ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation, R.anim.animation2).toBundle();
                                     startActivity(slideactivity, bndlanimation);
-                                } else if (account_type == 2) { //Provider Restaurant account
+                                } else if (account_type.equals("2")) { //Provider Restaurant account
                                     Toast.makeText(MainActivity.this, "Provider Account", Toast.LENGTH_LONG).show();
                                     Intent slideactivity = new Intent(MainActivity.this, MyAccountRestaurant.class)
                                             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     Bundle bndlanimation =
                                             ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation, R.anim.animation2).toBundle();
                                     startActivity(slideactivity, bndlanimation);
-                                } else if (account_type == 3) { //Nduthi account
+                                } else if (account_type.equals("3")) { //Nduthi account
                                     //Slide to new activity
                                     Toast.makeText(MainActivity.this, "Nduthi Account", Toast.LENGTH_LONG).show();
                                     Intent slideactivity = new Intent(MainActivity.this, MyAccountNduthi.class)
@@ -370,6 +370,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                                     Bundle bndlanimation =
                                             ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation, R.anim.animation2).toBundle();
                                     startActivity(slideactivity, bndlanimation);
+                                } else if (account_type.equals("X")){
+                                    Toast.makeText(MainActivity.this, "Your account has been disabled", Toast.LENGTH_LONG).show();
+
                                 } else { // Others
                                     Toast.makeText(MainActivity.this, "'Others' account still in development", Toast.LENGTH_LONG).show();
                                 }
@@ -501,6 +504,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                                                     Bundle bndlanimation =
                                                             ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
                                                     startActivity(slideactivity, bndlanimation);
+                                                }
+
+                                                else if (account_type.equals("X")){
+                                                    Toast.makeText(MainActivity.this, "Your account has been disabled", Toast.LENGTH_LONG).show();
+
                                                 }
 
                                                 else { // Others

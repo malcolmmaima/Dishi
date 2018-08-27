@@ -109,7 +109,7 @@
                 app:lineColor="@android:color/white"
                 app:lineWidth="0dp"
                 app:viewType="rectangle"
-                android:visibility="visible"/>
+                android:visibility="invisible"/>
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/sendverifybt"

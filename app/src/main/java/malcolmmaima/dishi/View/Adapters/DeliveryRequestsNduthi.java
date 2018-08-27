@@ -98,7 +98,7 @@ public class DeliveryRequestsNduthi extends RecyclerView.Adapter<DeliveryRequest
                     Glide.with(context).load(ic_delivered_order).into(holder.orderStatIcon);
                     holder.orderStatus.setText("confirmed"); }
 
-                //You have accepted the order are in transit to the customer
+                //You have accepted the order. in transit to the customer
             if (requestNduthi.status.equals("transit")) {
                     Glide.with(context).load(ic_order_in_transit).into(holder.orderStatIcon);
                     holder.orderStatus.setText("transit"); }

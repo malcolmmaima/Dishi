@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -40,9 +41,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import malcolmmaima.dishi.Model.MyCartDetails;
 import malcolmmaima.dishi.Model.NduthiNearMe;
 import malcolmmaima.dishi.R;
+import malcolmmaima.dishi.View.Adapters.CustomerOrderAdapter;
 import malcolmmaima.dishi.View.Adapters.MyCartAdapter;
 
 import static android.view.View.INVISIBLE;
@@ -359,14 +362,26 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                                                                 // Setting progressDialog Title.
                                                                 progressDialog.setMessage("Searching...");
                                                                 // Showing progressDialog.
-                                                                progressDialog.setCancelable(false);
+                                                                progressDialog.setCancelable(true);
                                                                 progressDialog.show();
 
                                                                 completeOrder = true;
 
-                                                                if(nduthisNearby() == false){
-                                                                    progressDialog.dismiss();
-                                                                }
+                                                                new CountDownTimer(3000, 1000) {
+                                                                    public void onTick(long millisUntilFinished) {
+                                                                        //Toast.makeText(getContext(), "seconds remaining: " + millisUntilFinished / 1000, Toast.LENGTH_SHORT).show();
+                                                                    }
+
+                                                                    public void onFinish() {
+                                                                        //Toast.makeText(getContext(), "done!", Toast.LENGTH_SHORT).show();
+                                                                        if(nduthisNearby() == false){
+                                                                            progressDialog.dismiss();
+                                                                            Toast.makeText(MyCart.this, "No nduthi near you, try again!", Toast.LENGTH_LONG).show();
+                                                                        }
+                                                                    }
+
+                                                                }.start();
+
 
                                                             }
                                                         })//setPositiveButton
@@ -590,26 +605,6 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_settings_activity, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if(id == R.id.action_save){
-            Toast.makeText(MyCart.this, "Save Cart", Toast.LENGTH_LONG).show();
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     public boolean nduthisNearby(){
         progressDialog.setMessage("Searching...");
@@ -643,73 +638,15 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                             nduthiNearMe.email = dataSnapshot1.child("email").getValue(String.class);
                             nduthiNearMe.gender = dataSnapshot1.child("gender").getValue(String.class);
 
-                            DatabaseReference nduthiRef = db.getReference(dataSnapshot1.getKey().toString() + "/location");
-
-                            //Nduthi latitude longitude coordinates
-                            nduthiRef.addValueEventListener(new ValueEventListener() {
+                            nduthiNearMeList.add(nduthiNearMe);
+                            myRef.child("nearby_nduthis").child(dataSnapshot1.getKey().toString()).setValue(nduthiNearMe).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                                    for (DataSnapshot nduthiCords : dataSnapshot.getChildren()) {
-                                        if (nduthiCords.getKey().equals("latitude")) {
-                                            nduthiLat = nduthiCords.getValue(Double.class);
-                                        }
-
-                                        if (nduthiCords.getKey().equals("longitude")) {
-                                            nduthiLong = nduthiCords.getValue(Double.class);
-                                        }
-                                    }
-
-                                    try {
-                                        //Calculate distance between nduthi and customer
-                                        distance = distance(myLat, myLong, nduthiLat, nduthiLong, "K");
-                                        distance = distance * 1000; //Convert to meters
-                                    } catch (Exception e){
-                                        if(progressDialog.isShowing()){
-                                            progressDialog.dismiss();
-                                        }
-
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-                                    if(progressDialog.isShowing()){
-                                        progressDialog.dismiss();
-                                    }
+                                public void onSuccess(Void aVoid) {
+                                    //Toast.makeText(MyCart.this, "Added: " + nduthiNearMeList.size() + " nduthis", Toast.LENGTH_SHORT).show();
+                                    avail_nduthi = true;
                                 }
                             });
 
-                            int nduthiSize = nduthiNearMeList.size();
-                            if(nduthiSize == 0){
-                                if(progressDialog.isShowing()){
-                                    progressDialog.dismiss();
-                                }
-                            }
-                            String key = myRef.push().getKey();
-                            //Search within a 1km radius for nduthis, if you're from USIU it's motorbike... my bad
-                            if(distance <= 1000){
-                                nduthiNearMeList.add(nduthiNearMe);
-                                myRef.child("nearby_nduthis").child(dataSnapshot1.getKey().toString()).setValue(nduthiNearMe).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        //Toast.makeText(MyCart.this, "Added: " + nduthiNearMeList.size() + " nduthis", Toast.LENGTH_SHORT).show();
-                                        avail_nduthi = true;
-                                    }
-                                });
-                            }
-
-                            else {
-                                if(progressDialog.isShowing()){
-                                    progressDialog.dismiss();
-                                }
-
-                                //Toast.makeText(MyCart.this, "No nduthi near you!", Toast.LENGTH_LONG).show();
-                                avail_nduthi = false;
-
-                                Toast.makeText(MyCart.this, "No nduthi near you!", Toast.LENGTH_SHORT).show();
-
-                            }
                             //Toast.makeText(MyCart.this, "nduthiNearMeList size: " + nduthiNearMeList.size(), Toast.LENGTH_SHORT).show();
                         }
 

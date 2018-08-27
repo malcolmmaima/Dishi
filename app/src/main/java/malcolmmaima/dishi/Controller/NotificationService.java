@@ -175,10 +175,10 @@ public class NotificationService extends Service {
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 try {
                                     for(DataSnapshot rideStat : dataSnapshot.getChildren()){
-                                        if(rideStat.child("status").getValue().equals("transit") && counter < 1){
+                                        if(rideStat.child("status").getValue().equals("transit") && rideStat.child("notification").getValue().equals("false")){
                                             sendNotification(rideStat.child("name").getValue()
                                                     + " has confirmed nduthi ride!");
-                                            counter = counter + 1;
+                                            reqRide.child(rideStat.getKey()).child("notification").setValue("true");
                                         }
                                     }
                                 } catch (Exception e){
