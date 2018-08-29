@@ -26,7 +26,7 @@ import malcolmmaima.dishi.R;
 
 public class ViewProfile extends AppCompatActivity {
 
-    DatabaseReference providerRef, myRef;
+    DatabaseReference providerRef, myRef, rootRef;
 
     TextView userProfileName, profileBio, followersCounter, deliveriesCounter;
     ImageView profilePic;
@@ -80,6 +80,37 @@ public class ViewProfile extends AppCompatActivity {
 
         //Set db reference to provider phone number then fetch user data (profile pic, name, bio)
         providerRef = FirebaseDatabase.getInstance().getReference(providerPhone);
+
+        rootRef = FirebaseDatabase.getInstance().getReference();
+
+        rootRef.child("platform_admin").child("cover_pic").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    String coverPic = dataSnapshot.getValue(String.class);
+                    //Loading image from Glide library.
+                    Glide.with(ViewProfile.this).load(coverPic).into(profilePic);
+                    if(progressDialog.isShowing()){
+                        progressDialog.dismiss();
+                    }
+                } catch (Exception e){
+                    //Error
+                    if(progressDialog.isShowing()){
+                        progressDialog.dismiss();
+                        try {
+                            Toast.makeText(ViewProfile.this, "failed to load cover picture. try again", Toast.LENGTH_SHORT).show();
+                        } catch (Exception ee){
+
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
         providerRef.child("profilepic").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

@@ -565,7 +565,7 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
         //Check if email uses the appropriate email pattern
         if (!userEmail.getText().toString().equals("") || userEmail.equals(emailPattern)) {
             databaseReference.child("email").setValue(userEmail.getText().toString());
-        } else { userEmail.setError("Invalid Email"); }
+        }
 
         //save gender
         if (gender.getCheckedRadioButtonId() != -1) {
@@ -670,6 +670,8 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
                                             Toast.makeText(SettingsActivity.this, "You will be redirected to your new account type on re-loading app", Toast.LENGTH_LONG).show();
                                         }
                                     });
+                                } else {
+                                    Toast.makeText(SettingsActivity.this, "Invalid account type!", Toast.LENGTH_LONG).show();
                                 }
                             }
                         }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
