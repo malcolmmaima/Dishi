@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,14 +30,18 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.TimeZone;
 
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import malcolmmaima.dishi.Model.DishiUser;
 
 import malcolmmaima.dishi.Model.RestaurantReview;
 import malcolmmaima.dishi.Model.StatusUpdateModel;
 import malcolmmaima.dishi.R;
+import malcolmmaima.dishi.View.Adapters.RestaurantReviewAdapter;
+import malcolmmaima.dishi.View.Adapters.StatusUpdateAdapter;
 import malcolmmaima.dishi.View.MyAccountCustomer;
 import malcolmmaima.dishi.View.SetupProfile;
 import malcolmmaima.dishi.View.SplashActivity;
@@ -53,8 +59,9 @@ public class UserProfileFragment extends Fragment {
     EditText statusPost;
     Button postStatus;
     CardView restaurantExtra;
+    RecyclerView recyclerView;
 
-    List<DishiUser> userdata;
+    List<StatusUpdateModel> list;
 
     public static UserProfileFragment newInstance() {
         UserProfileFragment fragment = new UserProfileFragment();
@@ -69,7 +76,7 @@ public class UserProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_user_profile, container, false);
+        final View v = inflater.inflate(R.layout.fragment_user_profile, container, false);
         final ProgressDialog progressDialog = new ProgressDialog(getContext());
         progressDialog.setMessage("loading...");
         progressDialog.setCancelable(true);
@@ -86,6 +93,7 @@ public class UserProfileFragment extends Fragment {
         stats = v.findViewById(R.id.stats);
         postStatus = v.findViewById(R.id.postStatus);
         statusPost = v.findViewById(R.id.inputStatus);
+        recyclerView = v.findViewById(R.id.rview);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         myPhone = user.getPhoneNumber(); //Current logged in user phone number
@@ -99,7 +107,7 @@ public class UserProfileFragment extends Fragment {
                 try {
                     String coverPic = dataSnapshot.getValue(String.class);
                     //Loading image from Glide library.
-                    Glide.with(getContext()).load(coverPic).into(profilePic);
+                    Glide.with(getContext()).load(coverPic).into(coverImg);
                     if(progressDialog.isShowing()){
                         progressDialog.dismiss();
                     }
@@ -133,7 +141,7 @@ public class UserProfileFragment extends Fragment {
                         reviews.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Toast.makeText(getContext(), "In deevelopment!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), "In development!", Toast.LENGTH_SHORT).show();
                             }
                         });
 
@@ -308,11 +316,11 @@ public class UserProfileFragment extends Fragment {
                         String.format("%02d" , calendar.get(Calendar.SECOND))+":"+
                         String.format("%03d" , calendar.get(Calendar.MILLISECOND));
 
-                StatusUpdateModel statusUpdateModel = new StatusUpdateModel();
+                final StatusUpdateModel statusUpdateModel = new StatusUpdateModel();
                 statusUpdateModel.setStatus(statusPost.getText().toString());
                 statusUpdateModel.setTimePosted(time);
 
-                String key = dbRef.push().getKey();
+                final String key = dbRef.push().getKey();
                 if(statusPost.getText().toString().equals("")){
                     Toast.makeText(getContext(), "You must enter something!", Toast.LENGTH_SHORT).show();
                 }
@@ -322,10 +330,55 @@ public class UserProfileFragment extends Fragment {
                         @Override
                         public void onSuccess(Void aVoid) {
                             Toast.makeText(getContext(), "Posted!", Toast.LENGTH_SHORT).show();
+                            statusUpdateModel.key = key;
                             statusPost.setText("");
                         }
                     });
                 }
+
+            }
+        });
+
+        //Fetch the updates from status_updates node
+        dbRef.child("status_updates").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                list = new ArrayList<>();
+                for(DataSnapshot updates : dataSnapshot.getChildren()){
+                    StatusUpdateModel statusUpdateModel = updates.getValue(StatusUpdateModel.class);
+                    list.add(statusUpdateModel);
+                    }
+
+                try {
+                    if (!list.isEmpty()) {
+                        Collections.reverse(list);
+                        recyclerView.setVisibility(View.VISIBLE);
+                        StatusUpdateAdapter recycler = new StatusUpdateAdapter(getContext(), list);
+                        RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
+                        recyclerView.setLayoutManager(layoutmanager);
+                        recyclerView.setItemAnimator(new SlideInLeftAnimator());
+
+                        recycler.notifyDataSetChanged();
+
+                        recyclerView.getItemAnimator().setAddDuration(1000);
+                        recyclerView.getItemAnimator().setRemoveDuration(1000);
+                        recyclerView.getItemAnimator().setMoveDuration(1000);
+                        recyclerView.getItemAnimator().setChangeDuration(1000);
+
+                        recyclerView.setAdapter(recycler);
+                    } else {
+                        recyclerView.setVisibility(v.INVISIBLE);
+                    }
+                }
+
+                catch (Exception e){
+                    recyclerView.setVisibility(v.INVISIBLE);
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });

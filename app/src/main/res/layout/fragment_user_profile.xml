@@ -218,8 +218,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="3.2"
-                        android:orientation="vertical"
-                        android:layout_marginRight="40dp">
+                        android:orientation="vertical">
 
                         <FrameLayout
                             android:layout_width="match_parent"
@@ -235,11 +234,14 @@
                                 <EditText
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:inputType="text"
+                                    android:paddingRight="80dp"
+                                    android:inputType="textAutoComplete"
                                     android:hint="Update status..."
                                     android:paddingBottom="15dp"
                                     android:id="@+id/inputStatus"
-                                    android:imeOptions="actionDone"/>
+                                    android:imeOptions="actionDone"
+                                    android:nestedScrollingEnabled="true"
+                                    />
 
                             </android.support.design.widget.TextInputLayout>
 

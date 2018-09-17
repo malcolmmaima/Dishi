@@ -4,6 +4,7 @@ public class StatusUpdateModel {
 
     public String status;
     public String timePosted;
+    public String key;
 
     public void setStatus(String status) {
         this.status = status;

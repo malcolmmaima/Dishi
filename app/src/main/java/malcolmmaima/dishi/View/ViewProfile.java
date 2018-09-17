@@ -29,7 +29,7 @@ public class ViewProfile extends AppCompatActivity {
     DatabaseReference providerRef, myRef, rootRef;
 
     TextView userProfileName, profileBio, followersCounter, deliveriesCounter;
-    ImageView profilePic;
+    ImageView profilePic, coverImg;
     Button followUserBtn;
     String myPhone, picUrl;
 
@@ -52,6 +52,7 @@ public class ViewProfile extends AppCompatActivity {
         followUserBtn = findViewById(R.id.btnFollow);
         followersCounter = findViewById(R.id.followers);
         deliveriesCounter = findViewById(R.id.deliveries);
+        coverImg = findViewById(R.id.header_cover_image);
 
         Toolbar topToolBar = findViewById(R.id.toolbar);
         setSupportActionBar(topToolBar);
@@ -89,7 +90,7 @@ public class ViewProfile extends AppCompatActivity {
                 try {
                     String coverPic = dataSnapshot.getValue(String.class);
                     //Loading image from Glide library.
-                    Glide.with(ViewProfile.this).load(coverPic).into(profilePic);
+                    Glide.with(ViewProfile.this).load(coverPic).into(coverImg);
                     if(progressDialog.isShowing()){
                         progressDialog.dismiss();
                     }
