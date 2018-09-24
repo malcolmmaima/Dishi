@@ -179,8 +179,6 @@ public class ReceivedOrdersFragment extends Fragment {
                 if(progressDialog.isShowing()){
                     progressDialog.dismiss();
                 }
-
-                Toast.makeText(getActivity(), "Failed, " + error, Toast.LENGTH_SHORT).show();
             }
         });
 

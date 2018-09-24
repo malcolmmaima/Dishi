@@ -59,6 +59,7 @@ public class ViewRequestItems extends AppCompatActivity {
     int totalPrice;
     String status;
     FirebaseAuth mAuth;
+    String[] itemPhone;
 
     Double custlat, custlon, myLat, myLong, dist;
 
@@ -108,7 +109,9 @@ public class ViewRequestItems extends AppCompatActivity {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String myPhone = user.getPhoneNumber();
 
-        final String itemPhone = getIntent().getStringExtra("customer_phone");
+
+        itemPhone = new String[1];
+        itemPhone = getIntent().getStringArrayExtra("customer_phone");
         final String customerName = getIntent().getStringExtra("customer_name");
         final String itemCount = getIntent().getStringExtra("item_count");
         final String key = getIntent().getStringExtra("key");
@@ -123,9 +126,9 @@ public class ViewRequestItems extends AppCompatActivity {
         }
 
         requestStatus = FirebaseDatabase.getInstance().getReference(myPhone + "/request_ride/"+key);
-        incomingRequestsRef = FirebaseDatabase.getInstance().getReference(myPhone + "/request_menus/request_"+itemPhone);
-        customerRef = FirebaseDatabase.getInstance().getReference(itemPhone + "/confirmed_order");
-        customerDelRef = FirebaseDatabase.getInstance().getReference(itemPhone);
+        incomingRequestsRef = FirebaseDatabase.getInstance().getReference(myPhone + "/request_menus/request_"+itemPhone[0]);
+        customerRef = FirebaseDatabase.getInstance().getReference(itemPhone[0] + "/confirmed_order");
+        customerDelRef = FirebaseDatabase.getInstance().getReference(itemPhone[0]);
         myRef = FirebaseDatabase.getInstance().getReference(myPhone);
 
         requestStatus.child("status").addValueEventListener(new ValueEventListener() {
@@ -181,7 +184,7 @@ public class ViewRequestItems extends AppCompatActivity {
                         //set three option buttons
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                String phone = itemPhone;
+                                String phone = itemPhone[0];
                                 Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null));
                                 startActivity(intent);
                             }

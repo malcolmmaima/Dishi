@@ -348,8 +348,6 @@ public class CustomerOrderFragment extends Fragment {
                         //  Log.w(TAG, "Failed to read value.", error.toException());
 
                         progressDialog.dismiss();
-
-                        Toast.makeText(getActivity(), "Failed, " + error, Toast.LENGTH_SHORT).show();
                     }
                 });
 

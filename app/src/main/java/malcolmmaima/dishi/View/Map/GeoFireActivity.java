@@ -55,6 +55,7 @@ import java.util.List;
 import java.util.Random;
 
 import malcolmmaima.dishi.Model.MyCartDetails;
+import malcolmmaima.dishi.Model.OrderDetails;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.MainActivity;
 import malcolmmaima.dishi.View.MyAccountCustomer;
@@ -76,9 +77,9 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
     boolean notifSent = false;
     VerticalSeekBar zoomMap;
     DatabaseReference myRef, pendingOrders, providerRef, providerOrderHistory, ordersHistory;
-    String myPhone, accType, nduthi_phone, message, callMsg, temp;
+    String myPhone, accType, message, callMsg, temp;
     ProgressDialog progressDialog;
-    String[] phoneNumbers, phoneNames;
+    String[] phoneNumbers, phoneNames, nduthiNumber, nduthi_phone;
     List<String> names;
     FirebaseAuth mAuth;
 
@@ -106,10 +107,15 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
         callNduthi = findViewById(R.id.callNduthi);
         confirmOrd = findViewById(R.id.confirmOrd);
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        myPhone = user.getPhoneNumber(); //Current logged in user phone number
+        try {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            myPhone = user.getPhoneNumber(); //Current logged in user phone number
+        } catch (Exception e){
 
-        nduthi_phone = getIntent().getStringExtra("nduthi_phone");
+        }
+
+        nduthi_phone = new String[1];
+        nduthi_phone = getIntent().getStringArrayExtra("nduthi_phone");
 
         pendingOrders = FirebaseDatabase.getInstance().getReference(myPhone + "/pending");
         ordersHistory = FirebaseDatabase.getInstance().getReference(myPhone + "/history");
@@ -128,7 +134,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                         //set three option buttons
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                String phone = nduthi_phone;
+                                String phone = nduthi_phone[0];
                                 Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null));
                                 startActivity(intent);
                             }
@@ -147,6 +153,43 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
         confirmOrd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                int totalDeliveryPeeps = phoneNames.length + nduthiNumber.length;
+                final String [] nduthi = new String[1];
+                final String [] all = new String[totalDeliveryPeeps];
+                final String [] allNames = new String[all.length];
+
+                //Get nduthi guy name
+                FirebaseDatabase.getInstance().getReference(nduthiNumber[0]).child("name").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        nduthi[0] = dataSnapshot.getValue(String.class);
+                        //Toast.makeText(GeoFireActivity.this, "ndthi code: "+ nduthi[0], Toast.LENGTH_SHORT).show();
+                        if(!nduthi[0].isEmpty()){
+
+                            //Create a general list with all active delivery peeps names
+                            for(int i = 0; i < all.length; i++ ){
+                                if(i < phoneNames.length){
+                                    allNames[i] = phoneNames[i];
+                                }
+                                if(i == phoneNames.length){
+                                    allNames[i] = nduthi[0];
+                                }
+
+                                if(phoneNames.length == 0 && nduthiNumber.length != 0){
+                                    allNames[i] = nduthi[0];
+                                }
+
+                                //Toast.makeText(GeoFireActivity.this, "Allnames: " + allNames[i], Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
                 final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(v.getContext())
                         //set message, title, and icon
                         .setTitle("Confirm Order Delivery")
@@ -156,7 +199,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
 
-
+                                //Toast.makeText(GeoFireActivity.this, "Nduthi code: " + nduthiNumber[0], Toast.LENGTH_SHORT).show();
                                     final ArrayList mSelectedItems = new ArrayList();  // Where we track the selected items
                                     AlertDialog.Builder builder = new AlertDialog.Builder(GeoFireActivity.this);
                                     // Set the dialog title
@@ -165,7 +208,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                                             .setIcon(R.drawable.nduthi_guy)
                                             // Specify the list array, the items to be selected by default (null for none),
                                             // and the listener through which to receive callbacks when items are selected
-                                            .setMultiChoiceItems(phoneNames, null,
+                                            .setMultiChoiceItems(allNames, null,
                                                     new DialogInterface.OnMultiChoiceClickListener() {
                                                         @Override
                                                         public void onClick(DialogInterface dialog, int which,
@@ -188,8 +231,84 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                                                     //Loop through all the selected items list
                                                     for(int i = 0; i < mSelectedItems.size(); i++){
                                                         //Toast.makeText(GeoFireActivity.this, phoneNames[(int)mSelectedItems.get(i)]+" success!", Toast.LENGTH_SHORT).show();
-                                                        providerRef = FirebaseDatabase.getInstance().getReference(phoneNumbers[(int)mSelectedItems.get(i)] + "/deliveries");
-                                                        providerOrderHistory = FirebaseDatabase.getInstance().getReference(phoneNumbers[(int)mSelectedItems.get(i)] + "/history_deliveries");
+                                                        try {
+                                                            providerRef = FirebaseDatabase.getInstance().getReference(phoneNumbers[(int) mSelectedItems.get(i)] + "/deliveries");
+                                                        } catch( Exception e){
+
+                                                        }
+
+                                                        try {
+                                                            FirebaseDatabase.getInstance().getReference(myPhone).child("confirmed_order").child("confirmed_"+nduthiNumber[0]).addValueEventListener(new ValueEventListener() {
+                                                                @Override
+                                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                                    for(DataSnapshot orders : dataSnapshot.getChildren()){
+                                                                        OrderDetails orderDetails = orders.getValue(OrderDetails.class); //Assign values to model
+                                                                        orderDetails.providerName = orders.child("providerName").getValue(String.class);
+                                                                        orderDetails.key = orders.getKey();
+                                                                        //Move already delivered order to history db node
+                                                                        ordersHistory.child(orderDetails.key).setValue(orderDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                            @Override
+                                                                            public void onSuccess(Void aVoid) {
+                                                                                //Then delete from active order node
+                                                                                FirebaseDatabase.getInstance().getReference(myPhone).child("confirmed_order").child("confirmed_"+nduthiNumber[0]).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                    @Override
+                                                                                    public void onSuccess(Void aVoid) {
+                                                                                        Toast.makeText(GeoFireActivity.this, "Enjoy your order fam!", Toast.LENGTH_LONG).show();
+                                                                                        finish();
+                                                                                    }
+                                                                                });
+                                                                                FirebaseDatabase.getInstance().getReference(nduthiNumber[0] + "/request_ride").addValueEventListener(new ValueEventListener() {
+                                                                                    @Override
+                                                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                                                        for(DataSnapshot dt : dataSnapshot.getChildren()){
+                                                                                            if(dt.getKey().equals(myPhone)){
+                                                                                                //Toast.makeText(GeoFireActivity.this, "Delete request nduthi node!", Toast.LENGTH_SHORT).show();
+                                                                                                FirebaseDatabase.getInstance().getReference(nduthiNumber[0] + "/request_ride").child(myPhone).removeValue();
+                                                                                                FirebaseDatabase.getInstance().getReference(nduthiNumber[0] + "/request_menus").addValueEventListener(new ValueEventListener() {
+                                                                                                    @Override
+                                                                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                                                                        for(DataSnapshot dt2 : dataSnapshot.getChildren()){
+                                                                                                            if(dt2.getKey().equals("request_" + myPhone)){
+                                                                                                                //Toast.makeText(GeoFireActivity.this, "Delete request menu node!", Toast.LENGTH_SHORT).show();
+                                                                                                                FirebaseDatabase.getInstance().getReference(nduthiNumber[0] + "/request_menus").child("request_"+myPhone).removeValue();
+                                                                                                                finish();
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+
+                                                                                                    @Override
+                                                                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                                                                    }
+                                                                                                });
+                                                                                            }
+                                                                                        }
+                                                                                    }
+
+                                                                                    @Override
+                                                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                                                    }
+                                                                                });
+                                                                            }
+                                                                        });
+                                                                    }
+                                                                }
+
+                                                                @Override
+                                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                                }
+                                                            });
+                                                        } catch (Exception e){
+
+                                                        }
+
+                                                        try {
+                                                            providerOrderHistory = FirebaseDatabase.getInstance().getReference(phoneNumbers[(int) mSelectedItems.get(i)] + "/history_deliveries");
+                                                        } catch (Exception e){
+
+                                                        }
                                                         //check in my pending node for items
                                                         pendingOrders.addListenerForSingleValueEvent(new ValueEventListener() {
                                                         @Override
@@ -397,7 +516,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
 
         db = FirebaseDatabase.getInstance();
         mylocationRef = db.getReference(myPhone + "/location"); //loggedin user location reference
-        nduthiGuyRef[0] = FirebaseDatabase.getInstance().getReference(nduthi_phone + "/location");
+        nduthiGuyRef[0] = FirebaseDatabase.getInstance().getReference(nduthi_phone[0] + "/location");
 
 
         nduthiGuyRef[0].child("latitude").addValueEventListener(new ValueEventListener() {
@@ -461,6 +580,11 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                         try{
                             phoneNumbers = getIntent().getStringArrayExtra("phoneNumbers");
 
+                            try {
+                                nduthiNumber = getIntent().getStringArrayExtra("nduthi_phone");
+                            } catch (Exception e){
+                                //Toast.makeText(GeoFireActivity.this, "no nduthi code", Toast.LENGTH_SHORT).show();
+                            }
                             /*
                              * convert array to list and then add all
                              * elements to LinkedHashSet. LinkedHashSet

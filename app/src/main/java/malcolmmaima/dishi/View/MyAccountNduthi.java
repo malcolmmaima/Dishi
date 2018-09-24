@@ -31,6 +31,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -83,6 +84,35 @@ public class MyAccountNduthi extends AppCompatActivity implements GoogleApiClien
             public void onCancelled(DatabaseError databaseError) {
                 Toast.makeText(MyAccountNduthi.this, "Error: " + databaseError.toString() + ". Try again!", Toast.LENGTH_LONG).show();
             }
+        });
+
+        dbRef.child("request_ride").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.hasChildren()){
+                    try {
+                        dbRef.child("engaged").setValue("true").addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(MyAccountNduthi.this, "Active order!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    } catch (Exception e){
+
+                    }
+                }
+                else {
+                    dbRef.child("engaged").setValue("false").addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(MyAccountNduthi.this, "No active order!", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                }
         });
 
         Toolbar topToolBar = findViewById(R.id.toolbar);

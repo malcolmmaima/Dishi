@@ -155,7 +155,9 @@ public class DeliveryRequestsNduthi extends RecyclerView.Adapter<DeliveryRequest
             public void onClick(View v) {
                 //Toast.makeText(context, "accept order", Toast.LENGTH_SHORT).show();
                 Intent slideactivity = new Intent(context, ViewRequestItems.class);
-                slideactivity.putExtra("customer_phone", requestNduthi.phone);
+                String [] nduthiPhone = new String[1];
+                nduthiPhone[0] = requestNduthi.phone;
+                slideactivity.putExtra("customer_phone", nduthiPhone);
                 slideactivity.putExtra("customer_name", requestNduthi.name);
                 slideactivity.putExtra("item_count", itemCount[position]);
                 slideactivity.putExtra("profile_pic", requestNduthi.profilepic);

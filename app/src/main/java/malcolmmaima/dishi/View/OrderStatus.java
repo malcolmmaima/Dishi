@@ -59,7 +59,7 @@ public class OrderStatus extends AppCompatActivity {
     List<MyCartDetails> myBasket;
     List<OrderDetails> nduthiConfirmed;
     RecyclerView recyclerview, recyclerView2;
-    String myPhone, trackNduthi, str, trackRestaurant;
+    String myPhone, str, trackRestaurant;
     TextView emptyTag, totalItems, totalFee;
     Button trackBtn;
 
@@ -68,13 +68,14 @@ public class OrderStatus extends AppCompatActivity {
     FirebaseUser user;
     String order_status;
     FirebaseAuth mAuth;
-    String[] phoneNumbers;
+    String[] phoneNumbers, trackNduthi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mAuth = FirebaseAuth.getInstance();
+        trackNduthi = new String[1];
 
         if (mAuth.getInstance().getCurrentUser() == null) {
 
@@ -207,10 +208,9 @@ public class OrderStatus extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-
                     //Clean the nduthi phone number which we will use for tracking purposes in GeoFireActivity
                     str = dataSnapshot1.getKey();
-                    trackNduthi = str.replace("confirmed_", "");
+                    trackNduthi[0] = str.replace("confirmed_", "");
 
                     //Get the menu items nduthi has confirmed will deliver
                     getConfirmedNduthi.child(dataSnapshot1.getKey()).addValueEventListener(new ValueEventListener() {
@@ -308,7 +308,7 @@ public class OrderStatus extends AppCompatActivity {
                         //unable to fetch tracking codes or doesn't exist
                         Toast.makeText(OrderStatus.this, "tracking code is empty, try again!", Toast.LENGTH_LONG).show();
                     } else {
-                        trackNduthi = trackRestaurant;
+                        trackNduthi[0] = trackRestaurant;
                         Intent slideactivity = new Intent(OrderStatus.this, GeoFireActivity.class);
                         slideactivity.putExtra("nduthi_phone", trackNduthi);
                         slideactivity.putExtra("phoneNumbers", phoneNumbers);
