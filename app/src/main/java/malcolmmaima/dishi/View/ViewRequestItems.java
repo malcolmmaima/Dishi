@@ -228,9 +228,13 @@ public class ViewRequestItems extends AppCompatActivity {
                                         @Override
                                         public void onSuccess(Void aVoid) {
 
-                                            incomingRequestsRef.addValueEventListener(new ValueEventListener() {
+                                            incomingRequestsRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                                 @Override
                                                 public void onDataChange(DataSnapshot dataSnapshot) {
+                                                    if(!dataSnapshot.hasChildren()){
+                                                        Toast.makeText(ViewRequestItems.this, "Customer has confirmed delivery!", Toast.LENGTH_LONG).show();
+                                                        finish();
+                                                    }
                                                     nduthis = new ArrayList<>();
                                                     for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                                                         OrderDetails orderDetails = dataSnapshot1.getValue(OrderDetails.class); //Assign values to model

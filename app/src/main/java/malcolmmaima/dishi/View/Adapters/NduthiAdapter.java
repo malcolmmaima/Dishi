@@ -232,7 +232,7 @@ public class NduthiAdapter extends RecyclerView.Adapter<NduthiAdapter.MyHolder>{
                                             requestNduthi.name = myName[0];
                                             requestNduthi.phone = myPhone;
                                             requestNduthi.profilepic = profilepic[0];
-                                            nduthiRideReqs.child(key).setValue(requestNduthi);
+                                            //nduthiRideReqs.child(key).setValue(requestNduthi);
                                             requestRideRef.child(myPhone).setValue(requestNduthi).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                 @Override
                                                 public void onSuccess(Void aVoid) {

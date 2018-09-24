@@ -238,7 +238,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                                                         }
 
                                                         try {
-                                                            FirebaseDatabase.getInstance().getReference(myPhone).child("confirmed_order").child("confirmed_"+nduthiNumber[0]).addValueEventListener(new ValueEventListener() {
+                                                            FirebaseDatabase.getInstance().getReference(myPhone).child("confirmed_order").child("confirmed_"+nduthiNumber[0]).addListenerForSingleValueEvent(new ValueEventListener() {
                                                                 @Override
                                                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                                     for(DataSnapshot orders : dataSnapshot.getChildren()){
@@ -257,14 +257,14 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                                                                                         finish();
                                                                                     }
                                                                                 });
-                                                                                FirebaseDatabase.getInstance().getReference(nduthiNumber[0] + "/request_ride").addValueEventListener(new ValueEventListener() {
+                                                                                FirebaseDatabase.getInstance().getReference(nduthiNumber[0] + "/request_ride").addListenerForSingleValueEvent(new ValueEventListener() {
                                                                                     @Override
                                                                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                                                         for(DataSnapshot dt : dataSnapshot.getChildren()){
                                                                                             if(dt.getKey().equals(myPhone)){
                                                                                                 //Toast.makeText(GeoFireActivity.this, "Delete request nduthi node!", Toast.LENGTH_SHORT).show();
                                                                                                 FirebaseDatabase.getInstance().getReference(nduthiNumber[0] + "/request_ride").child(myPhone).removeValue();
-                                                                                                FirebaseDatabase.getInstance().getReference(nduthiNumber[0] + "/request_menus").addValueEventListener(new ValueEventListener() {
+                                                                                                FirebaseDatabase.getInstance().getReference(nduthiNumber[0] + "/request_menus").addListenerForSingleValueEvent(new ValueEventListener() {
                                                                                                     @Override
                                                                                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                                                                         for(DataSnapshot dt2 : dataSnapshot.getChildren()){
