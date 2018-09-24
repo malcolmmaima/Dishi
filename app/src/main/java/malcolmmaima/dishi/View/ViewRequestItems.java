@@ -231,10 +231,6 @@ public class ViewRequestItems extends AppCompatActivity {
                                             incomingRequestsRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                                 @Override
                                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                                    if(!dataSnapshot.hasChildren()){
-                                                        Toast.makeText(ViewRequestItems.this, "Customer has confirmed delivery!", Toast.LENGTH_LONG).show();
-                                                        finish();
-                                                    }
                                                     nduthis = new ArrayList<>();
                                                     for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                                                         OrderDetails orderDetails = dataSnapshot1.getValue(OrderDetails.class); //Assign values to model
@@ -251,7 +247,7 @@ public class ViewRequestItems extends AppCompatActivity {
                                                                     @Override
                                                                     public void onSuccess(Void aVoid) {
                                                                         //confirmation complete
-                                                                        Toast.makeText(ViewRequestItems.this, "Confirmation sent", Toast.LENGTH_LONG).show();
+                                                                        //Toast.makeText(ViewRequestItems.this, "Confirmation sent", Toast.LENGTH_LONG).show();
                                                                     }
                                                                 });
                                                             }
@@ -307,11 +303,15 @@ public class ViewRequestItems extends AppCompatActivity {
                     recyclerview.setItemAnimator(new DefaultItemAnimator());
                     recyclerview.setAdapter(recycler);
                 } else {
+                    Toast.makeText(ViewRequestItems.this, "Customer has confirmed delivery!", Toast.LENGTH_LONG).show();
+                    finish();
+                    /*
                     ShoppingListAdapter recycler = new ShoppingListAdapter(ViewRequestItems.this, nduthis);
                     RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(ViewRequestItems.this);
                     recyclerview.setLayoutManager(layoutmanager);
                     recyclerview.setItemAnimator(new DefaultItemAnimator());
                     recyclerview.setAdapter(recycler);
+                    */
 
                 }
 
@@ -321,8 +321,6 @@ public class ViewRequestItems extends AppCompatActivity {
             public void onCancelled(DatabaseError error) {
                 // Failed to read value
                 //  Log.w(TAG, "Failed to read value.", error.toException());
-
-                Toast.makeText(ViewRequestItems.this, "Failed, " + error, Toast.LENGTH_SHORT).show();
             }
 
 
