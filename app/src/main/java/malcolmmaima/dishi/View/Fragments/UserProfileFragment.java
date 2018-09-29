@@ -195,8 +195,6 @@ public class UserProfileFragment extends Fragment {
                 if(progressDialog.isShowing()){
                     progressDialog.dismiss();
                 }
-                Toast.makeText(getContext(), "Database Error. Load failed!", Toast.LENGTH_SHORT).show();
-                Glide.with(getContext()).load(R.drawable.default_profile).into(profilePic);
             }
         });
 
@@ -346,6 +344,7 @@ public class UserProfileFragment extends Fragment {
                 list = new ArrayList<>();
                 for(DataSnapshot updates : dataSnapshot.getChildren()){
                     StatusUpdateModel statusUpdateModel = updates.getValue(StatusUpdateModel.class);
+                    statusUpdateModel.key = updates.getKey();
                     list.add(statusUpdateModel);
                     }
 

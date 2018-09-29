@@ -63,6 +63,7 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
         holder.deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 myRef.child("status_updates").child(statusUpdateModel.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {

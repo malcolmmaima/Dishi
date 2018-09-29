@@ -514,9 +514,15 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String myPhone = user.getPhoneNumber(); //Current logged in user phone number
 
+        try {
+            nduthiNumber = getIntent().getStringArrayExtra("nduthi_phone");
+        } catch (Exception e){
+            //Toast.makeText(GeoFireActivity.this, "no nduthi code", Toast.LENGTH_SHORT).show();
+        }
+
         db = FirebaseDatabase.getInstance();
         mylocationRef = db.getReference(myPhone + "/location"); //loggedin user location reference
-        nduthiGuyRef[0] = FirebaseDatabase.getInstance().getReference(nduthi_phone[0] + "/location");
+        nduthiGuyRef[0] = FirebaseDatabase.getInstance().getReference(nduthiNumber[0] + "/location");
 
 
         nduthiGuyRef[0].child("latitude").addValueEventListener(new ValueEventListener() {
@@ -565,7 +571,6 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
 
                 try {
                     if(accType.equals("1")) {//Customer
-
                         try {
                             loggedInUserLoc = new LatLng(myLat, myLong);
                             nduthiGuyLoc = new LatLng(nduthiLat, nduthiLng);
@@ -580,11 +585,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                         try{
                             phoneNumbers = getIntent().getStringArrayExtra("phoneNumbers");
 
-                            try {
-                                nduthiNumber = getIntent().getStringArrayExtra("nduthi_phone");
-                            } catch (Exception e){
-                                //Toast.makeText(GeoFireActivity.this, "no nduthi code", Toast.LENGTH_SHORT).show();
-                            }
+
                             /*
                              * convert array to list and then add all
                              * elements to LinkedHashSet. LinkedHashSet
@@ -658,6 +659,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                                     .strokeWidth(5.0f));
 
                         } catch (Exception e){
+                            //Toast.makeText(GeoFireActivity.this, "Error: " + e.toString(), Toast.LENGTH_SHORT).show();
                             confirmOrd.setEnabled(false);
                             callNduthi.setEnabled(false);
                             //Toast.makeText(GeoFireActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
