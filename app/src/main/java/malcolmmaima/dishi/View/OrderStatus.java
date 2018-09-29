@@ -318,6 +318,7 @@ public class OrderStatus extends AppCompatActivity {
                     }
 
                 } else {
+                    trackNduthi[0] = trackRestaurant;
                     Intent slideactivity = new Intent(OrderStatus.this, GeoFireActivity.class);
                     slideactivity.putExtra("nduthi_phone", trackNduthi);
                     slideactivity.putExtra("phoneNumbers", phoneNumbers);

@@ -330,12 +330,15 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
             }
         });
 
+        final String [] nduthiPhone = new String[1];
         holder.trackCustomer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
 
+                nduthiPhone[0] = receivedOrders.getCustomerNumber();
+
                 Intent slideactivity = new Intent(context, GeoFireActivity.class);
-                slideactivity.putExtra("nduthi_phone", receivedOrders.getCustomerNumber());
+                slideactivity.putExtra("nduthi_phone", nduthiPhone);
                 Bundle bndlanimation =
                         ActivityOptions.makeCustomAnimation(context, R.anim.animation,R.anim.animation2).toBundle();
                 context.startActivity(slideactivity, bndlanimation);

@@ -96,6 +96,13 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));//Load Main Activity and clear activity stack
         }
 
+        try {
+            nduthiNumber = getIntent().getStringArrayExtra("nduthi_phone");
+            //Toast.makeText(this, "track number: " + nduthiNumber[0], Toast.LENGTH_SHORT).show();
+        } catch (Exception e){
+            //Toast.makeText(GeoFireActivity.this, "no nduthi code", Toast.LENGTH_SHORT).show();
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_geo_fire);
         progressDialog = new ProgressDialog(GeoFireActivity.this);
@@ -514,11 +521,6 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String myPhone = user.getPhoneNumber(); //Current logged in user phone number
 
-        try {
-            nduthiNumber = getIntent().getStringArrayExtra("nduthi_phone");
-        } catch (Exception e){
-            //Toast.makeText(GeoFireActivity.this, "no nduthi code", Toast.LENGTH_SHORT).show();
-        }
 
         db = FirebaseDatabase.getInstance();
         mylocationRef = db.getReference(myPhone + "/location"); //loggedin user location reference
