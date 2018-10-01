@@ -374,10 +374,7 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
 
                                                                     public void onFinish() {
                                                                         //Toast.makeText(getContext(), "done!", Toast.LENGTH_SHORT).show();
-                                                                        if(nduthisNearby() == false){
-                                                                            progressDialog.dismiss();
-                                                                            Toast.makeText(MyCart.this, "No nduthi near you, try again!", Toast.LENGTH_LONG).show();
-                                                                        }
+                                                                        nduthisNearby();
                                                                     }
 
                                                                 }.start();
@@ -606,13 +603,13 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
     }
 
 
-    public boolean nduthisNearby(){
+    public void nduthisNearby(){
         progressDialog.setMessage("Searching...");
         progressDialog.setCancelable(true);
         progressDialog.show();
         ///////
         //Loop through all the users
-        nduthisRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        nduthisRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 try {
@@ -689,7 +686,7 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
 
         });
         //////
-        return avail_nduthi;
+        //return avail_nduthi;
     }
 
     @Override

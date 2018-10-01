@@ -91,8 +91,12 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
         dbRef.child("location-filter").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                location_filter[position] = dataSnapshot.getValue(Integer.class);
-                //Toast.makeText(context, "Fetch: " + location_filter, Toast.LENGTH_SHORT).show();
+                try {
+                    location_filter[position] = dataSnapshot.getValue(Integer.class);
+                    //Toast.makeText(context, "Fetch: " + location_filter, Toast.LENGTH_SHORT).show();
+                } catch (Exception e){
+
+                }
             }
 
             @Override

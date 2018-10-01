@@ -1,11 +1,14 @@
 package malcolmmaima.dishi.View.Adapters;
 
+import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -35,6 +38,8 @@ import malcolmmaima.dishi.Model.MyCartDetails;
 import malcolmmaima.dishi.Model.NduthiNearMe;
 import malcolmmaima.dishi.Model.RequestNduthi;
 import malcolmmaima.dishi.R;
+import malcolmmaima.dishi.View.MyCart;
+import malcolmmaima.dishi.View.OrderStatus;
 import malcolmmaima.dishi.View.SelectNduthiGuy;
 
 import static malcolmmaima.dishi.R.drawable.ic_delivered_order;
@@ -254,27 +259,8 @@ public class NduthiAdapter extends RecyclerView.Adapter<NduthiAdapter.MyHolder>{
                                                                         holder.selectBtn.setEnabled(false);
                                                                         holder.selectBtn.setText("Sent");
 
-
-
-                                                                        final AlertDialog requestSentBox = new AlertDialog.Builder(v.getContext())
-                                                                                //set message, title, and icon
-                                                                                .setTitle("Request sent")
-                                                                                .setCancelable(false)
-                                                                                .setMessage("Request sent to "
-                                                                                        + nduthiNearMe.name + "! wait for confirmation or call nduthi!")
-                                                                                //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
-                                                                                //set three option buttons
-                                                                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                                                                    public void onClick(DialogInterface dialog, int whichButton) {
-                                                                                        //do nothing
-                                                                                    }
-                                                                                })
-                                                                                .create();
-                                                                        if(requestSentBox.isShowing()){
-                                                                            //do nothing
-                                                                        } else {
-                                                                            requestSentBox.show();
-                                                                        }
+                                                                        Toast.makeText(context, "Request sent to "
+                                                                                + nduthiNearMe.name + "! wait for confirmation or call nduthi!", Toast.LENGTH_SHORT).show();
 
                                                                     }
                                                                 });

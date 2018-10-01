@@ -303,8 +303,9 @@ public class OrderStatus extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if (trackNduthi == null) {
+                if (trackNduthi.length != 0) {
                     if (trackRestaurant == null) {
+                        trackRestaurant = trackNduthi[0];
                         //unable to fetch tracking codes or doesn't exist
                         Toast.makeText(OrderStatus.this, "tracking code is empty, try again!", Toast.LENGTH_LONG).show();
                     } else {
@@ -319,6 +320,7 @@ public class OrderStatus extends AppCompatActivity {
 
                 } else {
                     trackNduthi[0] = trackRestaurant;
+
                     Intent slideactivity = new Intent(OrderStatus.this, GeoFireActivity.class);
                     slideactivity.putExtra("nduthi_phone", trackNduthi);
                     slideactivity.putExtra("phoneNumbers", phoneNumbers);

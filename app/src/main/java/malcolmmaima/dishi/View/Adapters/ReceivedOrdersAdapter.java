@@ -499,11 +499,17 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
                                                         //then delete it from orders node
+
+                                                        try {
                                                         myOrdersRef.child(receivedOrders.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                                                             @Override
                                                             public void onSuccess(Void aVoid) {
-                                                                if(progressDialog.isShowing()){
-                                                                    progressDialog.dismiss();
+                                                                try {
+                                                                    if (progressDialog.isShowing()) {
+                                                                        progressDialog.dismiss();
+                                                                    }
+                                                                } catch (Exception e){
+
                                                                 }
                                                             }
                                                         }).addOnFailureListener(new OnFailureListener() {
@@ -516,7 +522,9 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                                                                     progressDialog.dismiss();
                                                                 }
                                                             }
-                                                        });
+                                                        }); } catch (Exception e){
+
+                                                        }
 
                                                     }
                                                 });

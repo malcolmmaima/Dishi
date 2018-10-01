@@ -16,6 +16,9 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -50,13 +53,16 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
 
 import malcolmmaima.dishi.Model.MyCartDetails;
 import malcolmmaima.dishi.Model.OrderDetails;
+import malcolmmaima.dishi.Model.ReceivedOrders;
 import malcolmmaima.dishi.R;
+import malcolmmaima.dishi.View.Adapters.ReceivedOrdersAdapter;
 import malcolmmaima.dishi.View.MainActivity;
 import malcolmmaima.dishi.View.MyAccountCustomer;
 import malcolmmaima.dishi.View.MyAccountNduthi;
@@ -98,7 +104,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
 
         try {
             nduthiNumber = getIntent().getStringArrayExtra("nduthi_phone");
-            //Toast.makeText(this, "track number: " + nduthiNumber[0], Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "track number: " + nduthiNumber[0], Toast.LENGTH_SHORT).show();
         } catch (Exception e){
             //Toast.makeText(GeoFireActivity.this, "no nduthi code", Toast.LENGTH_SHORT).show();
         }
@@ -160,10 +166,10 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
         confirmOrd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int totalDeliveryPeeps = phoneNames.length + nduthiNumber.length;
+                //final int totalDeliveryPeeps = phoneNames.length + nduthiNumber.length;
+                final int totalDeliveryPeeps = nduthiNumber.length; //Bug fix, will revisit...
                 final String [] nduthi = new String[1];
-                final String [] all = new String[totalDeliveryPeeps];
-                final String [] allNames = new String[all.length];
+                final String [] allNames = new String[totalDeliveryPeeps];
 
                 //Get nduthi guy name
                 FirebaseDatabase.getInstance().getReference(nduthiNumber[0]).child("name").addValueEventListener(new ValueEventListener() {
@@ -174,7 +180,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                         if(!nduthi[0].isEmpty()){
 
                             //Create a general list with all active delivery peeps names
-                            for(int i = 0; i < all.length; i++ ){
+                            for(int i = 0; i < totalDeliveryPeeps; i++ ){
                                 if(i < phoneNames.length){
                                     allNames[i] = phoneNames[i];
                                 }
@@ -206,7 +212,11 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
 
-                                //Toast.makeText(GeoFireActivity.this, "Nduthi code: " + nduthiNumber[0], Toast.LENGTH_SHORT).show();
+                                if(allNames.length == 0){
+                                    Toast.makeText(GeoFireActivity.this, "Name list is empty!", Toast.LENGTH_SHORT).show();
+                                } else {
+
+                                    //Toast.makeText(GeoFireActivity.this, "Nduthi code: " + nduthiNumber[0], Toast.LENGTH_SHORT).show();
                                     final ArrayList mSelectedItems = new ArrayList();  // Where we track the selected items
                                     AlertDialog.Builder builder = new AlertDialog.Builder(GeoFireActivity.this);
                                     // Set the dialog title
@@ -318,64 +328,64 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                                                         }
                                                         //check in my pending node for items
                                                         pendingOrders.addListenerForSingleValueEvent(new ValueEventListener() {
-                                                        @Override
-                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                            @Override
+                                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                                                            for (final DataSnapshot orderStat : dataSnapshot.getChildren()) {
-                                                                final MyCartDetails myCartDetails = orderStat.getValue(MyCartDetails.class);
+                                                                for (final DataSnapshot orderStat : dataSnapshot.getChildren()) {
+                                                                    final MyCartDetails myCartDetails = orderStat.getValue(MyCartDetails.class);
 
-                                                                //If item status is confirmed, means it is in transit
-                                                                if(myCartDetails.status.equals("confirmed")){
-                                                                    myCartDetails.key = orderStat.getKey();
-                                                                    myCartDetails.status = "delivered";
-                                                                    myCartDetails.sent = true;
+                                                                    //If item status is confirmed, means it is in transit
+                                                                    if(myCartDetails.status.equals("confirmed")){
+                                                                        myCartDetails.key = orderStat.getKey();
+                                                                        myCartDetails.status = "delivered";
+                                                                        myCartDetails.sent = true;
 
-                                                                    //Update provider's node
-                                                                    providerRef.child(myCartDetails.key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                        @Override
-                                                                        public void onSuccess(Void aVoid) {
+                                                                        //Update provider's node
+                                                                        providerRef.child(myCartDetails.key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                            @Override
+                                                                            public void onSuccess(Void aVoid) {
 
-                                                                            //Create copy of order history for provider
-                                                                            providerOrderHistory.child(myCartDetails.key).setValue(myCartDetails);
+                                                                                //Create copy of order history for provider
+                                                                                providerOrderHistory.child(myCartDetails.key).setValue(myCartDetails);
 
-                                                                            //Move already delivered order to history db node
-                                                                            ordersHistory.child(myCartDetails.key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                                @Override
-                                                                                public void onSuccess(Void aVoid) {
-                                                                                    //then delete it from pending orders node
-                                                                                    pendingOrders.child(myCartDetails.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                                        @Override
-                                                                                        public void onSuccess(Void aVoid) {
+                                                                                //Move already delivered order to history db node
+                                                                                ordersHistory.child(myCartDetails.key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                    @Override
+                                                                                    public void onSuccess(Void aVoid) {
+                                                                                        //then delete it from pending orders node
+                                                                                        pendingOrders.child(myCartDetails.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                            @Override
+                                                                                            public void onSuccess(Void aVoid) {
 
-                                                                                            Snackbar snackbar = Snackbar
-                                                                                                    .make(findViewById(R.id.parentlayout), "Enjoy your order fam!", Snackbar.LENGTH_INDEFINITE)
-                                                                                                    .setActionTextColor(getResources().getColor(R.color.colorPrimary))
-                                                                                                    .setAction("FINISH", new View.OnClickListener() {
-                                                                                                        @Override
-                                                                                                        public void onClick(View view) {
-                                                                                                            Intent slideactivity = new Intent(GeoFireActivity.this, MyAccountCustomer.class)
-                                                                                                                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                                                                                            Bundle bndlanimation =
-                                                                                                                    ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
-                                                                                                            startActivity(slideactivity, bndlanimation);
-                                                                                                        }
-                                                                                                    });
+                                                                                                Snackbar snackbar = Snackbar
+                                                                                                        .make(findViewById(R.id.parentlayout), "Enjoy your order fam!", Snackbar.LENGTH_INDEFINITE)
+                                                                                                        .setActionTextColor(getResources().getColor(R.color.colorPrimary))
+                                                                                                        .setAction("FINISH", new View.OnClickListener() {
+                                                                                                            @Override
+                                                                                                            public void onClick(View view) {
+                                                                                                                Intent slideactivity = new Intent(GeoFireActivity.this, MyAccountCustomer.class)
+                                                                                                                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                                                                                Bundle bndlanimation =
+                                                                                                                        ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                                                                                                                startActivity(slideactivity, bndlanimation);
+                                                                                                            }
+                                                                                                        });
 
-                                                                                            snackbar.show();
-                                                                                        }
-                                                                                    });
-                                                                                }
-                                                                            });
-                                                                        }
-                                                                    });
-                                                                } else {//Order of the ticked delivery individual has not been confirmed
-                                                                    //Toast.makeText(GeoFireActivity.this, myCartDetails.provider
-                                                                    //        + " has not confirmed your order for " + myCartDetails.getName(), Toast.LENGTH_SHORT).show();
+                                                                                                snackbar.show();
+                                                                                            }
+                                                                                        });
+                                                                                    }
+                                                                                });
+                                                                            }
+                                                                        });
+                                                                    } else {//Order of the ticked delivery individual has not been confirmed
+                                                                        //Toast.makeText(GeoFireActivity.this, myCartDetails.provider
+                                                                        //        + " has not confirmed your order for " + myCartDetails.getName(), Toast.LENGTH_SHORT).show();
+
+                                                                    }
 
                                                                 }
-
                                                             }
-                                                        }
 
                                                             @Override
                                                             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -393,6 +403,9 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
 
                                     builder.create();
                                     builder.show();
+                                }
+
+
                             }
                         }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
@@ -519,7 +532,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
         FirebaseDatabase db;
 
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        String myPhone = user.getPhoneNumber(); //Current logged in user phone number
+        final String myPhone = user.getPhoneNumber(); //Current logged in user phone number
 
 
         db = FirebaseDatabase.getInstance();
@@ -691,6 +704,27 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                         } catch(Exception e){
 
                         }
+
+                        FirebaseDatabase.getInstance().getReference(myPhone + "/deliveries").addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                // StringBuffer stringbuffer = new StringBuffer();
+                                for(DataSnapshot dataSnapshot1 :dataSnapshot.getChildren()){
+                                    final ReceivedOrders receivedOrders = dataSnapshot1.getValue(ReceivedOrders.class); //Assign values to model
+                                    if(receivedOrders.status.equals("delivered")){
+                                        Toast.makeText(GeoFireActivity.this, "Customer has confirmed delivery!", Toast.LENGTH_SHORT).show();
+                                        finish();
+                                    }
+                                }
+
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError error) {
+                                // Failed to read value
+                                //  Log.w(TAG, "Failed to read value.", error.toException());
+                            }
+                        });
                         setTitle("Track Customer");
                         confirmOrd.setVisibility(View.INVISIBLE);
                         try {
