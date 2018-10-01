@@ -537,7 +537,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
 
         db = FirebaseDatabase.getInstance();
         mylocationRef = db.getReference(myPhone + "/location"); //loggedin user location reference
-        nduthiGuyRef[0] = FirebaseDatabase.getInstance().getReference(nduthiNumber[0] + "/location");
+        nduthiGuyRef[0] = FirebaseDatabase.getInstance().getReference("+254778256039" + "/location");
 
 
         nduthiGuyRef[0].child("latitude").addValueEventListener(new ValueEventListener() {
@@ -649,9 +649,13 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                             message = "Has nduthi or provider delivered your order?";
                             callMsg = "Call delivery guy?";
                             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nduthiLat, nduthiLng), zoomLevel));
-                            if (distance < 200 && notifSent == false) {
-                                sendNotification("Order is " + distance + "m away");
-                                notifSent = true;
+                            if (distance == 10 || distance == 60 || distance == 120 || distance < 10) {
+                                //sendNotification("Order is " + distance + "m away");
+
+                                //FirebaseDatabase.getInstance().getReference(myPhone).child("active_notifications")
+                                //        .child("active_order").child("message").setValue("Order is " + distance + "m away");
+                                //FirebaseDatabase.getInstance().getReference(myPhone)
+                                //        .child("active_notifications").child("active_order").child("phone").setValue(nduthiNumber[0]);
                             }
 
                             myCurrent.remove(); //Remove previous marker

@@ -153,6 +153,7 @@ public class OrderStatus extends AppCompatActivity {
                         }
                         myBasket.add(myCartDetails);
                         trackRestaurant = myCartDetails.providerNumber;
+                        myRef.child("active_notifications").child("active_track").setValue(trackRestaurant);
                         //Toast.makeText(OrderStatus.this, myCartDetails.getName() + " status: " + myCartDetails.status, Toast.LENGTH_SHORT).show();
                     }
                     //Toast.makeText(getContext(), "TOTAL: " + temp, Toast.LENGTH_SHORT).show();
@@ -211,6 +212,8 @@ public class OrderStatus extends AppCompatActivity {
                     //Clean the nduthi phone number which we will use for tracking purposes in GeoFireActivity
                     str = dataSnapshot1.getKey();
                     trackNduthi[0] = str.replace("confirmed_", "");
+
+                    myRef.child("active_notifications").child("active_track").setValue(trackNduthi[0]);
 
                     //Get the menu items nduthi has confirmed will deliver
                     getConfirmedNduthi.child(dataSnapshot1.getKey()).addValueEventListener(new ValueEventListener() {

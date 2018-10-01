@@ -18,6 +18,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,6 +29,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -43,8 +46,14 @@ public class NotificationService extends Service {
     private Looper looper;
     private NotificationServiceHandler notificationServiceHandler;
     int counter;
-    boolean sent;
+    boolean sent = false;
+    boolean arrived = false;
     FirebaseAuth mAuth;
+    String trackPhone;
+
+    Double nduthiLat, nduthiLng, myLat, myLong, distance;
+    Double current;
+
     @Override
     public void onCreate() {
         HandlerThread handlerthread = new HandlerThread("MyThread", Process.THREAD_PRIORITY_BACKGROUND);
@@ -52,7 +61,7 @@ public class NotificationService extends Service {
         looper = handlerthread.getLooper();
         notificationServiceHandler = new NotificationServiceHandler(looper);
         isRunning = true;
-        sent = false;
+
         counter = 0;
 
         mAuth = FirebaseAuth.getInstance();
@@ -61,6 +70,8 @@ public class NotificationService extends Service {
             NotificationManager nManager = ((NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE));
             nManager.cancelAll();
         }
+
+        current = 0.0;
 
     }
     @Override
@@ -71,6 +82,160 @@ public class NotificationService extends Service {
         //Toast.makeText(this, "Notification service Started.", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "Notification service Started...");
         //If service is killed while starting, it restarts.
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        final String myPhone = user.getPhoneNumber(); //Current logged in user phone number
+        final DatabaseReference mylocationRef;
+        final DatabaseReference[] nduthiGuyRef = new DatabaseReference[1];
+
+
+
+        FirebaseDatabase.getInstance().getReference(myPhone).child("active_notifications")
+                .child("active_order").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String message = "";
+                String[] phone = new String[1];
+                if(dataSnapshot.hasChildren()){
+                    for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
+                        if(dataSnapshot1.getKey().equals("message")){
+                            message = dataSnapshot1.getValue(String.class);
+                        }
+
+                        if(dataSnapshot1.getKey().equals("phone")){
+                            phone[0] = dataSnapshot1.getValue(String.class);
+                        }
+                    }
+
+                    if(arrived != true){
+                        sendActiveOrderNotification(message, phone);
+                        arrived = true;
+                        trackPhone = ""; //Empty the tracking code and stop tracking
+                    }
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        mylocationRef = FirebaseDatabase.getInstance().getReference(myPhone + "/location"); //loggedin user location reference
+
+        FirebaseDatabase.getInstance().getReference(myPhone).child("active_notifications")
+                .child("active_track").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                trackPhone = dataSnapshot.getValue(String.class);
+                //Toast.makeText(NotificationService.this, "Track: " + trackPhone, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        nduthiGuyRef[0] = FirebaseDatabase.getInstance().getReference(trackPhone + "/location");
+
+        nduthiGuyRef[0].child("latitude").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                nduthiLat = dataSnapshot.getValue(Double.class);
+                //Toast.makeText(NotificationService.this, "nduthiLat: " + nduthiLat, Toast.LENGTH_LONG).show();
+
+                try {
+
+                    distance = distance(nduthiLat, nduthiLng, myLat, myLong, "K");
+                    //Toast.makeText(GeoFireActivity.this, "Distance: " + distance, Toast.LENGTH_SHORT).show();
+                    distance = distance * 1000; //Convert distance to meters
+
+
+                    if (distance < 60 && current != distance) {
+                        //sendNotification("Order is " + distance + "m away");
+                        Toast.makeText(NotificationService.this, "Order is: " + distance + "m away!", Toast.LENGTH_SHORT).show();
+
+                        current = distance;
+                    }
+                    if(distance == 20.0 && arrived != true){
+                        FirebaseDatabase.getInstance().getReference(myPhone).child("active_notifications")
+                                .child("active_order").child("message").setValue("Your order has arrived!");
+                        FirebaseDatabase.getInstance().getReference(myPhone)
+                                .child("active_notifications").child("active_order").child("phone").setValue(trackPhone);
+                    }
+                } catch(Exception e){
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        nduthiGuyRef[0].child("longitude").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                nduthiLng = dataSnapshot.getValue(Double.class);
+                //Toast.makeText(NotificationService.this, "nduthiLng: " + nduthiLat, Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d("dishi", "GeoFireActivity: " + databaseError);
+            }
+        });
+
+        FirebaseDatabase.getInstance().getReference(myPhone + "/pending").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.hasChildren()){
+                    FirebaseDatabase.getInstance().getReference(myPhone)
+                            .child("active_notifications").removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            //Toast.makeText(NotificationService.this, "Tracking code deleted!", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        //My latitude longitude coordinates
+        mylocationRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot myCords : dataSnapshot.getChildren()) {
+                    if (myCords.getKey().equals("latitude")) {
+                        myLat = myCords.getValue(Double.class);
+                    }
+
+                    if (myCords.getKey().equals("longitude")) {
+                        myLong = myCords.getValue(Double.class);
+                    }
+
+                    //Toast.makeText(NotificationService.this, "myLat: " + myLat + " mylng: " + myLong, Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+
 
         return START_STICKY;
     }
@@ -85,12 +250,15 @@ public class NotificationService extends Service {
         Log.d(TAG, "Notification service Stopped...");
     }
 
+
     private final class NotificationServiceHandler extends Handler {
         public NotificationServiceHandler(Looper looper) {
             super(looper);
         }
         @Override
         public void handleMessage(Message msg) {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            final String myPhone = user.getPhoneNumber(); //Current logged in user phone number
             synchronized (this) {
                 while(isRunning) {
                     try {
@@ -99,8 +267,7 @@ public class NotificationService extends Service {
 
                         Log.d(TAG, "Notification service running...");
 
-                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                        String myPhone = user.getPhoneNumber(); //Current logged in user phone number
+
 
                         final DatabaseReference ref = FirebaseDatabase.getInstance().getReference(myPhone + "/pending");
                         final DatabaseReference reqRide = FirebaseDatabase.getInstance().getReference(myPhone + "/request_ride");
@@ -222,6 +389,34 @@ public class NotificationService extends Service {
 
             manager.notify(new Random().nextInt(), notification);
         }
+
+    }
+
+    private void sendActiveOrderNotification(String s, String[] phone){
+        Notification.Builder builder = new Notification.Builder(NotificationService.this)
+                .setSmallIcon(R.drawable.logo)
+                .setContentTitle("Dishi")
+                .setContentText(s);
+
+        NotificationManager manager = (NotificationManager)NotificationService.this.getSystemService(Context.NOTIFICATION_SERVICE);
+        Intent intent = new Intent(getApplicationContext(), GeoFireActivity.class);
+        intent.putExtra("nduthi_phone", phone);
+
+        PendingIntent contentIntent = PendingIntent.getActivity(NotificationService.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(contentIntent);
+        Notification notification = builder.build();
+        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+        notification.defaults |= Notification.DEFAULT_SOUND;
+        notification.icon |= Notification.BADGE_ICON_LARGE;
+
+        manager.notify(new Random().nextInt(), notification);
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String myPhone = user.getPhoneNumber(); //Current logged in user phone number
+
+        FirebaseDatabase.getInstance().getReference(myPhone).child("active_notifications").removeValue();
+
+
     }
 
     private void isOnline() {
@@ -232,6 +427,47 @@ public class NotificationService extends Service {
         } else {
             Toast.makeText(NotificationService.this, "You are not connected to the internet", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public static double distance(double lat1, double lon1, double lat2, double lon2, String unit) {
+        double theta = lon1 - lon2;
+        double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
+        dist = Math.acos(dist);
+        dist = rad2deg(dist);
+        dist = dist * 60 * 1.1515;
+        if (unit == "K") {
+            dist = dist * 1.609344;
+        } else if (unit == "N") {
+            dist = dist * 0.8684;
+        }
+
+        return round(dist, 2);
+    }
+
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    /*::	This function converts decimal degrees to radians			:*/
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    public static double deg2rad(double deg) {
+        return (deg * Math.PI / 180.0);
+    }
+
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    /*::	This function converts radians to decimal degrees			:*/
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    public static double rad2deg(double rad) {
+        return (rad * 180 / Math.PI);
+    }
+
+
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    /*::	This function rounds a double to N decimal places					 :*/
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    private static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(Double.toString(value));
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 
 }
