@@ -154,7 +154,7 @@ public class NotificationService extends Service {
                     distance = distance * 1000; //Convert distance to meters
 
 
-                    if (distance < 60 && current != distance) {
+                    if (distance < 60 && current != distance && arrived != true) {
                         //sendNotification("Order is " + distance + "m away");
                         Toast.makeText(NotificationService.this, "Order is: " + distance + "m away!", Toast.LENGTH_SHORT).show();
 

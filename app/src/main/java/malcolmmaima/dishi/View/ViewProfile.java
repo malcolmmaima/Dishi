@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
@@ -22,7 +24,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
+import malcolmmaima.dishi.Model.StatusUpdateModel;
 import malcolmmaima.dishi.R;
+import malcolmmaima.dishi.View.Adapters.StatusUpdateAdapter;
+
+import static android.view.View.INVISIBLE;
 
 public class ViewProfile extends AppCompatActivity {
 
@@ -32,6 +43,9 @@ public class ViewProfile extends AppCompatActivity {
     ImageView profilePic, coverImg;
     Button followUserBtn;
     String myPhone, picUrl;
+    RecyclerView recyclerView;
+
+    List<StatusUpdateModel> list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +67,7 @@ public class ViewProfile extends AppCompatActivity {
         followersCounter = findViewById(R.id.followers);
         deliveriesCounter = findViewById(R.id.deliveries);
         coverImg = findViewById(R.id.header_cover_image);
+        recyclerView = findViewById(R.id.rview);
 
         Toolbar topToolBar = findViewById(R.id.toolbar);
         setSupportActionBar(topToolBar);
@@ -318,6 +333,51 @@ public class ViewProfile extends AppCompatActivity {
                         }
                     });
                 }
+            }
+        });
+
+        //Fetch the updates from status_updates node
+        providerRef.child("status_updates").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                list = new ArrayList<>();
+                for(DataSnapshot updates : dataSnapshot.getChildren()){
+                    StatusUpdateModel statusUpdateModel = updates.getValue(StatusUpdateModel.class);
+                    statusUpdateModel.key = updates.getKey();
+                    list.add(statusUpdateModel);
+                }
+
+                try {
+                    if (!list.isEmpty()) {
+                        Collections.reverse(list);
+                        recyclerView.setVisibility(View.VISIBLE);
+                        StatusUpdateAdapter recycler = new StatusUpdateAdapter(ViewProfile.this, list);
+                        RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(ViewProfile.this);
+                        recyclerView.setLayoutManager(layoutmanager);
+                        recyclerView.setItemAnimator(new SlideInLeftAnimator());
+
+                        recycler.notifyDataSetChanged();
+
+                        recyclerView.getItemAnimator().setAddDuration(1000);
+                        recyclerView.getItemAnimator().setRemoveDuration(1000);
+                        recyclerView.getItemAnimator().setMoveDuration(1000);
+                        recyclerView.getItemAnimator().setChangeDuration(1000);
+
+                        recyclerView.setAdapter(recycler);
+                    } else {
+                        recyclerView.setVisibility(INVISIBLE);
+                    }
+                }
+
+                catch (Exception e){
+                    recyclerView.setVisibility(INVISIBLE);
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
 

@@ -317,6 +317,7 @@ public class UserProfileFragment extends Fragment {
                 final StatusUpdateModel statusUpdateModel = new StatusUpdateModel();
                 statusUpdateModel.setStatus(statusPost.getText().toString());
                 statusUpdateModel.setTimePosted(time);
+                statusUpdateModel.setAuthor(myPhone);
 
                 final String key = dbRef.push().getKey();
                 if(statusPost.getText().toString().equals("")){
@@ -329,6 +330,7 @@ public class UserProfileFragment extends Fragment {
                         public void onSuccess(Void aVoid) {
                             Toast.makeText(getContext(), "Posted!", Toast.LENGTH_SHORT).show();
                             statusUpdateModel.key = key;
+                            statusUpdateModel.setAuthor(myPhone);
                             statusPost.setText("");
                         }
                     });

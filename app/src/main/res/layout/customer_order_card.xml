@@ -92,6 +92,7 @@
             android:id="@+id/providerName"
             android:layout_below="@id/foodDescription"
             android:layout_toRightOf="@id/restIcon"
+            android:textStyle="bold"
             android:textColor="#666"
             android:textColorHighlight="@color/colorPrimary"/>
 

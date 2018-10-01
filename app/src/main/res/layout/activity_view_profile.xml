@@ -186,27 +186,13 @@
                     android:layout_marginTop="5dp"
                     android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_height="200dp"
-                        android:layout_margin="5dp"
-                        android:background="#fff"
-                        android:clickable="true"
-                        android:elevation="4dp"
-                        android:padding="20dp"
-                        android:text="Card 1" />
+                    <android.support.v7.widget.RecyclerView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/rview"
+                        >
 
-                    <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_height="200dp"
-                        android:layout_margin="5dp"
-                        android:layout_marginBottom="3dp"
-                        android:layout_marginTop="3dp"
-                        android:background="#fff"
-                        android:clickable="true"
-                        android:elevation="4dp"
-                        android:padding="20dp"
-                        android:text="Card 2" />
+                    </android.support.v7.widget.RecyclerView>
 
                 </LinearLayout>
 

@@ -32,7 +32,7 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
 
     Context context;
     List<StatusUpdateModel> listdata;
-    DatabaseReference myRef;
+    DatabaseReference myRef, dbRef;
 
     public StatusUpdateAdapter(Context context, List<StatusUpdateModel> listdata) {
         this.listdata = listdata;
@@ -54,11 +54,91 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String myPhone = user.getPhoneNumber(); //Current logged in user phone number
         myRef = FirebaseDatabase.getInstance().getReference(myPhone);
+        dbRef = FirebaseDatabase.getInstance().getReference(statusUpdateModel.getAuthor());
 
         final String profilePic[] = new String[listdata.size()];
         final String profileName[] = new String[listdata.size()];
 
-        holder.deleteBtn.setVisibility(View.VISIBLE);
+        if(!myPhone.equals(statusUpdateModel.getAuthor())){
+            //Toast.makeText(context, "Author: " + statusUpdateModel.getAuthor(), Toast.LENGTH_SHORT).show();
+            holder.deleteBtn.setVisibility(View.INVISIBLE);
+
+            try {
+                //Loading image from Glide library.
+                dbRef.child("profilepic").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        profilePic[position] = dataSnapshot.getValue(String.class);
+                        Glide.with(context).load(profilePic[position]).into(holder.profilePic);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+                //Fetch name
+                dbRef.child("name").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        profileName[position] = dataSnapshot.getValue(String.class);
+                        holder.profileName.setText(profileName[position]);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+                holder.userUpdate.setText(statusUpdateModel.getStatus());
+
+
+            } catch (Exception e){
+
+            }
+        }
+        else {
+            holder.deleteBtn.setVisibility(View.VISIBLE);
+
+            try {
+                //Loading image from Glide library.
+                myRef.child("profilepic").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        profilePic[position] = dataSnapshot.getValue(String.class);
+                        Glide.with(context).load(profilePic[position]).into(holder.profilePic);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+                //Fetch name
+                myRef.child("name").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        profileName[position] = dataSnapshot.getValue(String.class);
+                        holder.profileName.setText(profileName[position]);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+                holder.userUpdate.setText(statusUpdateModel.getStatus());
+
+
+            } catch (Exception e){
+
+            }
+        }
+
 
         holder.deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,41 +153,7 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
             }
         });
 
-        try {
-            //Loading image from Glide library.
-            myRef.child("profilepic").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    profilePic[position] = dataSnapshot.getValue(String.class);
-                    Glide.with(context).load(profilePic[position]).into(holder.profilePic);
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-
-            //Fetch name
-            myRef.child("name").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    profileName[position] = dataSnapshot.getValue(String.class);
-                    holder.profileName.setText(profileName[position]);
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-
-            holder.userUpdate.setText(statusUpdateModel.getStatus());
-
-
-        } catch (Exception e){
-
-        }
     }
 
     @Override

@@ -5,6 +5,7 @@ public class StatusUpdateModel {
     public String status;
     public String timePosted;
     public String key;
+    public String author;
 
     public void setStatus(String status) {
         this.status = status;
@@ -20,5 +21,13 @@ public class StatusUpdateModel {
 
     public String getTimePosted() {
         return timePosted;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public String getAuthor() {
+        return author;
     }
 }

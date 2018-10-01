@@ -245,6 +245,10 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int id) {
+                                                    final ProgressDialog progressDialog = new ProgressDialog(GeoFireActivity.this);
+                                                    progressDialog.setMessage("Processing...");
+                                                    progressDialog.setCancelable(false);
+                                                    progressDialog.show();
                                                     //Loop through all the selected items list
                                                     for(int i = 0; i < mSelectedItems.size(); i++){
                                                         //Toast.makeText(GeoFireActivity.this, phoneNames[(int)mSelectedItems.get(i)]+" success!", Toast.LENGTH_SHORT).show();
@@ -270,6 +274,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                                                                                 FirebaseDatabase.getInstance().getReference(myPhone).child("confirmed_order").child("confirmed_"+nduthiNumber[0]).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                                     @Override
                                                                                     public void onSuccess(Void aVoid) {
+                                                                                        progressDialog.dismiss();
                                                                                         Toast.makeText(GeoFireActivity.this, "Enjoy your order fam!", Toast.LENGTH_LONG).show();
                                                                                         finish();
                                                                                     }
@@ -357,6 +362,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                                                                                             @Override
                                                                                             public void onSuccess(Void aVoid) {
 
+                                                                                                progressDialog.dismiss();
                                                                                                 Snackbar snackbar = Snackbar
                                                                                                         .make(findViewById(R.id.parentlayout), "Enjoy your order fam!", Snackbar.LENGTH_INDEFINITE)
                                                                                                         .setActionTextColor(getResources().getColor(R.color.colorPrimary))
