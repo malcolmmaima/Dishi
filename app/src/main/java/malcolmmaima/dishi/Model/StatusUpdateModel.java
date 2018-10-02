@@ -6,6 +6,7 @@ public class StatusUpdateModel {
     public String timePosted;
     public String key;
     public String author;
+    public String postedTo;
 
     public void setStatus(String status) {
         this.status = status;
@@ -29,5 +30,13 @@ public class StatusUpdateModel {
 
     public String getAuthor() {
         return author;
+    }
+
+    public void setPostedTo(String postedTo) {
+        this.postedTo = postedTo;
+    }
+
+    public String getPostedTo() {
+        return postedTo;
     }
 }

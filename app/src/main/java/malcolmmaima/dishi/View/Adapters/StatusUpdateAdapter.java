@@ -64,6 +64,7 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
             holder.deleteBtn.setVisibility(View.INVISIBLE);
 
             try {
+
                 //Loading image from Glide library.
                 dbRef.child("profilepic").addValueEventListener(new ValueEventListener() {
                     @Override
@@ -102,6 +103,19 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
         else {
             holder.deleteBtn.setVisibility(View.VISIBLE);
 
+            holder.deleteBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    dbRef.child("status_updates").child(statusUpdateModel.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(context, "deleted", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            });
+
             try {
                 //Loading image from Glide library.
                 myRef.child("profilepic").addValueEventListener(new ValueEventListener() {
@@ -139,19 +153,6 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
             }
         }
 
-
-        holder.deleteBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                myRef.child("status_updates").child(statusUpdateModel.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(context, "deleted", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        });
 
 
     }

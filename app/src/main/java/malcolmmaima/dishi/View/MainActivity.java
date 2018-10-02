@@ -180,10 +180,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                         progressDialog.dismiss();
                     }
                     Snackbar snackbar = Snackbar
-                            .make((LinearLayout) findViewById(R.id.parentlayout), "Failed! Check connection and try again. ", Snackbar.LENGTH_LONG);
+                            .make((LinearLayout) findViewById(R.id.parentlayout), "Failed! Network error, try again!. ", Snackbar.LENGTH_LONG);
 
                     snackbar.show();
                 }
+
 
             }
 

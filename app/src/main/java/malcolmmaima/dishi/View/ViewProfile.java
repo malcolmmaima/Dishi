@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,8 +26,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.TimeZone;
 
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import malcolmmaima.dishi.Model.StatusUpdateModel;
@@ -44,6 +47,8 @@ public class ViewProfile extends AppCompatActivity {
     Button followUserBtn;
     String myPhone, picUrl;
     RecyclerView recyclerView;
+    EditText statusPost;
+    Button postStatus;
 
     List<StatusUpdateModel> list;
 
@@ -68,6 +73,8 @@ public class ViewProfile extends AppCompatActivity {
         deliveriesCounter = findViewById(R.id.deliveries);
         coverImg = findViewById(R.id.header_cover_image);
         recyclerView = findViewById(R.id.rview);
+        postStatus = findViewById(R.id.postStatus);
+        statusPost = findViewById(R.id.inputStatus);
 
         Toolbar topToolBar = findViewById(R.id.toolbar);
         setSupportActionBar(topToolBar);
@@ -259,6 +266,44 @@ public class ViewProfile extends AppCompatActivity {
 
         //myref
         myRef = FirebaseDatabase.getInstance().getReference(myPhone);
+
+        postStatus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                TimeZone timeZone = TimeZone.getTimeZone("GMT+03:00");
+                Calendar calendar = Calendar.getInstance(timeZone);
+                String time = String.format("%02d" , calendar.get(Calendar.HOUR_OF_DAY))+":"+
+                        String.format("%02d" , calendar.get(Calendar.MINUTE))+":"+
+                        String.format("%02d" , calendar.get(Calendar.SECOND))+":"+
+                        String.format("%03d" , calendar.get(Calendar.MILLISECOND));
+
+                final StatusUpdateModel statusUpdateModel = new StatusUpdateModel();
+                statusUpdateModel.setStatus(statusPost.getText().toString());
+                statusUpdateModel.setTimePosted(time);
+                statusUpdateModel.setAuthor(myPhone);
+                statusUpdateModel.setPostedTo(providerPhone);
+
+                final String key = providerRef.push().getKey();
+                if(statusPost.getText().toString().equals("")){
+                    Toast.makeText(ViewProfile.this, "You must enter something!", Toast.LENGTH_SHORT).show();
+                }
+
+                else {
+                    providerRef.child("status_updates").child(key).setValue(statusUpdateModel).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(ViewProfile.this, "Posted!", Toast.LENGTH_SHORT).show();
+                            statusUpdateModel.key = key;
+                            statusUpdateModel.setAuthor(myPhone);
+                            statusUpdateModel.setPostedTo(providerPhone);
+                            statusPost.setText("");
+                        }
+                    });
+                }
+
+            }
+        });
 
         //Fetch follow status
         myRef.child("following").addValueEventListener(new ValueEventListener() {
