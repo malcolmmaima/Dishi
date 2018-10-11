@@ -62,6 +62,7 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
         if(!myPhone.equals(statusUpdateModel.getAuthor())){
             //Toast.makeText(context, "Author: " + statusUpdateModel.getAuthor(), Toast.LENGTH_SHORT).show();
             holder.deleteBtn.setVisibility(View.INVISIBLE);
+            holder.likePost.setTag(R.drawable.ic_like);
 
             try {
 
@@ -95,13 +96,78 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
 
                 holder.userUpdate.setText(statusUpdateModel.getStatus());
 
+                //On laoding adapter fetch the like status
+                dbRef.child("status_updates").child(statusUpdateModel.key).child("likes").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                        for(DataSnapshot likes : dataSnapshot.getChildren()){
+                            String phone = likes.getKey();
+                            try {
+                                if (phone.equals(myPhone)) {
+                                    Toast.makeText(context, "liked", Toast.LENGTH_SHORT).show();
+                                    holder.likePost.setTag(R.drawable.ic_liked);
+                                    holder.likePost.setImageResource(R.drawable.ic_liked);
+                                } else {
+                                    Toast.makeText(context, "not liked", Toast.LENGTH_SHORT).show();
+                                    holder.likePost.setTag(R.drawable.ic_like);
+                                    holder.likePost.setImageResource(R.drawable.ic_like);
+                                }
+                            } catch (Exception e){
+                                Toast.makeText(context, "error" + e, Toast.LENGTH_SHORT).show();
+                                holder.likePost.setTag(R.drawable.ic_like);
+                                holder.likePost.setImageResource(R.drawable.ic_like);
+                            }
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+                holder.likePost.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        int id = (int)holder.likePost.getTag();
+                        if( id == R.drawable.ic_like){
+                            //Add to my favourites
+                            dbRef.child("status_updates").child(statusUpdateModel.key).child("likes").child(myPhone).setValue("like").addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    holder.likePost.setTag(R.drawable.ic_liked);
+                                    holder.likePost.setImageResource(R.drawable.ic_liked);
+                                    //Toast.makeText(context,restaurantDetails.getName()+" added to favourites",Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+
+                        } else{
+                            //Remove from my favourites
+                            dbRef.child("status_updates").child(statusUpdateModel.key).child("likes").child(myPhone).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    holder.likePost.setTag(R.drawable.ic_like);
+                                    holder.likePost.setImageResource(R.drawable.ic_like);
+
+                                    //Toast.makeText(context,restaurantDetails.getName()+" removed from favourites",Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                        }
+
+                    }
+                });
             } catch (Exception e){
 
             }
         }
         else {
             holder.deleteBtn.setVisibility(View.VISIBLE);
+            holder.likePost.setTag(R.drawable.ic_like);
 
             holder.deleteBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -147,6 +213,71 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
 
                 holder.userUpdate.setText(statusUpdateModel.getStatus());
 
+                //On laoding adapter fetch the like status
+                dbRef.child("status_updates").child(statusUpdateModel.key).child("likes").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        for(DataSnapshot likes : dataSnapshot.getChildren()){
+                            String phone = likes.getKey();
+                            try {
+                                if (phone.equals(myPhone)) {
+                                    Toast.makeText(context, "liked", Toast.LENGTH_SHORT).show();
+                                    holder.likePost.setTag(R.drawable.ic_liked);
+                                    holder.likePost.setImageResource(R.drawable.ic_liked);
+                                } else {
+                                    Toast.makeText(context, "not liked", Toast.LENGTH_SHORT).show();
+                                    holder.likePost.setTag(R.drawable.ic_like);
+                                    holder.likePost.setImageResource(R.drawable.ic_like);
+                                }
+                            } catch (Exception e){
+                                Toast.makeText(context, "error" + e, Toast.LENGTH_SHORT).show();
+                                holder.likePost.setTag(R.drawable.ic_like);
+                                holder.likePost.setImageResource(R.drawable.ic_like);
+                            }
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+                holder.likePost.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        int id = (int)holder.likePost.getTag();
+                        if( id == R.drawable.ic_like){
+                            //Add to my favourites
+                            dbRef.child("status_updates").child(statusUpdateModel.key).child("likes").child(myPhone).setValue("like").addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    holder.likePost.setTag(R.drawable.ic_liked);
+                                    holder.likePost.setImageResource(R.drawable.ic_liked);
+                                    //Toast.makeText(context,restaurantDetails.getName()+" added to favourites",Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+
+                        } else{
+                            //Remove from my favourites
+                            dbRef.child("status_updates").child(statusUpdateModel.key).child("likes").child(myPhone).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    holder.likePost.setTag(R.drawable.ic_like);
+                                    holder.likePost.setImageResource(R.drawable.ic_like);
+
+                                    //Toast.makeText(context,restaurantDetails.getName()+" removed from favourites",Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                        }
+
+                    }
+                });
 
             } catch (Exception e){
 
@@ -163,8 +294,8 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
     }
 
     class MyHolder extends RecyclerView.ViewHolder{
-        TextView profileName, userUpdate;
-        ImageView profilePic, deleteBtn;
+        TextView profileName, userUpdate, likesTotal, commentsTotal;
+        ImageView profilePic, deleteBtn, likePost, comments, sharePost;
 
         public MyHolder(View itemView) {
             super(itemView);
@@ -173,6 +304,11 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
             userUpdate = itemView.findViewById(R.id.userUpdate);
             profilePic = itemView.findViewById(R.id.profilePic);
             deleteBtn = itemView.findViewById(R.id.deleteBtn);
+            likePost = itemView.findViewById(R.id.likePost);
+            comments = itemView.findViewById(R.id.comments);
+            sharePost = itemView.findViewById(R.id.sharePost);
+            likesTotal = itemView.findViewById(R.id.likesTotal);
+            commentsTotal = itemView.findViewById(R.id.commentsTotal);
         }
     }
 }
