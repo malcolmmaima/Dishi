@@ -32,7 +32,7 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
 
     Context context;
     List<StatusUpdateModel> listdata;
-    DatabaseReference myRef, dbRef;
+    DatabaseReference myRef, postStatus;
 
     public StatusUpdateAdapter(Context context, List<StatusUpdateModel> listdata) {
         this.listdata = listdata;
@@ -54,20 +54,38 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String myPhone = user.getPhoneNumber(); //Current logged in user phone number
         myRef = FirebaseDatabase.getInstance().getReference(myPhone);
-        dbRef = FirebaseDatabase.getInstance().getReference(statusUpdateModel.getAuthor());
+        final DatabaseReference [] dbRef = new DatabaseReference[listdata.size()];
+        dbRef[position] = FirebaseDatabase.getInstance().getReference(statusUpdateModel.getAuthor());
+        postStatus = FirebaseDatabase.getInstance().getReference();
+
+        final String [] phone = new String[listdata.size()];
 
         final String profilePic[] = new String[listdata.size()];
         final String profileName[] = new String[listdata.size()];
 
-        if(!myPhone.equals(statusUpdateModel.getAuthor())){
-            //Toast.makeText(context, "Author: " + statusUpdateModel.getAuthor(), Toast.LENGTH_SHORT).show();
+        //Likes total counter
+        postStatus.child(statusUpdateModel.getCurrentWall()).child("status_updates").child(statusUpdateModel.key).child("likes").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //Toast.makeText(context, "Likes: " + dataSnapshot.getChildrenCount(), Toast.LENGTH_SHORT).show();
+                holder.likesTotal.setText(""+dataSnapshot.getChildrenCount());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        if(!myPhone.equals(statusUpdateModel.getCurrentWall())){
+            //Toast.makeText(context, statusUpdateModel.getStatus() + " Not my Wall: " + statusUpdateModel.getCurrentWall(), Toast.LENGTH_SHORT).show();
             holder.deleteBtn.setVisibility(View.INVISIBLE);
             holder.likePost.setTag(R.drawable.ic_like);
 
             try {
 
                 //Loading image from Glide library.
-                dbRef.child("profilepic").addValueEventListener(new ValueEventListener() {
+                dbRef[position].child("profilepic").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         profilePic[position] = dataSnapshot.getValue(String.class);
@@ -81,7 +99,7 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
                 });
 
                 //Fetch name
-                dbRef.child("name").addValueEventListener(new ValueEventListener() {
+                dbRef[position].child("name").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         profileName[position] = dataSnapshot.getValue(String.class);
@@ -96,30 +114,23 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
 
                 holder.userUpdate.setText(statusUpdateModel.getStatus());
 
-                //On laoding adapter fetch the like status
-                dbRef.child("status_updates").child(statusUpdateModel.key).child("likes").addValueEventListener(new ValueEventListener() {
+                //Likes total counter
+
+                //On loading adapter fetch the like status
+                postStatus.child(statusUpdateModel.getCurrentWall()).child("status_updates").child(statusUpdateModel.key).child("likes").child(myPhone).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                        for(DataSnapshot likes : dataSnapshot.getChildren()){
-                            String phone = likes.getKey();
-                            try {
-                                if (phone.equals(myPhone)) {
-                                    Toast.makeText(context, "liked", Toast.LENGTH_SHORT).show();
-                                    holder.likePost.setTag(R.drawable.ic_liked);
-                                    holder.likePost.setImageResource(R.drawable.ic_liked);
-                                } else {
-                                    Toast.makeText(context, "not liked", Toast.LENGTH_SHORT).show();
-                                    holder.likePost.setTag(R.drawable.ic_like);
-                                    holder.likePost.setImageResource(R.drawable.ic_like);
-                                }
-                            } catch (Exception e){
-                                Toast.makeText(context, "error" + e, Toast.LENGTH_SHORT).show();
-                                holder.likePost.setTag(R.drawable.ic_like);
-                                holder.likePost.setImageResource(R.drawable.ic_like);
-                            }
+                        phone[position] = dataSnapshot.getValue(String.class);
+                        if(phone[position] == null){
+                            //Toast.makeText(context, "phoneLike: is null", Toast.LENGTH_SHORT).show();
+                            holder.likePost.setTag(R.drawable.ic_like);
+                            holder.likePost.setImageResource(R.drawable.ic_like);
                         }
-
+                        else {
+                            //Toast.makeText(context, "phoneLike: not null", Toast.LENGTH_SHORT).show();
+                            holder.likePost.setTag(R.drawable.ic_liked);
+                            holder.likePost.setImageResource(R.drawable.ic_liked);
+                        }
                     }
 
                     @Override
@@ -135,7 +146,7 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
                         int id = (int)holder.likePost.getTag();
                         if( id == R.drawable.ic_like){
                             //Add to my favourites
-                            dbRef.child("status_updates").child(statusUpdateModel.key).child("likes").child(myPhone).setValue("like").addOnSuccessListener(new OnSuccessListener<Void>() {
+                            postStatus.child(statusUpdateModel.getCurrentWall()).child("status_updates").child(statusUpdateModel.key).child("likes").child(myPhone).setValue("like").addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     holder.likePost.setTag(R.drawable.ic_liked);
@@ -147,7 +158,7 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
 
                         } else{
                             //Remove from my favourites
-                            dbRef.child("status_updates").child(statusUpdateModel.key).child("likes").child(myPhone).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            postStatus.child(statusUpdateModel.getCurrentWall()).child("status_updates").child(statusUpdateModel.key).child("likes").child(myPhone).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     holder.likePost.setTag(R.drawable.ic_like);
@@ -165,7 +176,8 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
 
             }
         }
-        else {
+        else if(myPhone.equals(statusUpdateModel.getCurrentWall())) {
+            //Toast.makeText(context, statusUpdateModel.getStatus() + " my Wall: " + statusUpdateModel.getAuthor(), Toast.LENGTH_SHORT).show();
             holder.deleteBtn.setVisibility(View.VISIBLE);
             holder.likePost.setTag(R.drawable.ic_like);
 
@@ -173,7 +185,7 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
                 @Override
                 public void onClick(View v) {
 
-                    dbRef.child("status_updates").child(statusUpdateModel.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    dbRef[position].child("status_updates").child(statusUpdateModel.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
                             Toast.makeText(context, "deleted", Toast.LENGTH_SHORT).show();
@@ -213,8 +225,8 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
 
                 holder.userUpdate.setText(statusUpdateModel.getStatus());
 
-                //On laoding adapter fetch the like status
-                dbRef.child("status_updates").child(statusUpdateModel.key).child("likes").addValueEventListener(new ValueEventListener() {
+                //On loading adapter fetch the like status
+                dbRef[position].child("status_updates").child(statusUpdateModel.key).child("likes").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -222,11 +234,11 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
                             String phone = likes.getKey();
                             try {
                                 if (phone.equals(myPhone)) {
-                                    Toast.makeText(context, "liked", Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(context, "liked", Toast.LENGTH_SHORT).show();
                                     holder.likePost.setTag(R.drawable.ic_liked);
                                     holder.likePost.setImageResource(R.drawable.ic_liked);
                                 } else {
-                                    Toast.makeText(context, "not liked", Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(context, "not liked", Toast.LENGTH_SHORT).show();
                                     holder.likePost.setTag(R.drawable.ic_like);
                                     holder.likePost.setImageResource(R.drawable.ic_like);
                                 }
@@ -252,7 +264,7 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
                         int id = (int)holder.likePost.getTag();
                         if( id == R.drawable.ic_like){
                             //Add to my favourites
-                            dbRef.child("status_updates").child(statusUpdateModel.key).child("likes").child(myPhone).setValue("like").addOnSuccessListener(new OnSuccessListener<Void>() {
+                            dbRef[position].child("status_updates").child(statusUpdateModel.key).child("likes").child(myPhone).setValue("like").addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     holder.likePost.setTag(R.drawable.ic_liked);
@@ -264,7 +276,7 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
 
                         } else{
                             //Remove from my favourites
-                            dbRef.child("status_updates").child(statusUpdateModel.key).child("likes").child(myPhone).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            dbRef[position].child("status_updates").child(statusUpdateModel.key).child("likes").child(myPhone).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     holder.likePost.setTag(R.drawable.ic_like);

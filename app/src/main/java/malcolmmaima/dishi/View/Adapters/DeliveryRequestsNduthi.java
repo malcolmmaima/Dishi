@@ -66,7 +66,12 @@ public class DeliveryRequestsNduthi extends RecyclerView.Adapter<DeliveryRequest
 
     public void onBindViewHolder(final MyHolder holder, final int position) {
         final RequestNduthi requestNduthi = listdata.get(position);
-        final DatabaseReference myRef, mylocationRef, customerRef, requestRideRef, nduthiGuyRef, customerRequests;
+        final DatabaseReference myRef;
+        final DatabaseReference mylocationRef;
+        DatabaseReference customerRef = null;
+        final DatabaseReference requestRideRef;
+        final DatabaseReference nduthiGuyRef;
+        final DatabaseReference customerRequests;
         FirebaseDatabase db;
 
         final Double[] custlon = new Double[listdata.size()];
@@ -169,46 +174,51 @@ public class DeliveryRequestsNduthi extends RecyclerView.Adapter<DeliveryRequest
             }
         });
 
-        customerRef = db.getReference(requestNduthi.phone);
-        //customer latitude longitude coordinates
-        customerRef.child("location").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+        try {
+            customerRef = db.getReference(requestNduthi.phone);
 
-                for(DataSnapshot providerLoc : dataSnapshot.getChildren()){
+            //customer latitude longitude coordinates
+            customerRef.child("location").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
 
-                    try {
-                        if(providerLoc.getKey().equals("longitude")){
-                            custlon[position] = providerLoc.getValue(Double.class);
-                            //Toast.makeText(getContext(), "(prov lat): " + provlon[0], Toast.LENGTH_SHORT).show();
+                    for(DataSnapshot providerLoc : dataSnapshot.getChildren()){
+
+                        try {
+                            if(providerLoc.getKey().equals("longitude")){
+                                custlon[position] = providerLoc.getValue(Double.class);
+                                //Toast.makeText(getContext(), "(prov lat): " + provlon[0], Toast.LENGTH_SHORT).show();
+                            }
+
+                            if(providerLoc.getKey().equals("latitude")){
+                                custlat[position] = providerLoc.getValue(Double.class);
+                                //Toast.makeText(getContext(), "(prov lon): " + provlat[0], Toast.LENGTH_SHORT).show();
+                            }
+
+                            dist[position] = distance(custlat[position], custlon[position], myLat[position], myLong[position], "K");
+                            //Toast.makeText(context,  "dist: (" + dist[position] + ")m to " + orderDetails.providerName, Toast.LENGTH_SHORT).show();
+
+                            if(dist[position] < 1.0){
+                                holder.distanceAway.setText(dist[position]*1000 + " m away");
+                            } else {
+                                holder.distanceAway.setText(dist[position] + " km away");
+                            }
+
+
+                        } catch (Exception e){
+                            //Toast.makeText(context, "" + e, Toast.LENGTH_SHORT).show();
                         }
-
-                        if(providerLoc.getKey().equals("latitude")){
-                            custlat[position] = providerLoc.getValue(Double.class);
-                            //Toast.makeText(getContext(), "(prov lon): " + provlat[0], Toast.LENGTH_SHORT).show();
-                        }
-
-                        dist[position] = distance(custlat[position], custlon[position], myLat[position], myLong[position], "K");
-                        //Toast.makeText(context,  "dist: (" + dist[position] + ")m to " + orderDetails.providerName, Toast.LENGTH_SHORT).show();
-
-                        if(dist[position] < 1.0){
-                            holder.distanceAway.setText(dist[position]*1000 + " m away");
-                        } else {
-                            holder.distanceAway.setText(dist[position] + " km away");
-                        }
-
-
-                    } catch (Exception e){
-                        //Toast.makeText(context, "" + e, Toast.LENGTH_SHORT).show();
                     }
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
+        } catch (Exception e){
+
+        }
 
         mylocationRef = db.getReference(myPhone);
 

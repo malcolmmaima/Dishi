@@ -7,6 +7,7 @@ public class StatusUpdateModel {
     public String key;
     public String author;
     public String postedTo;
+    public String currentWall;
 
     public void setStatus(String status) {
         this.status = status;
@@ -38,5 +39,13 @@ public class StatusUpdateModel {
 
     public String getPostedTo() {
         return postedTo;
+    }
+
+    public String getCurrentWall() {
+        return currentWall;
+    }
+
+    public void setCurrentWall(String currentWall) {
+        this.currentWall = currentWall;
     }
 }

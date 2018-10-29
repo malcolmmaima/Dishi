@@ -347,6 +347,7 @@ public class UserProfileFragment extends Fragment {
                 for(DataSnapshot updates : dataSnapshot.getChildren()){
                     StatusUpdateModel statusUpdateModel = updates.getValue(StatusUpdateModel.class);
                     statusUpdateModel.key = updates.getKey();
+                    statusUpdateModel.setCurrentWall(myPhone);
                     list.add(statusUpdateModel);
                     }
 

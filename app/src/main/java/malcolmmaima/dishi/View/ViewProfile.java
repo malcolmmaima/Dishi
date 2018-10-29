@@ -389,6 +389,7 @@ public class ViewProfile extends AppCompatActivity {
                 for(DataSnapshot updates : dataSnapshot.getChildren()){
                     StatusUpdateModel statusUpdateModel = updates.getValue(StatusUpdateModel.class);
                     statusUpdateModel.key = updates.getKey();
+                    statusUpdateModel.setCurrentWall(providerPhone);
                     list.add(statusUpdateModel);
                 }
 
