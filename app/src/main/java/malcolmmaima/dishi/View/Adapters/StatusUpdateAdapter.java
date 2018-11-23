@@ -37,7 +37,7 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
 
     Context context;
     List<StatusUpdateModel> listdata;
-    DatabaseReference myRef, postStatus;
+    DatabaseReference myRef, postStatus, ref;
 
     public StatusUpdateAdapter(Context context, List<StatusUpdateModel> listdata) {
         this.listdata = listdata;
@@ -62,6 +62,7 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
         final DatabaseReference [] dbRef = new DatabaseReference[listdata.size()];
         dbRef[position] = FirebaseDatabase.getInstance().getReference(statusUpdateModel.getAuthor());
         postStatus = FirebaseDatabase.getInstance().getReference();
+        ref = FirebaseDatabase.getInstance().getReference();
 
         final String [] phone = new String[listdata.size()];
 
@@ -86,6 +87,22 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
             //Toast.makeText(context, statusUpdateModel.getStatus() + " Not my Wall: " + statusUpdateModel.getCurrentWall(), Toast.LENGTH_SHORT).show();
             holder.deleteBtn.setVisibility(View.INVISIBLE);
             holder.likePost.setTag(R.drawable.ic_like);
+
+            if(myPhone.equals(statusUpdateModel.getAuthor())){
+                holder.deleteBtn.setVisibility(View.VISIBLE);
+                holder.deleteBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        ref.child(statusUpdateModel.getCurrentWall()).child("status_updates").child(statusUpdateModel.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(context, "deleted", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                });
+            }
 
             try {
 

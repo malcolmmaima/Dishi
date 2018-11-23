@@ -47,6 +47,7 @@ public class ViewStatus extends AppCompatActivity {
     EditText statusPost;
     RecyclerView recyclerView;
     List<StatusUpdateModel> list;
+    String phone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,6 +148,78 @@ public class ViewStatus extends AppCompatActivity {
 
             }
 
+        });
+
+
+        //Fetch status update likes
+        authorRef.child("status_updates").child(key).child("likes").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.hasChildren()){
+                    likesTotal.setText(""+dataSnapshot.getChildrenCount());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        //On loading adapter fetch the like status
+        authorRef.child("status_updates").child(key).child("likes").child(myPhone).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                phone = dataSnapshot.getValue(String.class);
+                if(phone == null){
+                    //Toast.makeText(context, "phoneLike: is null", Toast.LENGTH_SHORT).show();
+                    likePost.setTag(R.drawable.ic_like);
+                    likePost.setImageResource(R.drawable.ic_like);
+                }
+                else {
+                    //Toast.makeText(context, "phoneLike: not null", Toast.LENGTH_SHORT).show();
+                    likePost.setTag(R.drawable.ic_liked);
+                    likePost.setImageResource(R.drawable.ic_liked);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        likePost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                int id = (int)likePost.getTag();
+                if( id == R.drawable.ic_like){
+                    //Add to my favourites
+                    authorRef.child("status_updates").child(key).child("likes").child(myPhone).setValue("like").addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            likePost.setTag(R.drawable.ic_liked);
+                            likePost.setImageResource(R.drawable.ic_liked);
+                            //Toast.makeText(context,restaurantDetails.getName()+" added to favourites",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+
+                } else{
+                    //Remove from my favourites
+                    authorRef.child("status_updates").child(key).child("likes").child(myPhone).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            likePost.setTag(R.drawable.ic_like);
+                            likePost.setImageResource(R.drawable.ic_like);
+
+                            //Toast.makeText(context,restaurantDetails.getName()+" removed from favourites",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                }
+
+            }
         });
 
         //Fetch the updates from status_updates node
