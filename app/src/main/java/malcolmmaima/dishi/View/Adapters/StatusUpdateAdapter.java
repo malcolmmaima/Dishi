@@ -77,7 +77,7 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
             }
         });
 
-        if(!myPhone.equals(statusUpdateModel.getCurrentWall())){
+        if(!myPhone.equals(statusUpdateModel.getCurrentWall()) || !statusUpdateModel.getAuthor().equals(statusUpdateModel.getCurrentWall())){
             //Toast.makeText(context, statusUpdateModel.getStatus() + " Not my Wall: " + statusUpdateModel.getCurrentWall(), Toast.LENGTH_SHORT).show();
             holder.deleteBtn.setVisibility(View.INVISIBLE);
             holder.likePost.setTag(R.drawable.ic_like);
@@ -176,7 +176,7 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
 
             }
         }
-        else if(myPhone.equals(statusUpdateModel.getCurrentWall())) {
+        else {
             //Toast.makeText(context, statusUpdateModel.getStatus() + " my Wall: " + statusUpdateModel.getAuthor(), Toast.LENGTH_SHORT).show();
             holder.deleteBtn.setVisibility(View.VISIBLE);
             holder.likePost.setTag(R.drawable.ic_like);
@@ -195,7 +195,7 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
             });
 
             try {
-                //Loading image from Glide library.
+                //Loading image using Glide library.
                 myRef.child("profilepic").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

@@ -8,11 +8,11 @@
     <string name="skip">SKIP</string>
     <string name="start">GOT IT</string>
     <string name="slide_1_title">Dishi</string>
-    <string name="slide_1_desc">Food has never been this social</string>
-    <string name="slide_2_title">Order</string>
-    <string name="slide_2_desc">Food within your geographical location</string>
+    <string name="slide_1_desc">Order food that\'s in close proximity to you</string>
+    <string name="slide_2_title">Delivery</string>
+    <string name="slide_2_desc">Have it delivered to you in real-time</string>
     <string name="slide_3_title">Share</string>
-    <string name="slide_3_desc">Socialize with your food buddies</string>
+    <string name="slide_3_desc">Congratulations, you are now a Dishi foodie. Share your food journey.</string>
     <string name="play_again_desc">Clear app data to see welcome slider again</string>
     <string name="play_again">Play Again</string>
     <string name="tracking_enabled_notif">Tracking is currently enabled. Tap to cancel.</string>

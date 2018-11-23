@@ -585,8 +585,10 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 saved = true;
-                if (progressDialog.isShowing()) {
+                try {
                     progressDialog.dismiss();
+                } catch (Exception e){
+
                 }
 
                 Snackbar snackbar = Snackbar
