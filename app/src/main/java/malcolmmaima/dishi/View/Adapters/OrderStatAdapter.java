@@ -76,7 +76,7 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
         FirebaseDatabase db;
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        String myPhone = user.getPhoneNumber(); //Current logged in user phone number
+        final String myPhone = user.getPhoneNumber(); //Current logged in user phone number
 
         // Assign FirebaseStorage instance to storageReference.
 
@@ -295,6 +295,21 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
         } catch (Exception e){
 
         }
+
+        holder.providerName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!myPhone.equals(myCartDetails.customerNumber)){
+                    Intent slideactivity = new Intent(context, ViewProfile.class)
+                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                    slideactivity.putExtra("phone", myCartDetails.customerNumber);
+                    Bundle bndlanimation =
+                            ActivityOptions.makeCustomAnimation(context, R.anim.animation,R.anim.animation2).toBundle();
+                    context.startActivity(slideactivity, bndlanimation);
+                }
+            }
+        });
 
     }
 

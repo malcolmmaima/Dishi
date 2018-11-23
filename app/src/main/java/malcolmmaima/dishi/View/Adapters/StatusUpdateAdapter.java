@@ -1,6 +1,8 @@
 package malcolmmaima.dishi.View.Adapters;
 
+import android.app.ActivityOptions;
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,6 +29,7 @@ import java.util.List;
 import malcolmmaima.dishi.Model.RestaurantReview;
 import malcolmmaima.dishi.Model.StatusUpdateModel;
 import malcolmmaima.dishi.R;
+import malcolmmaima.dishi.View.ViewProfile;
 
 public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapter.MyHolder> {
 
@@ -297,7 +300,22 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
         }
 
 
+        holder.profileName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+                if(!myPhone.equals(statusUpdateModel.getAuthor())){
+                    Intent slideactivity = new Intent(context, ViewProfile.class)
+                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                    slideactivity.putExtra("phone", statusUpdateModel.getAuthor());
+                    Bundle bndlanimation =
+                            ActivityOptions.makeCustomAnimation(context, R.anim.animation,R.anim.animation2).toBundle();
+                    context.startActivity(slideactivity, bndlanimation);
+                }
+
+            }
+        });
     }
 
     @Override

@@ -313,14 +313,11 @@ public class ViewProfile extends AppCompatActivity {
                 for(DataSnapshot following : dataSnapshot.getChildren()){
                     //Toast.makeText(ViewProfile.this, "following: " + following.getKey(), Toast.LENGTH_SHORT).show();
                     //If user i clicked on is in my db (following node) then set button to unfollow
-                    if(providerPhone.equals(following.getKey())){
+                    if(providerPhone.equals(following.getKey()) ){
                         followUserBtn.setText("UNFOLLOW");
                         followUserBtn.setTag("unfollow");
                     }
-                    if(!providerPhone.equals(following.getKey())) {
-                        followUserBtn.setText("FOLLOW");
-                        followUserBtn.setTag("follow");
-                    }
+
                 }
             }
 

@@ -48,6 +48,7 @@ import malcolmmaima.dishi.View.AddMenu;
 import malcolmmaima.dishi.View.Map.GeoFireActivity;
 import malcolmmaima.dishi.View.MyCart;
 import malcolmmaima.dishi.View.OrderStatus;
+import malcolmmaima.dishi.View.ViewProfile;
 
 public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAdapter.MyHolder>{
 
@@ -78,7 +79,7 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
         FirebaseDatabase db;
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        String myPhone = user.getPhoneNumber(); //Current logged in user phone number
+        final String myPhone = user.getPhoneNumber(); //Current logged in user phone number
 
         // Assign FirebaseStorage instance to storageReference.
 
@@ -569,6 +570,21 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                         .create();
                 myQuittingDialogBox.show();
             }
+            }
+        });
+
+        holder.providerName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!myPhone.equals(receivedOrders.getCustomerNumber())){
+                    Intent slideactivity = new Intent(context, ViewProfile.class)
+                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                    slideactivity.putExtra("phone", receivedOrders.getCustomerNumber());
+                    Bundle bndlanimation =
+                            ActivityOptions.makeCustomAnimation(context, R.anim.animation,R.anim.animation2).toBundle();
+                    context.startActivity(slideactivity, bndlanimation);
+                }
             }
         });
     }

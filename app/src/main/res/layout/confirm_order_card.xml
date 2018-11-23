@@ -98,6 +98,7 @@
             android:layout_marginTop="5dp"
             android:layout_below="@id/foodDescription"
             android:layout_toRightOf="@id/customerTag"
+            android:textStyle="bold"
             android:textColor="#666"/>
 
         <ImageButton

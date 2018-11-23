@@ -1,8 +1,10 @@
 package malcolmmaima.dishi.View.Adapters;
 
+import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -35,6 +37,7 @@ import malcolmmaima.dishi.Model.MyCartDetails;
 import malcolmmaima.dishi.Model.RestaurantDetails;
 import malcolmmaima.dishi.Model.RestaurantReview;
 import malcolmmaima.dishi.R;
+import malcolmmaima.dishi.View.ViewProfile;
 
 public class RestaurantReviewAdapter extends RecyclerView.Adapter<RestaurantReviewAdapter.MyHolder> {
 
@@ -244,6 +247,21 @@ public class RestaurantReviewAdapter extends RecyclerView.Adapter<RestaurantRevi
         } catch (Exception e){
 
         }
+
+        holder.customerName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!myPhone.equals(restaurantReview.getPhone())){
+                    Intent slideactivity = new Intent(context, ViewProfile.class)
+                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                    slideactivity.putExtra("phone", restaurantReview.getPhone());
+                    Bundle bndlanimation =
+                            ActivityOptions.makeCustomAnimation(context, R.anim.animation,R.anim.animation2).toBundle();
+                    context.startActivity(slideactivity, bndlanimation);
+                }
+            }
+        });
 
     }
 

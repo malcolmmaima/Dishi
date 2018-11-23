@@ -1,5 +1,6 @@
 package malcolmmaima.dishi.View;
 
+import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -40,7 +41,7 @@ import malcolmmaima.dishi.View.Fragments.RestaurantStats;
 public class ViewRestaurant extends AppCompatActivity {
     FirebaseAuth mAuth;
     DatabaseReference restaurantRef, myFavourites, providerFavs;
-    ImageView restaurantPic, favourite, callBtn, shareRest;
+    ImageView viewProfile, favourite, callBtn, shareRest;
     TextView restaurantName, distAway, likes;
     String RestaurantName, phone;
     Double provlat, provlon, mylat, mylon, dist;
@@ -90,6 +91,7 @@ public class ViewRestaurant extends AppCompatActivity {
         favourite = findViewById(R.id.likeImageView);
         callBtn = findViewById(R.id.callRestaurant);
         shareRest = findViewById(R.id.shareImageView);
+        viewProfile = findViewById(R.id.viewProfile);
 
         favourite.setTag(R.drawable.ic_like);
 
@@ -152,6 +154,21 @@ public class ViewRestaurant extends AppCompatActivity {
         restaurantRef = FirebaseDatabase.getInstance().getReference(restaurantPhone);
         myFavourites = FirebaseDatabase.getInstance().getReference(myPhone);
         providerFavs = FirebaseDatabase.getInstance().getReference(restaurantPhone + "/favourites");
+
+        viewProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!myPhone.equals(restaurantPhone)){
+                    Intent slideactivity = new Intent(ViewRestaurant.this, ViewProfile.class)
+                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                    slideactivity.putExtra("phone", restaurantPhone);
+                    Bundle bndlanimation =
+                            ActivityOptions.makeCustomAnimation(ViewRestaurant.this, R.anim.animation,R.anim.animation2).toBundle();
+                    startActivity(slideactivity, bndlanimation);
+                }
+            }
+        });
 
         //Fetch the restauant basic info
         restaurantRef.addValueEventListener(new ValueEventListener() {

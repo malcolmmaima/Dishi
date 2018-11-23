@@ -2,6 +2,8 @@ package malcolmmaima.dishi.View;
 
 import android.Manifest;
 import android.app.ActivityOptions;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -52,6 +54,7 @@ public class MyAccountCustomer extends AppCompatActivity implements GoogleApiCli
     String myPhone;
     private static final int PERMISSIONS_REQUEST = 100;
     private FirebaseAuth mAuth;
+    private DatabaseReference dbRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +76,7 @@ public class MyAccountCustomer extends AppCompatActivity implements GoogleApiCli
         myPhone = user.getPhoneNumber(); //Current logged in user phone number
 
         FirebaseDatabase db = FirebaseDatabase.getInstance();
-        final DatabaseReference dbRef = db.getReference(myPhone);
+        dbRef = db.getReference(myPhone);
 
         dbRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -84,7 +87,7 @@ public class MyAccountCustomer extends AppCompatActivity implements GoogleApiCli
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(MyAccountCustomer.this, "Error: " + databaseError.toString() + ". Try again!", Toast.LENGTH_LONG).show();
+
             }
         });
 
@@ -251,6 +254,29 @@ public class MyAccountCustomer extends AppCompatActivity implements GoogleApiCli
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main_customer, menu);
+
+        if (menu != null) {
+            final MenuItem item = menu.findItem(R.id.action_cart);
+            if (item != null) {
+                dbRef.child("pending").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.hasChildren()){
+                            item.setIcon(R.drawable.geo_food);
+                        }
+                        else {
+                            item.setIcon(R.drawable.nduthi_guy);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        }
+
         return true;
     }
 
@@ -260,6 +286,7 @@ public class MyAccountCustomer extends AppCompatActivity implements GoogleApiCli
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+
 
         //noinspection SimplifiableIfStatement
         if(id == R.id.action_cart){
@@ -282,12 +309,34 @@ public class MyAccountCustomer extends AppCompatActivity implements GoogleApiCli
             Toast.makeText(MyAccountCustomer.this, "Refresh App", Toast.LENGTH_LONG).show();
         }
         if(id == R.id.action_logout){
-            stopService(new Intent(this, NotificationService.class));
-            //Toast.makeText(MyAccountRestaurant.this, "Logout", Toast.LENGTH_LONG).show();
-            FirebaseAuth.getInstance().signOut();
-            startActivity(new Intent(MyAccountCustomer.this,MainActivity.class)
-                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-            finish();
+
+            final AlertDialog logout = new AlertDialog.Builder(MyAccountCustomer.this)
+                    .setMessage("Logout?")
+                    //.setIcon(R.drawable.ic_done_black_48dp) //will replace icon with name of existing icon from project
+                    .setCancelable(false)
+                    //set three option buttons
+                    .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            //Log out
+                            //Toast.makeText(MyAccountRestaurant.this, "Logout", Toast.LENGTH_LONG).show();
+                            stopService(new Intent(MyAccountCustomer.this, NotificationService.class));
+                            FirebaseAuth.getInstance().signOut();
+                            startActivity(new Intent(MyAccountCustomer.this,MainActivity.class)
+                                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                            finish();
+                        }
+                    })//setPositiveButton
+
+                    .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            //Do nothing
+                        }
+                    })
+
+                    .create();
+            logout.show();
+
         }
         return super.onOptionsItemSelected(item);
     }

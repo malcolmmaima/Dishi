@@ -81,6 +81,13 @@
                         android:gravity="center|right"
                         >
 
+
+                        <ImageView
+                            android:id="@+id/viewProfile"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/ic_store_black_48dp" />
+
                         <ImageView
                             android:id="@+id/likeImageView"
                             android:layout_width="40dp"
