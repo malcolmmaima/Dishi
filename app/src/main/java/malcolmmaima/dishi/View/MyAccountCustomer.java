@@ -258,6 +258,7 @@ public class MyAccountCustomer extends AppCompatActivity implements GoogleApiCli
         if (menu != null) {
             final MenuItem item = menu.findItem(R.id.action_cart);
             if (item != null) {
+                //Indicate if there is an active order request or not
                 dbRef.child("pending").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

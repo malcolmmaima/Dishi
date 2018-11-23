@@ -63,7 +63,9 @@
         <activity android:name=".View.Adapters.RestaurantReviewAdapter" />
         <activity android:name=".View.ViewProfile" />
         <activity android:name=".View.ViewPhoto" />
-        <activity android:name=".View.Adapters.StatusUpdateAdapter"></activity>
+        <activity android:name=".View.Adapters.StatusUpdateAdapter" />
+        <activity android:name=".View.ViewStatus" />
+        <activity android:name=".View.Adapters.CommentAdapter"></activity>
     </application>
 
 </manifest>

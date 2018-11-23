@@ -27,40 +27,39 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
-import malcolmmaima.dishi.Model.RestaurantReview;
 import malcolmmaima.dishi.Model.StatusUpdateModel;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.ViewProfile;
 import malcolmmaima.dishi.View.ViewStatus;
 
-public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapter.MyHolder> {
+public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyHolder> {
 
     Context context;
     List<StatusUpdateModel> listdata;
     DatabaseReference myRef, postStatus;
 
-    public StatusUpdateAdapter(Context context, List<StatusUpdateModel> listdata) {
+    public CommentAdapter(Context context, List<StatusUpdateModel> listdata) {
         this.listdata = listdata;
         this.context = context;
     }
 
     @Override
-    public StatusUpdateAdapter.MyHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_status_update,parent,false);
+    public CommentAdapter.MyHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_comment,parent,false);
 
-        StatusUpdateAdapter.MyHolder myHolder = new StatusUpdateAdapter.MyHolder(view);
+        CommentAdapter.MyHolder myHolder = new CommentAdapter.MyHolder(view);
         return myHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final StatusUpdateAdapter.MyHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final CommentAdapter.MyHolder holder, final int position) {
 
         final StatusUpdateModel statusUpdateModel = listdata.get(position);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String myPhone = user.getPhoneNumber(); //Current logged in user phone number
         myRef = FirebaseDatabase.getInstance().getReference(myPhone);
         final DatabaseReference [] dbRef = new DatabaseReference[listdata.size()];
-        dbRef[position] = FirebaseDatabase.getInstance().getReference(statusUpdateModel.getAuthor());
+        dbRef[position] = FirebaseDatabase.getInstance().getReference(statusUpdateModel.getCurrentWall());
         postStatus = FirebaseDatabase.getInstance().getReference();
 
         final String [] phone = new String[listdata.size()];
@@ -69,7 +68,7 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
         final String profileName[] = new String[listdata.size()];
 
         //Likes total counter
-        postStatus.child(statusUpdateModel.getCurrentWall()).child("status_updates").child(statusUpdateModel.key).child("likes").addValueEventListener(new ValueEventListener() {
+        postStatus.child(statusUpdateModel.getPostedTo()).child("status_updates").child("comments").child(statusUpdateModel.key).child("likes").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //Toast.makeText(context, "Likes: " + dataSnapshot.getChildrenCount(), Toast.LENGTH_SHORT).show();
@@ -82,8 +81,8 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
             }
         });
 
-        if(!myPhone.equals(statusUpdateModel.getCurrentWall()) || !statusUpdateModel.getAuthor().equals(statusUpdateModel.getCurrentWall())){
-            //Toast.makeText(context, statusUpdateModel.getStatus() + " Not my Wall: " + statusUpdateModel.getCurrentWall(), Toast.LENGTH_SHORT).show();
+        if(!myPhone.equals(statusUpdateModel.getAuthor())){
+            //Toast.makeText(context, statusUpdateModel.getStatus() + " Not my comment: " + statusUpdateModel.getCurrentWall(), Toast.LENGTH_SHORT).show();
             holder.deleteBtn.setVisibility(View.INVISIBLE);
             holder.likePost.setTag(R.drawable.ic_like);
 
@@ -190,7 +189,7 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
                 @Override
                 public void onClick(View v) {
 
-                    dbRef[position].child("status_updates").child(statusUpdateModel.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    dbRef[position].child("status_updates").child(statusUpdateModel.getCommentKey()).child("comments").child(statusUpdateModel.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
                             Toast.makeText(context, "deleted", Toast.LENGTH_SHORT).show();
@@ -319,30 +318,33 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
             }
         });
 
-        holder.cardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        /**
+         *
+         * holder.cardView.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
 
-                if(statusUpdateModel.getAuthor() != null && profileName[position] != null && profilePic[position] != null){
-                    Intent slideactivity = new Intent(context, ViewStatus.class)
-                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if(statusUpdateModel.getAuthor() != null && profileName[position] != null && profilePic[position] != null){
+        Intent slideactivity = new Intent(context, ViewStatus.class)
+        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-                    slideactivity.putExtra("phone", statusUpdateModel.getAuthor());
-                    slideactivity.putExtra("username", profileName[position]);
-                    slideactivity.putExtra("update", statusUpdateModel.getStatus());
-                    slideactivity.putExtra("profilepic", profilePic[position]);
-                    slideactivity.putExtra("currentWall", statusUpdateModel.getCurrentWall());
-                    slideactivity.putExtra("key", statusUpdateModel.key);
-                    Bundle bndlanimation =
-                            ActivityOptions.makeCustomAnimation(context, R.anim.animation,R.anim.animation2).toBundle();
-                    context.startActivity(slideactivity, bndlanimation);
-                }
-                else {
-                    Toast.makeText(context, "Error fetching data, try again!", Toast.LENGTH_SHORT).show();
-                }
+        slideactivity.putExtra("phone", statusUpdateModel.getAuthor());
+        slideactivity.putExtra("username", profileName[position]);
+        slideactivity.putExtra("update", statusUpdateModel.getStatus());
+        slideactivity.putExtra("profilepic", profilePic[position]);
+        slideactivity.putExtra("key", statusUpdateModel.key);
+        Bundle bndlanimation =
+        ActivityOptions.makeCustomAnimation(context, R.anim.animation,R.anim.animation2).toBundle();
+        context.startActivity(slideactivity, bndlanimation);
+        }
+        else {
+        Toast.makeText(context, "Error fetching data, try again!", Toast.LENGTH_SHORT).show();
+        }
 
-            }
+        }
         });
+         */
+
     }
 
     @Override

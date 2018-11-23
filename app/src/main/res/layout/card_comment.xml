@@ -13,9 +13,10 @@
     card_view:view_shadowDy="0dp"
     card_view:view_borderWidth="2dp"
     card_view:view_borderColor="#cccccc"
-    android:foreground="?android:attr/selectableItemBackground">
+    android:foreground="?android:attr/selectableItemBackground"
+    >
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -25,8 +26,8 @@
 
         <com.alexzh.circleimageview.CircleImageView
             android:id="@+id/profilePic"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:src="@drawable/default_profile"
             app:view_shadowRadius="2dp"
             app:view_shadowDx="2dp"
@@ -70,8 +71,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Review..."
-            android:id="@+id/userReview"
+            android:text="Update..."
+            android:id="@+id/userUpdate"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="20dp"
             android:layout_below="@id/profileName"
@@ -83,36 +84,34 @@
             android:id="@+id/cardActions"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/userReview"
+            android:layout_below="@id/userUpdate"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_toRightOf="@id/profilePic"
             android:gravity="center|left">
 
-            <!-- Disabled for now-->
-            <ImageButton
-                android:id="@+id/locationTag"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginTop="5dp"
-                android:scaleType="centerCrop"
-                android:background="@drawable/ic_location_black_48dp"
-                android:layout_marginRight="10dp"
-                android:visibility="invisible"
-
-                />
-
-            <!-- Disabled for now (Java)-->
-            <TextView
-                android:id="@+id/distanceAway"
-                android:layout_toRightOf="@id/locationTag"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text=" 0 m away"
-                android:layout_marginLeft="-10dp"
-                android:layout_marginRight="5dp"/>
+                android:gravity="center|right"
+                >
 
+                <ImageView
+                    android:id="@+id/likePost"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:padding="5dp"
+                    android:src="@drawable/ic_like" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:id="@+id/likesTotal"
+                    />
+
+
+            </LinearLayout>
         </RelativeLayout>
 
     </RelativeLayout>

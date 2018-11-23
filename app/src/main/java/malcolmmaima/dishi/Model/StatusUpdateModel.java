@@ -8,6 +8,15 @@ public class StatusUpdateModel {
     public String author;
     public String postedTo;
     public String currentWall;
+    public String commentKey;
+
+    public String getCommentKey() {
+        return commentKey;
+    }
+
+    public void setCommentKey(String commentKey) {
+        this.commentKey = commentKey;
+    }
 
     public void setStatus(String status) {
         this.status = status;
