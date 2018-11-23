@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:allowBackup="true"
@@ -55,17 +56,12 @@
         <activity
             android:name=".View.Map.GeoFireActivity"
             android:label="@string/title_activity_geo_fire" />
-        <activity android:name=".View.Adapters.RestaurantAdapter" />
-        <activity android:name=".View.ViewRestaurant" />
-        <activity android:name=".View.Fragments.RestaurantMenu" />
-        <activity android:name=".View.Fragments.RestaurantReviews" />
-        <activity android:name=".View.Fragments.RestaurantStats" />
-        <activity android:name=".View.Adapters.RestaurantReviewAdapter" />
-        <activity android:name=".View.ViewProfile" />
+        <activity android:name=".View.ViewProfile"
+            android:windowSoftInputMode="stateHidden" />
         <activity android:name=".View.ViewPhoto" />
-        <activity android:name=".View.Adapters.StatusUpdateAdapter" />
-        <activity android:name=".View.ViewStatus" />
-        <activity android:name=".View.Adapters.CommentAdapter"></activity>
+        <activity android:name=".View.ViewStatus"
+            android:windowSoftInputMode="stateHidden"/>
+        <activity android:name=".View.ViewRestaurant" />
     </application>
 
 </manifest>

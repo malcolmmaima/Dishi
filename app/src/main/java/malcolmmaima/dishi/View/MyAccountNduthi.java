@@ -2,7 +2,9 @@ package malcolmmaima.dishi.View;
 
 import android.Manifest;
 import android.app.ActivityOptions;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -40,6 +42,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import malcolmmaima.dishi.Controller.NotificationService;
 import malcolmmaima.dishi.Controller.TrackingService;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.Fragments.NduthiDeliveriesFragment;
@@ -289,11 +292,32 @@ public class MyAccountNduthi extends AppCompatActivity implements GoogleApiClien
             Toast.makeText(MyAccountNduthi.this, "Refresh App", Toast.LENGTH_LONG).show();
         }
         if(id == R.id.action_logout){
-            //Toast.makeText(MyAccountRestaurant.this, "Logout", Toast.LENGTH_LONG).show();
-            FirebaseAuth.getInstance().signOut();
-            startActivity(new Intent(MyAccountNduthi.this,MainActivity.class)
-                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-            finish();
+            final AlertDialog logout = new AlertDialog.Builder(MyAccountNduthi.this)
+                    .setMessage("Logout?")
+                    //.setIcon(R.drawable.ic_done_black_48dp) //will replace icon with name of existing icon from project
+                    .setCancelable(false)
+                    //set three option buttons
+                    .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            //Log out
+                            //Toast.makeText(MyAccountRestaurant.this, "Logout", Toast.LENGTH_LONG).show();
+                            stopService(new Intent(MyAccountNduthi.this, NotificationService.class));
+                            FirebaseAuth.getInstance().signOut();
+                            startActivity(new Intent(MyAccountNduthi.this,MainActivity.class)
+                                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                            finish();
+                        }
+                    })//setPositiveButton
+
+                    .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            //Do nothing
+                        }
+                    })
+
+                    .create();
+            logout.show();
         }
         return super.onOptionsItemSelected(item);
     }

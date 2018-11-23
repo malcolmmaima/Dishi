@@ -40,7 +40,7 @@ import static android.view.View.INVISIBLE;
 public class ViewStatus extends AppCompatActivity {
 
     DatabaseReference authorRef, myRef;
-    TextView profileName, userUpdate, likesTotal, commentsTotal;
+    TextView profileName, userUpdate, likesTotal, commentsTotal, emptyTag;
     ImageView profilePic, deleteBtn, likePost, comments, sharePost;
     String myPhone;
     Button postStatus;
@@ -69,6 +69,7 @@ public class ViewStatus extends AppCompatActivity {
         postStatus = findViewById(R.id.postStatus);
         statusPost = findViewById(R.id.inputComment);
         recyclerView = findViewById(R.id.rview);
+        emptyTag = findViewById(R.id.empty_tag);
 
         Toolbar topToolBar = findViewById(R.id.toolbar);
         setSupportActionBar(topToolBar);
@@ -155,9 +156,20 @@ public class ViewStatus extends AppCompatActivity {
         authorRef.child("status_updates").child(key).child("likes").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.hasChildren()){
-                    likesTotal.setText(""+dataSnapshot.getChildrenCount());
-                }
+                likesTotal.setText(""+dataSnapshot.getChildrenCount());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        //Fetch comments count
+        authorRef.child("status_updates").child(key).child("comments").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                commentsTotal.setText(""+dataSnapshot.getChildrenCount());
             }
 
             @Override
@@ -237,7 +249,8 @@ public class ViewStatus extends AppCompatActivity {
 
                 try {
                     if (!list.isEmpty()) {
-                        Collections.reverse(list);
+                        emptyTag.setVisibility(INVISIBLE);
+                        //Collections.reverse(list);
                         recyclerView.setVisibility(View.VISIBLE);
                         CommentAdapter recycler = new CommentAdapter(ViewStatus.this, list);
                         RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(ViewStatus.this);
@@ -253,6 +266,7 @@ public class ViewStatus extends AppCompatActivity {
 
                         recyclerView.setAdapter(recycler);
                     } else {
+                        emptyTag.setVisibility(View.VISIBLE);
                         recyclerView.setVisibility(INVISIBLE);
                     }
                 }

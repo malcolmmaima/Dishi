@@ -6,7 +6,6 @@
     android:clickable="true"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp"
     card_view:cardCornerRadius="5dp"
     android:focusableInTouchMode="false"
     card_view:view_shadowDx="2dp"
@@ -90,7 +89,9 @@
             android:layout_toRightOf="@id/profilePic"
             android:gravity="center|left">
 
+            <!-- set visibility later on and develop comment likes -->
             <LinearLayout
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center|right"

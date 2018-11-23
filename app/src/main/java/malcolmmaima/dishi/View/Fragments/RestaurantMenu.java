@@ -107,7 +107,7 @@ public class RestaurantMenu extends android.support.v4.app.Fragment {
                 }
             });
 
-            restaurantRootRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+            restaurantRootRef.child("name").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     try {

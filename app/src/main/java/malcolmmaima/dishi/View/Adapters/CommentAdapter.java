@@ -81,6 +81,20 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyHolder
             }
         });
 
+        //Fetch name
+        postStatus.child(statusUpdateModel.getAuthor()).child("name").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                profileName[position] = dataSnapshot.getValue(String.class);
+                holder.profileName.setText(profileName[position]);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         if(!myPhone.equals(statusUpdateModel.getAuthor())){
             //Toast.makeText(context, statusUpdateModel.getStatus() + " Not my comment: " + statusUpdateModel.getCurrentWall(), Toast.LENGTH_SHORT).show();
             holder.deleteBtn.setVisibility(View.INVISIBLE);
@@ -94,20 +108,6 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyHolder
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         profilePic[position] = dataSnapshot.getValue(String.class);
                         Glide.with(context).load(profilePic[position]).into(holder.profilePic);
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
-                //Fetch name
-                dbRef[position].child("name").addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        profileName[position] = dataSnapshot.getValue(String.class);
-                        holder.profileName.setText(profileName[position]);
                     }
 
                     @Override
@@ -213,19 +213,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyHolder
                     }
                 });
 
-                //Fetch name
-                myRef.child("name").addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        profileName[position] = dataSnapshot.getValue(String.class);
-                        holder.profileName.setText(profileName[position]);
-                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
 
                 holder.userUpdate.setText(statusUpdateModel.getStatus());
 

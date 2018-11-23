@@ -161,6 +161,19 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
                     }
                 });
 
+                //On loading adapter fetch the comments count
+                postStatus.child(statusUpdateModel.getCurrentWall()).child("status_updates").child(statusUpdateModel.key).child("comments").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        holder.commentsTotal.setText(""+dataSnapshot.getChildrenCount());
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
                 holder.likePost.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -217,6 +230,8 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
             });
 
             try {
+
+
                 //Loading image using Glide library.
                 myRef.child("profilepic").addValueEventListener(new ValueEventListener() {
                     @Override
@@ -246,6 +261,19 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
                 });
 
                 holder.userUpdate.setText(statusUpdateModel.getStatus());
+
+                //On loading adapter fetch the comments count
+                dbRef[position].child("status_updates").child(statusUpdateModel.key).child("comments").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        holder.commentsTotal.setText(""+dataSnapshot.getChildrenCount());
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
 
                 //On loading adapter fetch the like status
                 dbRef[position].child("status_updates").child(statusUpdateModel.key).child("likes").addValueEventListener(new ValueEventListener() {

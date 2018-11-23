@@ -299,14 +299,18 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.My
         holder.profilePic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Slide to new activity
-                Intent slideactivity = new Intent(context, ViewRestaurant.class)
-                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-                slideactivity.putExtra("restaurant_phone", restaurantDetails.phone);
-                Bundle bndlanimation =
-                        ActivityOptions.makeCustomAnimation(context, R.anim.animation,R.anim.animation2).toBundle();
-                context.startActivity(slideactivity, bndlanimation);
+                if(restaurantDetails.phone != null){
+                    //Slide to new activity
+                    Intent slideactivity = new Intent(context, ViewRestaurant.class)
+                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                    slideactivity.putExtra("restaurant_phone", restaurantDetails.phone);
+                    Bundle bndlanimation =
+                            ActivityOptions.makeCustomAnimation(context, R.anim.animation,R.anim.animation2).toBundle();
+                    context.startActivity(slideactivity, bndlanimation);
+                }
+
             }
         });
 
