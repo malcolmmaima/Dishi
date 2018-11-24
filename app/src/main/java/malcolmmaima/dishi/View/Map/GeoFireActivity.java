@@ -245,75 +245,161 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int id) {
-                                                    final ProgressDialog progressDialog = new ProgressDialog(GeoFireActivity.this);
-                                                    progressDialog.setMessage("Processing...");
-                                                    progressDialog.setCancelable(false);
-                                                    progressDialog.show();
-                                                    //Loop through all the selected items list
-                                                    for(int i = 0; i < mSelectedItems.size(); i++){
-                                                        //Toast.makeText(GeoFireActivity.this, phoneNames[(int)mSelectedItems.get(i)]+" success!", Toast.LENGTH_SHORT).show();
-                                                        try {
-                                                            providerRef = FirebaseDatabase.getInstance().getReference(phoneNumbers[(int) mSelectedItems.get(i)] + "/deliveries");
-                                                        } catch( Exception e){
 
-                                                        }
+                                                    if (mSelectedItems.size() == 0) {
+                                                        Toast.makeText(GeoFireActivity.this, "You must select a name", Toast.LENGTH_LONG).show();
+                                                    }
+                                                    else {
+                                                        final ProgressDialog progressDialog = new ProgressDialog(GeoFireActivity.this);
+                                                        progressDialog.setMessage("Processing...");
+                                                        progressDialog.setCancelable(false);
+                                                        progressDialog.show();
+                                                        //Loop through all the selected items list
+                                                        for (int i = 0; i < mSelectedItems.size(); i++) {
+                                                            //Toast.makeText(GeoFireActivity.this, phoneNames[(int)mSelectedItems.get(i)]+" success!", Toast.LENGTH_SHORT).show();
+                                                            try {
+                                                                providerRef = FirebaseDatabase.getInstance().getReference(phoneNumbers[(int) mSelectedItems.get(i)] + "/deliveries");
+                                                            } catch (Exception e) {
 
-                                                        try {
-                                                            FirebaseDatabase.getInstance().getReference(myPhone).child("confirmed_order").child("confirmed_"+nduthiNumber[0]).addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                @Override
-                                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                                    for(DataSnapshot orders : dataSnapshot.getChildren()){
-                                                                        OrderDetails orderDetails = orders.getValue(OrderDetails.class); //Assign values to model
-                                                                        orderDetails.providerName = orders.child("providerName").getValue(String.class);
-                                                                        orderDetails.key = orders.getKey();
-                                                                        //Move already delivered order to history db node
-                                                                        ordersHistory.child(orderDetails.key).setValue(orderDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                            @Override
-                                                                            public void onSuccess(Void aVoid) {
-                                                                                //Then delete from active order node
-                                                                                FirebaseDatabase.getInstance().getReference(myPhone).child("confirmed_order").child("confirmed_"+nduthiNumber[0]).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                                    @Override
-                                                                                    public void onSuccess(Void aVoid) {
-                                                                                        progressDialog.dismiss();
-                                                                                        Toast.makeText(GeoFireActivity.this, "Enjoy your order fam!", Toast.LENGTH_LONG).show();
-                                                                                        finish();
-                                                                                    }
-                                                                                });
-                                                                                FirebaseDatabase.getInstance().getReference(nduthiNumber[0] + "/request_ride").addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                                    @Override
-                                                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                                                        for(DataSnapshot dt : dataSnapshot.getChildren()){
-                                                                                            if(dt.getKey().equals(myPhone)){
-                                                                                                //Toast.makeText(GeoFireActivity.this, "Delete request nduthi node!", Toast.LENGTH_SHORT).show();
-                                                                                                FirebaseDatabase.getInstance().getReference(nduthiNumber[0] + "/request_ride").child(myPhone).removeValue();
-                                                                                                FirebaseDatabase.getInstance().getReference(nduthiNumber[0] + "/request_menus").addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                                                    @Override
-                                                                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                                                                        for(DataSnapshot dt2 : dataSnapshot.getChildren()){
-                                                                                                            if(dt2.getKey().equals("request_" + myPhone)){
-                                                                                                                //Toast.makeText(GeoFireActivity.this, "Delete request menu node!", Toast.LENGTH_SHORT).show();
-                                                                                                                FirebaseDatabase.getInstance().getReference(nduthiNumber[0] + "/request_menus").child("request_"+myPhone).removeValue();
-                                                                                                                finish();
+                                                            }
+
+                                                            try {
+                                                                FirebaseDatabase.getInstance().getReference(myPhone).child("confirmed_order").child("confirmed_" + nduthiNumber[0]).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                    @Override
+                                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                                        for (DataSnapshot orders : dataSnapshot.getChildren()) {
+                                                                            OrderDetails orderDetails = orders.getValue(OrderDetails.class); //Assign values to model
+                                                                            orderDetails.providerName = orders.child("providerName").getValue(String.class);
+                                                                            orderDetails.key = orders.getKey();
+                                                                            //Move already delivered order to history db node
+                                                                            ordersHistory.child(orderDetails.key).setValue(orderDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                @Override
+                                                                                public void onSuccess(Void aVoid) {
+                                                                                    //Then delete from active order node
+                                                                                    FirebaseDatabase.getInstance().getReference(myPhone).child("confirmed_order").child("confirmed_" + nduthiNumber[0]).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                        @Override
+                                                                                        public void onSuccess(Void aVoid) {
+                                                                                            progressDialog.dismiss();
+                                                                                            Toast.makeText(GeoFireActivity.this, "Enjoy your order fam!", Toast.LENGTH_LONG).show();
+                                                                                            finish();
+                                                                                        }
+                                                                                    });
+                                                                                    FirebaseDatabase.getInstance().getReference(nduthiNumber[0] + "/request_ride").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                                        @Override
+                                                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                                                            for (DataSnapshot dt : dataSnapshot.getChildren()) {
+                                                                                                if (dt.getKey().equals(myPhone)) {
+                                                                                                    //Toast.makeText(GeoFireActivity.this, "Delete request nduthi node!", Toast.LENGTH_SHORT).show();
+                                                                                                    FirebaseDatabase.getInstance().getReference(nduthiNumber[0] + "/request_ride").child(myPhone).removeValue();
+                                                                                                    FirebaseDatabase.getInstance().getReference(nduthiNumber[0] + "/request_menus").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                                                        @Override
+                                                                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                                                                            for (DataSnapshot dt2 : dataSnapshot.getChildren()) {
+                                                                                                                if (dt2.getKey().equals("request_" + myPhone)) {
+                                                                                                                    //Toast.makeText(GeoFireActivity.this, "Delete request menu node!", Toast.LENGTH_SHORT).show();
+                                                                                                                    FirebaseDatabase.getInstance().getReference(nduthiNumber[0] + "/request_menus").child("request_" + myPhone).removeValue();
+                                                                                                                    finish();
+                                                                                                                }
                                                                                                             }
                                                                                                         }
-                                                                                                    }
 
-                                                                                                    @Override
-                                                                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                                                                        @Override
+                                                                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                                                                                    }
-                                                                                                });
+                                                                                                        }
+                                                                                                    });
+                                                                                                }
                                                                                             }
                                                                                         }
-                                                                                    }
 
-                                                                                    @Override
-                                                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                                                        @Override
+                                                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                                                                    }
-                                                                                });
-                                                                            }
-                                                                        });
+                                                                                        }
+                                                                                    });
+                                                                                }
+                                                                            });
+                                                                        }
+                                                                    }
+
+                                                                    @Override
+                                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                                    }
+                                                                });
+                                                            } catch (Exception e) {
+
+                                                            }
+
+                                                            try {
+                                                                providerOrderHistory = FirebaseDatabase.getInstance().getReference(phoneNumbers[(int) mSelectedItems.get(i)] + "/history_deliveries");
+                                                            } catch (Exception e) {
+
+                                                            }
+                                                            //check in my pending node for items
+                                                            pendingOrders.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                @Override
+                                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                                                    for (final DataSnapshot orderStat : dataSnapshot.getChildren()) {
+                                                                        final MyCartDetails myCartDetails = orderStat.getValue(MyCartDetails.class);
+
+                                                                        //If item status is confirmed, means it is in transit
+                                                                        if (myCartDetails.status.equals("confirmed")) {
+                                                                            myCartDetails.key = orderStat.getKey();
+                                                                            myCartDetails.status = "delivered";
+                                                                            myCartDetails.sent = true;
+
+                                                                            //Update provider's node
+                                                                            providerRef.child(myCartDetails.key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                @Override
+                                                                                public void onSuccess(Void aVoid) {
+
+                                                                                    //Create copy of order history for provider
+                                                                                    providerOrderHistory.child(myCartDetails.key).setValue(myCartDetails);
+
+                                                                                    //Move already delivered order to history db node
+                                                                                    ordersHistory.child(myCartDetails.key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                        @Override
+                                                                                        public void onSuccess(Void aVoid) {
+                                                                                            //then delete it from pending orders node
+                                                                                            pendingOrders.child(myCartDetails.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                                @Override
+                                                                                                public void onSuccess(Void aVoid) {
+
+                                                                                                    progressDialog.dismiss();
+                                                                                                    confirmOrd.setEnabled(false);
+                                                                                                    Snackbar snackbar = Snackbar
+                                                                                                            .make(findViewById(R.id.parentlayout), "Enjoy your order fam!", Snackbar.LENGTH_INDEFINITE)
+                                                                                                            .setActionTextColor(getResources().getColor(R.color.colorPrimary))
+                                                                                                            .setAction("FINISH", new View.OnClickListener() {
+                                                                                                                @Override
+                                                                                                                public void onClick(View view) {
+                                                                                                                    /*
+                                                                                                                    Intent slideactivity = new Intent(GeoFireActivity.this, MyAccountCustomer.class)
+                                                                                                                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                                                                                    Bundle bndlanimation =
+                                                                                                                            ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                                                                                                                    startActivity(slideactivity, bndlanimation);
+                                                                                                                    */
+
+                                                                                                                    finish();
+                                                                                                                }
+                                                                                                            });
+
+                                                                                                    snackbar.show();
+                                                                                                }
+                                                                                            });
+                                                                                        }
+                                                                                    });
+                                                                                }
+                                                                            });
+                                                                        } else {//Order of the ticked delivery individual has not been confirmed
+                                                                            //Toast.makeText(GeoFireActivity.this, myCartDetails.provider
+                                                                            //        + " has not confirmed your order for " + myCartDetails.getName(), Toast.LENGTH_SHORT).show();
+
+                                                                        }
+
                                                                     }
                                                                 }
 
@@ -322,83 +408,9 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
 
                                                                 }
                                                             });
-                                                        } catch (Exception e){
-
                                                         }
 
-                                                        try {
-                                                            providerOrderHistory = FirebaseDatabase.getInstance().getReference(phoneNumbers[(int) mSelectedItems.get(i)] + "/history_deliveries");
-                                                        } catch (Exception e){
-
-                                                        }
-                                                        //check in my pending node for items
-                                                        pendingOrders.addListenerForSingleValueEvent(new ValueEventListener() {
-                                                            @Override
-                                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                                                                for (final DataSnapshot orderStat : dataSnapshot.getChildren()) {
-                                                                    final MyCartDetails myCartDetails = orderStat.getValue(MyCartDetails.class);
-
-                                                                    //If item status is confirmed, means it is in transit
-                                                                    if(myCartDetails.status.equals("confirmed")){
-                                                                        myCartDetails.key = orderStat.getKey();
-                                                                        myCartDetails.status = "delivered";
-                                                                        myCartDetails.sent = true;
-
-                                                                        //Update provider's node
-                                                                        providerRef.child(myCartDetails.key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                            @Override
-                                                                            public void onSuccess(Void aVoid) {
-
-                                                                                //Create copy of order history for provider
-                                                                                providerOrderHistory.child(myCartDetails.key).setValue(myCartDetails);
-
-                                                                                //Move already delivered order to history db node
-                                                                                ordersHistory.child(myCartDetails.key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                                    @Override
-                                                                                    public void onSuccess(Void aVoid) {
-                                                                                        //then delete it from pending orders node
-                                                                                        pendingOrders.child(myCartDetails.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                                            @Override
-                                                                                            public void onSuccess(Void aVoid) {
-
-                                                                                                progressDialog.dismiss();
-                                                                                                Snackbar snackbar = Snackbar
-                                                                                                        .make(findViewById(R.id.parentlayout), "Enjoy your order fam!", Snackbar.LENGTH_INDEFINITE)
-                                                                                                        .setActionTextColor(getResources().getColor(R.color.colorPrimary))
-                                                                                                        .setAction("FINISH", new View.OnClickListener() {
-                                                                                                            @Override
-                                                                                                            public void onClick(View view) {
-                                                                                                                Intent slideactivity = new Intent(GeoFireActivity.this, MyAccountCustomer.class)
-                                                                                                                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                                                                                                Bundle bndlanimation =
-                                                                                                                        ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
-                                                                                                                startActivity(slideactivity, bndlanimation);
-                                                                                                            }
-                                                                                                        });
-
-                                                                                                snackbar.show();
-                                                                                            }
-                                                                                        });
-                                                                                    }
-                                                                                });
-                                                                            }
-                                                                        });
-                                                                    } else {//Order of the ticked delivery individual has not been confirmed
-                                                                        //Toast.makeText(GeoFireActivity.this, myCartDetails.provider
-                                                                        //        + " has not confirmed your order for " + myCartDetails.getName(), Toast.LENGTH_SHORT).show();
-
-                                                                    }
-
-                                                                }
-                                                            }
-
-                                                            @Override
-                                                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                                            }
-                                                        });
-                                                    }
+                                                }
                                                 }
                                             })
                                             .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -543,7 +555,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
 
         db = FirebaseDatabase.getInstance();
         mylocationRef = db.getReference(myPhone + "/location"); //loggedin user location reference
-        nduthiGuyRef[0] = FirebaseDatabase.getInstance().getReference("+254778256039" + "/location");
+        nduthiGuyRef[0] = FirebaseDatabase.getInstance().getReference(nduthi_phone[0] + "/location");
 
 
         nduthiGuyRef[0].child("latitude").addValueEventListener(new ValueEventListener() {
@@ -551,6 +563,11 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 nduthiLat = dataSnapshot.getValue(Double.class);
                 //Toast.makeText(GeoFireActivity.this, "nduthiLat: " + nduthiLat, Toast.LENGTH_LONG).show();
+                try {
+                    track();
+                } catch (Exception e){
+
+                }
             }
 
             @Override
@@ -564,6 +581,11 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 nduthiLng = dataSnapshot.getValue(Double.class);
                 //Toast.makeText(GeoFireActivity.this, "nduthiLng: " + nduthiLat, Toast.LENGTH_LONG).show();
+                try {
+                    track();
+                } catch (Exception e){
+
+                }
             }
 
             @Override
@@ -588,301 +610,306 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                 }
 
                 //Toast.makeText(GeoFireActivity.this, "lat: "+ myLat + " long: " + myLong, Toast.LENGTH_SHORT).show();
-
-
                 try {
-                    if(accType.equals("1")) {//Customer
-                        try {
-                            loggedInUserLoc = new LatLng(myLat, myLong);
-                            nduthiGuyLoc = new LatLng(nduthiLat, nduthiLng);
-
-                            distance = distance(nduthiGuyLoc.latitude, nduthiGuyLoc.longitude, loggedInUserLoc.latitude, loggedInUserLoc.longitude, "K");
-                            //Toast.makeText(GeoFireActivity.this, "Distance: " + distance, Toast.LENGTH_SHORT).show();
-                            distance = distance * 1000; //Convert distance to meters
-                        } catch(Exception e){
-
-                        }
-
-                        try{
-                            phoneNumbers = getIntent().getStringArrayExtra("phoneNumbers");
-
-
-                            /*
-                             * convert array to list and then add all
-                             * elements to LinkedHashSet. LinkedHashSet
-                             * will automatically remove all duplicate elements.
-                             */
-                            LinkedHashSet<String> phones =
-                                    new LinkedHashSet<String>(Arrays.asList(phoneNumbers));
-
-                            //create array from the LinkedHashSet
-                            String[] newArray = phones.toArray(new String[ phones.size() ]);
-
-                            phoneNumbers = newArray;
-
-                            DatabaseReference phoneNamesRef;
-                            phoneNames = new String[phoneNumbers.length];
-
-                            for(int i = 0; i< phoneNumbers.length; i++){
-                                phoneNamesRef = FirebaseDatabase.getInstance().getReference(phoneNumbers[i]);
-
-                                phoneNamesRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        String name = dataSnapshot.getValue(String.class);
-                                        if(!names.contains(name)){
-                                            names.add(name);
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                    }
-                                });
-                            }
-
-                            phoneNames = names.toArray(new String[names.size()]);
-
-                        }catch (Exception e){}
-
-                        try {
-
-                            confirmOrd.setEnabled(true);
-                            callNduthi.setEnabled(true);
-                            //If person making delivery is within 500m radius, send notification
-                            //mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
-                            message = "Has nduthi or provider delivered your order?";
-                            callMsg = "Call delivery guy?";
-                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nduthiLat, nduthiLng), zoomLevel));
-                            if (distance == 10 || distance == 60 || distance == 120 || distance < 10) {
-                                //sendNotification("Order is " + distance + "m away");
-
-                                //FirebaseDatabase.getInstance().getReference(myPhone).child("active_notifications")
-                                //        .child("active_order").child("message").setValue("Order is " + distance + "m away");
-                                //FirebaseDatabase.getInstance().getReference(myPhone)
-                                //        .child("active_notifications").child("active_order").child("phone").setValue(nduthiNumber[0]);
-                            }
-
-                            myCurrent.remove(); //Remove previous marker
-                            myArea.remove(); //Remove previous circle
-
-                            providerCurrent.remove();
-
-                            providerCurrent = mMap.addMarker(new MarkerOptions().position(nduthiGuyLoc).title("Nduthi")
-                                    .snippet("Extra info")
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.nduthi_guy))
-                                    .flat(true));
-
-                            myCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("My Location"));
-
-                            //Radius around my area
-                            myArea = mMap.addCircle(new CircleOptions().center(loggedInUserLoc)
-                                    .radius(200)//in meters
-                                    .strokeColor(Color.BLUE)
-                                    .fillColor(0x220000FF)
-                                    .strokeWidth(5.0f));
-
-                        } catch (Exception e){
-                            //Toast.makeText(GeoFireActivity.this, "Error: " + e.toString(), Toast.LENGTH_SHORT).show();
-                            confirmOrd.setEnabled(false);
-                            callNduthi.setEnabled(false);
-                            //Toast.makeText(GeoFireActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
-                            Log.d("dish", "GeoFireActivity: " + e);
-                            loggedInUserLoc = new LatLng(-1.281647, 36.822638); //Default Nairobi
-                            myCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("Default Location").snippet("Error fetching your location"));
-                            providerCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("Default Location").snippet("Error fetching your location"));
-                            //Radius around my area
-                            myArea = mMap.addCircle(new CircleOptions().center(loggedInUserLoc)
-                                    .radius(500)//in meters
-                                    .strokeColor(Color.BLUE)
-                                    .fillColor(0x220000FF)
-                                    .strokeWidth(5.0f));
-                            //mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
-                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-1.281647, 36.822638), zoomLevel));
-                        }
-                    }
-
-                    if(accType.equals("2")) {//provider
-                        try {
-                            loggedInUserLoc = new LatLng(myLat, myLong);
-                            nduthiGuyLoc = new LatLng(nduthiLat, nduthiLng);
-
-                            distance = distance(nduthiGuyLoc.latitude, nduthiGuyLoc.longitude, loggedInUserLoc.latitude, loggedInUserLoc.longitude, "K");
-                            //Toast.makeText(GeoFireActivity.this, "Distance: " + distance, Toast.LENGTH_SHORT).show();
-                            distance = distance * 1000; //Convert distance to meters
-                        } catch(Exception e){
-
-                        }
-
-                        FirebaseDatabase.getInstance().getReference(myPhone + "/deliveries").addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                // StringBuffer stringbuffer = new StringBuffer();
-                                for(DataSnapshot dataSnapshot1 :dataSnapshot.getChildren()){
-                                    final ReceivedOrders receivedOrders = dataSnapshot1.getValue(ReceivedOrders.class); //Assign values to model
-                                    if(receivedOrders.status.equals("delivered")){
-                                        Toast.makeText(GeoFireActivity.this, "Customer has confirmed delivery!", Toast.LENGTH_SHORT).show();
-                                        finish();
-                                    }
-                                }
-
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError error) {
-                                // Failed to read value
-                                //  Log.w(TAG, "Failed to read value.", error.toException());
-                            }
-                        });
-                        setTitle("Track Customer");
-                        confirmOrd.setVisibility(View.INVISIBLE);
-                        try {
-                            confirmOrd.setEnabled(true);
-                            callNduthi.setEnabled(true);
-                            message = "Have you successfully made the delivery?";
-                            callMsg = "Call customer?";
-                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nduthiLat, nduthiLng), zoomLevel));
-                            if (distance < 200 && notifSent == false) {
-                                sendNotification("Customer is " + distance + "m away");
-                                notifSent = true;
-                            }
-
-                            loggedInUserLoc = new LatLng(myLat, myLong);
-                            nduthiGuyLoc = new LatLng(nduthiLat, nduthiLng);
-
-                            myCurrent.remove(); //Remove previous marker
-                            myArea.remove(); //Remove previous circle
-
-                            providerCurrent.remove();
-
-                            providerCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("My Location")
-                                    .snippet("Extra info")
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.nduthi_guy))
-                                    .flat(true));
-
-                            myCurrent = mMap.addMarker(new MarkerOptions().position(nduthiGuyLoc).title("Customer Location"));
-
-                            //Radius around my area
-                            myArea = mMap.addCircle(new CircleOptions().center(nduthiGuyLoc)
-                                    .radius(200)//in meters
-                                    .strokeColor(Color.BLUE)
-                                    .fillColor(0x220000FF)
-                                    .strokeWidth(5.0f));
-
-                        } catch (Exception e){
-                            confirmOrd.setEnabled(false);
-                            callNduthi.setEnabled(false);
-                            //Toast.makeText(GeoFireActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
-                            Log.d("dish", "GeoFireActivity: " + e);
-                            loggedInUserLoc = new LatLng(-1.281647, 36.822638); //Default Nairobi
-                            myCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("Default Location").snippet("Error fetching your location"));
-                            providerCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("Default Location").snippet("Error fetching your location"));
-
-                            //Radius around my area
-                            myArea = mMap.addCircle(new CircleOptions().center(loggedInUserLoc)
-                                    .radius(500)//in meters
-                                    .strokeColor(Color.BLUE)
-                                    .fillColor(0x220000FF)
-                                    .strokeWidth(5.0f));
-                            //mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
-                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-1.281647, 36.822638), zoomLevel));
-                        }
-                        }
-
-                    if(accType.equals("3")) {//nduthi
-
-                        try {
-                            loggedInUserLoc = new LatLng(myLat, myLong);
-                            nduthiGuyLoc = new LatLng(nduthiLat, nduthiLng);
-
-                            distance = distance(nduthiGuyLoc.latitude, nduthiGuyLoc.longitude, loggedInUserLoc.latitude, loggedInUserLoc.longitude, "K");
-                            //Toast.makeText(GeoFireActivity.this, "Distance: " + distance, Toast.LENGTH_SHORT).show();
-                            distance = distance * 1000; //Convert distance to meters
-                        } catch(Exception e){
-
-                        }
-                        setTitle("Track Customer");
-                        confirmOrd.setVisibility(View.INVISIBLE);
-                        try {
-                            confirmOrd.setEnabled(true);
-                            callNduthi.setEnabled(true);
-                            message = "Have you successfully made the delivery?";
-                            callMsg = "Call customer?";
-
-                            if (distance < 200 && notifSent == false) {
-                                sendNotification("Customer is " + distance + "m away");
-                                notifSent = true;
-                            }
-                            myCurrent.remove();
-                            providerCurrent.remove();
-                            myArea.remove();
-
-                            myCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("My Location")
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.nduthi_guy))
-                                    .flat(true));
-
-                            providerCurrent = mMap.addMarker(new MarkerOptions().position(nduthiGuyLoc).title("Customer Location")
-                                    .snippet("Extra info"));
-
-                            //Radius around customer's area
-                            myArea = mMap.addCircle(new CircleOptions().center(nduthiGuyLoc)
-                                    .radius(200)//in meters
-                                    .strokeColor(Color.BLUE)
-                                    .fillColor(0x220000FF)
-                                    .strokeWidth(5.0f));
-                            //track customer
-                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nduthiLat, nduthiLng), zoomLevel));
-
-                        } catch (Exception e){
-                            confirmOrd.setEnabled(false);
-                            callNduthi.setEnabled(false);
-                            //Toast.makeText(GeoFireActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
-                            Log.d("dish", "GeoFireActivity: " + e);
-                            loggedInUserLoc = new LatLng(-1.281647, 36.822638); //Default Nairobi
-                            myCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("Default Location").snippet("Error fetching your location"));
-                            providerCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("Default Location").snippet("Error fetching your location"));
-
-                            //Radius around my area
-                            myArea = mMap.addCircle(new CircleOptions().center(loggedInUserLoc)
-                                    .radius(500)//in meters
-                                    .strokeColor(Color.BLUE)
-                                    .fillColor(0x220000FF)
-                                    .strokeWidth(5.0f));
-                            //mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
-                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-1.281647, 36.822638), zoomLevel));
-                        }
-                    } } catch (Exception e){
+                    track();
+                } catch (Exception e){
 
                 }
 
             }
 
-            private void sendNotification(String s) {
-                Notification.Builder builder = new Notification.Builder(GeoFireActivity.this)
-                        .setSmallIcon(R.drawable.logo)
-                        .setContentTitle("Dishi")
-                        .setContentText(s);
-
-                NotificationManager manager = (NotificationManager)GeoFireActivity.this.getSystemService(Context.NOTIFICATION_SERVICE);
-                Intent intent = new Intent(GeoFireActivity.this, GeoFireActivity.class);
-                PendingIntent contentIntent = PendingIntent.getActivity(GeoFireActivity.this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-                builder.setContentIntent(contentIntent);
-                Notification notification = builder.build();
-                notification.flags |= Notification.FLAG_AUTO_CANCEL;
-                notification.defaults |= Notification.DEFAULT_SOUND;
-                notification.icon |= Notification.BADGE_ICON_LARGE;
-
-                manager.notify(new Random().nextInt(), notification);
-            }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d("dishiTag", "GeoFireActivity: "+ databaseError);
             }
         });
 
+    }
 
+    private void track() {
+        if(accType.equals("1")) {//Customer
+            try {
+                loggedInUserLoc = new LatLng(myLat, myLong);
+                nduthiGuyLoc = new LatLng(nduthiLat, nduthiLng);
+
+                distance = distance(nduthiGuyLoc.latitude, nduthiGuyLoc.longitude, loggedInUserLoc.latitude, loggedInUserLoc.longitude, "K");
+                //Toast.makeText(GeoFireActivity.this, "Distance: " + distance, Toast.LENGTH_SHORT).show();
+                distance = distance * 1000; //Convert distance to meters
+            } catch(Exception e){
+
+            }
+
+            try{
+                phoneNumbers = getIntent().getStringArrayExtra("phoneNumbers");
+
+                if(phoneNumbers == null){
+                    phoneNumbers = getIntent().getStringArrayExtra("nduthi_phone");
+                }
+
+
+                /*
+                 * convert array to list and then add all
+                 * elements to LinkedHashSet. LinkedHashSet
+                 * will automatically remove all duplicate elements.
+                 */
+                LinkedHashSet<String> phones =
+                        new LinkedHashSet<String>(Arrays.asList(phoneNumbers));
+
+                //create array from the LinkedHashSet
+                String[] newArray = phones.toArray(new String[ phones.size() ]);
+
+                phoneNumbers = newArray;
+
+                DatabaseReference phoneNamesRef;
+                phoneNames = new String[phoneNumbers.length];
+
+                for(int i = 0; i< phoneNumbers.length; i++){
+                    phoneNamesRef = FirebaseDatabase.getInstance().getReference(phoneNumbers[i]);
+
+                    phoneNamesRef.child("name").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            String name = dataSnapshot.getValue(String.class);
+                            if(!names.contains(name)){
+                                names.add(name);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+
+                phoneNames = names.toArray(new String[names.size()]);
+
+            }catch (Exception e){}
+
+            try {
+
+                confirmOrd.setEnabled(true);
+                callNduthi.setEnabled(true);
+                //If person making delivery is within 500m radius, send notification
+                //mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
+                message = "Has nduthi or provider delivered your order?";
+                callMsg = "Call delivery guy?";
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nduthiLat, nduthiLng), zoomLevel));
+                if (distance == 10 || distance == 60 || distance == 120 || distance < 10) {
+                    //sendNotification("Order is " + distance + "m away");
+
+                    //FirebaseDatabase.getInstance().getReference(myPhone).child("active_notifications")
+                    //        .child("active_order").child("message").setValue("Order is " + distance + "m away");
+                    //FirebaseDatabase.getInstance().getReference(myPhone)
+                    //        .child("active_notifications").child("active_order").child("phone").setValue(nduthiNumber[0]);
+                }
+
+                myCurrent.remove(); //Remove previous marker
+                myArea.remove(); //Remove previous circle
+
+                providerCurrent.remove();
+
+                providerCurrent = mMap.addMarker(new MarkerOptions().position(nduthiGuyLoc).title("Nduthi")
+                        .snippet("Extra info")
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.nduthi_guy))
+                        .flat(true));
+
+                myCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("My Location"));
+
+                //Radius around my area
+                myArea = mMap.addCircle(new CircleOptions().center(loggedInUserLoc)
+                        .radius(200)//in meters
+                        .strokeColor(Color.BLUE)
+                        .fillColor(0x220000FF)
+                        .strokeWidth(5.0f));
+
+            } catch (Exception e){
+                //Toast.makeText(GeoFireActivity.this, "Error: " + e.toString(), Toast.LENGTH_SHORT).show();
+                confirmOrd.setEnabled(false);
+                callNduthi.setEnabled(false);
+                //Toast.makeText(GeoFireActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+                Log.d("dish", "GeoFireActivity: " + e);
+                loggedInUserLoc = new LatLng(-1.281647, 36.822638); //Default Nairobi
+                myCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("Default Location").snippet("Error fetching your location"));
+                providerCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("Default Location").snippet("Error fetching your location"));
+                //Radius around my area
+                myArea = mMap.addCircle(new CircleOptions().center(loggedInUserLoc)
+                        .radius(500)//in meters
+                        .strokeColor(Color.BLUE)
+                        .fillColor(0x220000FF)
+                        .strokeWidth(5.0f));
+                //mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-1.281647, 36.822638), zoomLevel));
+            }
+        }
+
+        if(accType.equals("2")) {//provider
+            try {
+                loggedInUserLoc = new LatLng(myLat, myLong);
+                nduthiGuyLoc = new LatLng(nduthiLat, nduthiLng);
+
+                distance = distance(nduthiGuyLoc.latitude, nduthiGuyLoc.longitude, loggedInUserLoc.latitude, loggedInUserLoc.longitude, "K");
+                //Toast.makeText(GeoFireActivity.this, "Distance: " + distance, Toast.LENGTH_SHORT).show();
+                distance = distance * 1000; //Convert distance to meters
+            } catch(Exception e){
+
+            }
+
+            FirebaseDatabase.getInstance().getReference(myPhone + "/deliveries").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    // StringBuffer stringbuffer = new StringBuffer();
+                    for(DataSnapshot dataSnapshot1 :dataSnapshot.getChildren()){
+                        final ReceivedOrders receivedOrders = dataSnapshot1.getValue(ReceivedOrders.class); //Assign values to model
+                        if(receivedOrders.status.equals("delivered")){
+                            Toast.makeText(GeoFireActivity.this, "Customer has confirmed delivery!", Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    // Failed to read value
+                    //  Log.w(TAG, "Failed to read value.", error.toException());
+                }
+            });
+            setTitle("Track Customer");
+            confirmOrd.setVisibility(View.INVISIBLE);
+            try {
+                confirmOrd.setEnabled(true);
+                callNduthi.setEnabled(true);
+                message = "Have you successfully made the delivery?";
+                callMsg = "Call customer?";
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nduthiLat, nduthiLng), zoomLevel));
+                if (distance < 200 && notifSent == false) {
+                    sendNotification("Customer is " + distance + "m away");
+                    notifSent = true;
+                }
+
+                loggedInUserLoc = new LatLng(myLat, myLong);
+                nduthiGuyLoc = new LatLng(nduthiLat, nduthiLng);
+
+                myCurrent.remove(); //Remove previous marker
+                myArea.remove(); //Remove previous circle
+
+                providerCurrent.remove();
+
+                providerCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("My Location")
+                        .snippet("Extra info")
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.nduthi_guy))
+                        .flat(true));
+
+                myCurrent = mMap.addMarker(new MarkerOptions().position(nduthiGuyLoc).title("Customer Location"));
+
+                //Radius around my area
+                myArea = mMap.addCircle(new CircleOptions().center(nduthiGuyLoc)
+                        .radius(200)//in meters
+                        .strokeColor(Color.BLUE)
+                        .fillColor(0x220000FF)
+                        .strokeWidth(5.0f));
+
+            } catch (Exception e){
+                confirmOrd.setEnabled(false);
+                callNduthi.setEnabled(false);
+                //Toast.makeText(GeoFireActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+                Log.d("dish", "GeoFireActivity: " + e);
+                loggedInUserLoc = new LatLng(-1.281647, 36.822638); //Default Nairobi
+                myCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("Default Location").snippet("Error fetching your location"));
+                providerCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("Default Location").snippet("Error fetching your location"));
+
+                //Radius around my area
+                myArea = mMap.addCircle(new CircleOptions().center(loggedInUserLoc)
+                        .radius(500)//in meters
+                        .strokeColor(Color.BLUE)
+                        .fillColor(0x220000FF)
+                        .strokeWidth(5.0f));
+                //mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-1.281647, 36.822638), zoomLevel));
+            }
+        }
+
+        if(accType.equals("3")) {//nduthi
+
+            try {
+                loggedInUserLoc = new LatLng(myLat, myLong);
+                nduthiGuyLoc = new LatLng(nduthiLat, nduthiLng);
+
+                distance = distance(nduthiGuyLoc.latitude, nduthiGuyLoc.longitude, loggedInUserLoc.latitude, loggedInUserLoc.longitude, "K");
+                //Toast.makeText(GeoFireActivity.this, "Distance: " + distance, Toast.LENGTH_SHORT).show();
+                distance = distance * 1000; //Convert distance to meters
+            } catch(Exception e){
+
+            }
+            setTitle("Track Customer");
+            confirmOrd.setVisibility(View.INVISIBLE);
+            try {
+                confirmOrd.setEnabled(true);
+                callNduthi.setEnabled(true);
+                message = "Have you successfully made the delivery?";
+                callMsg = "Call customer?";
+
+                if (distance < 200 && notifSent == false) {
+                    sendNotification("Customer is " + distance + "m away");
+                    notifSent = true;
+                }
+                myCurrent.remove();
+                providerCurrent.remove();
+                myArea.remove();
+
+                myCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("My Location")
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.nduthi_guy))
+                        .flat(true));
+
+                providerCurrent = mMap.addMarker(new MarkerOptions().position(nduthiGuyLoc).title("Customer Location")
+                        .snippet("Extra info"));
+
+                //Radius around customer's area
+                myArea = mMap.addCircle(new CircleOptions().center(nduthiGuyLoc)
+                        .radius(200)//in meters
+                        .strokeColor(Color.BLUE)
+                        .fillColor(0x220000FF)
+                        .strokeWidth(5.0f));
+                //track customer
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nduthiLat, nduthiLng), zoomLevel));
+
+            } catch (Exception e){
+                confirmOrd.setEnabled(false);
+                callNduthi.setEnabled(false);
+                //Toast.makeText(GeoFireActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+                Log.d("dish", "GeoFireActivity: " + e);
+                loggedInUserLoc = new LatLng(-1.281647, 36.822638); //Default Nairobi
+                myCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("Default Location").snippet("Error fetching your location"));
+                providerCurrent = mMap.addMarker(new MarkerOptions().position(loggedInUserLoc).title("Default Location").snippet("Error fetching your location"));
+
+                //Radius around my area
+                myArea = mMap.addCircle(new CircleOptions().center(loggedInUserLoc)
+                        .radius(500)//in meters
+                        .strokeColor(Color.BLUE)
+                        .fillColor(0x220000FF)
+                        .strokeWidth(5.0f));
+                //mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-1.281647, 36.822638), zoomLevel));
+            }
+        }
+    }
+
+    private void sendNotification(String s) {
+        Notification.Builder builder = new Notification.Builder(GeoFireActivity.this)
+                .setSmallIcon(R.drawable.logo)
+                .setContentTitle("Dishi")
+                .setContentText(s);
+
+        NotificationManager manager = (NotificationManager)GeoFireActivity.this.getSystemService(Context.NOTIFICATION_SERVICE);
+        Intent intent = new Intent(GeoFireActivity.this, GeoFireActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(GeoFireActivity.this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        builder.setContentIntent(contentIntent);
+        Notification notification = builder.build();
+        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+        notification.defaults |= Notification.DEFAULT_SOUND;
+        notification.icon |= Notification.BADGE_ICON_LARGE;
+
+        manager.notify(new Random().nextInt(), notification);
     }
 
     public static double distance(double lat1, double lon1, double lat2, double lon2, String unit) {

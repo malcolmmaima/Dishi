@@ -118,7 +118,7 @@
                             android:orientation="vertical">
 
                             <TextView
-                                android:id="@+id/deliveries"
+                                android:id="@+id/following"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="center"
@@ -129,7 +129,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Deliveries"
+                                android:text="Following"
                                 android:textSize="18sp"
                                 android:textStyle="bold" />
 

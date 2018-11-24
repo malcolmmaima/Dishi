@@ -443,7 +443,11 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
                     progressDialog.dismiss();
                 }
                 Toast.makeText(SettingsActivity.this, "Database Error. Load failed!", Toast.LENGTH_SHORT).show();
-                Glide.with(SettingsActivity.this).load(R.drawable.default_profile).into(profile_pic);
+                try {
+                    Glide.with(SettingsActivity.this).load(R.drawable.default_profile).into(profile_pic);
+                } catch (Exception e){
+
+                }
             }
         });
 

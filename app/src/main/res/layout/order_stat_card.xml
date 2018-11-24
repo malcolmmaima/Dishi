@@ -59,6 +59,16 @@
             android:layout_marginRight="5dp"
             />
 
+        <Button
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:gravity="center|right"
+            android:layout_below="@id/foodPrice"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/ic_location_black_48dp"
+            android:id="@+id/trackProvider"/>
+
 
         <TextView
             android:layout_width="wrap_content"
@@ -155,10 +165,15 @@
                 android:gravity="center|right"
                 android:layout_below="@id/distanceAway">
 
-                <!-- bottom left corner. for future use-->
-                    />
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Confrim"
+                    android:id="@+id/confirmOrd"
+                    android:visibility="gone"/>
 
                 <Button
+                    android:layout_toRightOf="@id/confirmOrd"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Call"

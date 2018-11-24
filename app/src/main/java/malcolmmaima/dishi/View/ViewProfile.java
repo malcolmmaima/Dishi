@@ -42,7 +42,7 @@ public class ViewProfile extends AppCompatActivity {
 
     DatabaseReference providerRef, myRef, rootRef;
 
-    TextView userProfileName, profileBio, followersCounter, deliveriesCounter;
+    TextView userProfileName, profileBio, followersCounter, followingCounter;
     ImageView profilePic, coverImg;
     Button followUserBtn;
     String myPhone, picUrl;
@@ -70,7 +70,7 @@ public class ViewProfile extends AppCompatActivity {
         profileBio = findViewById(R.id.user_profile_short_bio);
         followUserBtn = findViewById(R.id.btnFollow);
         followersCounter = findViewById(R.id.followers);
-        deliveriesCounter = findViewById(R.id.deliveries);
+        followingCounter = findViewById(R.id.following);
         coverImg = findViewById(R.id.header_cover_image);
         recyclerView = findViewById(R.id.rview);
         postStatus = findViewById(R.id.postStatus);
@@ -227,7 +227,7 @@ public class ViewProfile extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
-                    deliveriesCounter.setText(""+dataSnapshot.getChildrenCount());
+                   // deliveriesCounter.setText(""+dataSnapshot.getChildrenCount());
                 } catch(Exception e){
 
                 }
@@ -252,6 +252,31 @@ public class ViewProfile extends AppCompatActivity {
 
                     else {
                         followersCounter.setText("" + dataSnapshot.getChildrenCount());
+                    }
+                } catch (Exception e){
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        providerRef.child("following").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+
+                    //If followers are in the thousands them set to this format (1k followers)
+                    if((int)dataSnapshot.getChildrenCount() > 999){
+                        int thousandFollowers = (int) dataSnapshot.getChildrenCount();
+                        followingCounter.setText(thousandFollowers / 1000 + "K");
+                    }
+
+                    else {
+                        followingCounter.setText("" + dataSnapshot.getChildrenCount());
                     }
                 } catch (Exception e){
 
@@ -309,6 +334,7 @@ public class ViewProfile extends AppCompatActivity {
         myRef.child("following").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
 
                 for(DataSnapshot following : dataSnapshot.getChildren()){
                     //Toast.makeText(ViewProfile.this, "following: " + following.getKey(), Toast.LENGTH_SHORT).show();

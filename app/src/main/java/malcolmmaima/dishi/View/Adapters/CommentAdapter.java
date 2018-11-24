@@ -95,26 +95,26 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyHolder
             }
         });
 
+        //Loading image from Glide library.
+        postStatus.child(statusUpdateModel.getAuthor()).child("profilepic").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                profilePic[position] = dataSnapshot.getValue(String.class);
+                Glide.with(context).load(profilePic[position]).into(holder.profilePic);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         if(!myPhone.equals(statusUpdateModel.getAuthor())){
             //Toast.makeText(context, statusUpdateModel.getStatus() + " Not my comment: " + statusUpdateModel.getCurrentWall(), Toast.LENGTH_SHORT).show();
             holder.deleteBtn.setVisibility(View.INVISIBLE);
             holder.likePost.setTag(R.drawable.ic_like);
 
             try {
-
-                //Loading image from Glide library.
-                dbRef[position].child("profilepic").addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        profilePic[position] = dataSnapshot.getValue(String.class);
-                        Glide.with(context).load(profilePic[position]).into(holder.profilePic);
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
 
                 holder.userUpdate.setText(statusUpdateModel.getStatus());
 

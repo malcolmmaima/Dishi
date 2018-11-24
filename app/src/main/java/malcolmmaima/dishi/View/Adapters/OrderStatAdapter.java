@@ -2,6 +2,7 @@ package malcolmmaima.dishi.View.Adapters;
 
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -41,7 +42,9 @@ import malcolmmaima.dishi.Model.OrderDetails;
 import malcolmmaima.dishi.Model.ProductDetails;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.AddMenu;
+import malcolmmaima.dishi.View.Map.GeoFireActivity;
 import malcolmmaima.dishi.View.MyCart;
+import malcolmmaima.dishi.View.OrderStatus;
 import malcolmmaima.dishi.View.ViewPhoto;
 import malcolmmaima.dishi.View.ViewProfile;
 
@@ -72,7 +75,7 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
 
     public void onBindViewHolder(final MyHolder holder, final int position) {
         final MyCartDetails myCartDetails = listdata.get(position);
-        final DatabaseReference mylocationRef, providerRef, myCartRef, provider;
+        final DatabaseReference mylocationRef, providerRef, pending, ordersHistory, provider;
         FirebaseDatabase db;
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -83,7 +86,8 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
         db = FirebaseDatabase.getInstance();
         mylocationRef = db.getReference(myPhone + "/location"); //loggedin user location reference
         providerRef = db.getReference(myCartDetails.getProviderNumber() + "/location"); //food item provider location reference
-        myCartRef = db.getReference(myPhone + "/mycart");
+        pending = db.getReference(myPhone + "/pending");
+        ordersHistory = FirebaseDatabase.getInstance().getReference(myPhone + "/history");
         provider = db.getReference(myCartDetails.getProviderNumber());
 
         final String [] providerName = new String[listdata.size()];
@@ -215,23 +219,97 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
 
         if(myCartDetails.status.equals("pending")){
             Glide.with(context).load(ic_pending_order).into(holder.orderStat);
+            holder.confirmOrd.setVisibility(View.GONE);
+            holder.trackProvider.setVisibility(View.GONE);
         }
 
         if(myCartDetails.status.equals("confirmed")){
             Glide.with(context).load(ic_delivered_order).into(holder.orderStat);
+            holder.confirmOrd.setVisibility(View.VISIBLE);
+            holder.trackProvider.setVisibility(View.VISIBLE);
         }
         if(myCartDetails.status.equals("delivered")){
             Glide.with(context).load(ic_check_circle_black_48dp).into(holder.orderStat);
+            holder.confirmOrd.setVisibility(View.VISIBLE);
+            holder.trackProvider.setVisibility(View.VISIBLE);
         }
         if(myCartDetails.status.equals("transit")) {
             Glide.with(context).load(ic_order_in_transit).into(holder.orderStat);
+            holder.confirmOrd.setVisibility(View.VISIBLE);
+            holder.trackProvider.setVisibility(View.VISIBLE);
         }
 
+        holder.confirmOrd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final ProgressDialog progressDialog = new ProgressDialog(context);
+                progressDialog.setMessage("Processing...");
+                progressDialog.setCancelable(false);
+
+                final AlertDialog callBox = new AlertDialog.Builder(view.getContext())
+                        //set message, title, and icon
+                        .setTitle("Confirm Delivery")
+                        .setMessage("Has " + providerName[position] + " delivered " + myCartDetails.getName() + "?")
+                        //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
+                        //set three option buttons
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                progressDialog.show();
+                                //Move order to orders history node
+                                ordersHistory.child(myCartDetails.key).setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        //Then remove from pending node
+                                        pending.child(myCartDetails.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                //Update provider's node
+                                                provider.child("history_deliveries").setValue(myCartDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        //Then remove from provider's active deliveries node
+                                                        provider.child("deliveries").child(myCartDetails.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void aVoid) {
+                                                                progressDialog.dismiss();
+                                                                Toast.makeText(context, myCartDetails.getName() + " confirmed!", Toast.LENGTH_LONG).show();
+                                                            }
+                                                        }).addOnFailureListener(new OnFailureListener() {
+                                                            @Override
+                                                            public void onFailure(@NonNull Exception e) {
+                                                                progressDialog.dismiss();
+                                                                Toast.makeText(context, "Something wrong occured!", Toast.LENGTH_LONG).show();
+                                                            }
+                                                        });
+                                                    }
+                                                }).addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        progressDialog.dismiss();
+                                                        Toast.makeText(context, "Something wrong occured!", Toast.LENGTH_LONG).show();
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                //do nothing
+
+                            }
+                        })//setNegativeButton
+
+                        .create();
+                callBox.show();
+            }
+        });
         holder.callProvider.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                final AlertDialog myQuittingDialogBox = new AlertDialog.Builder(v.getContext())
+                final AlertDialog callBox = new AlertDialog.Builder(v.getContext())
                         //set message, title, and icon
                         .setTitle("Call Provider")
                         .setMessage("Call " + providerName[position] + "?")
@@ -251,7 +329,7 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
                         })//setNegativeButton
 
                         .create();
-                myQuittingDialogBox.show();
+                callBox.show();
             }
         });
 
@@ -311,6 +389,19 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
             }
         });
 
+        holder.trackProvider.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent slideactivity = new Intent(context, GeoFireActivity.class);
+                String [] phone_ = new String[1];
+                phone_[0] = myCartDetails.getProviderNumber();
+                slideactivity.putExtra("nduthi_phone", phone_);
+                Bundle bndlanimation =
+                        ActivityOptions.makeCustomAnimation(context, R.anim.animation, R.anim.animation2).toBundle();
+                context.startActivity(slideactivity, bndlanimation);
+            }
+        });
+
     }
 
     public static double distance(double lat1, double lon1, double lat2, double lon2, String unit) {
@@ -362,7 +453,7 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
     class MyHolder extends RecyclerView.ViewHolder{
         TextView foodPrice , foodDescription, foodName, providerName, distAway, orderStatus;
         ImageView foodPic, orderStat;
-        Button callProvider;
+        Button callProvider, confirmOrd, trackProvider;
 
         public MyHolder(View itemView) {
             super(itemView);
@@ -375,6 +466,8 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
             orderStatus = itemView.findViewById(R.id.orderStatus);
             orderStat = itemView.findViewById(R.id.orderStat);
             callProvider = itemView.findViewById(R.id.callProvider);
+            confirmOrd = itemView.findViewById(R.id.confirmOrd);
+            trackProvider = itemView.findViewById(R.id.trackProvider);
 
         }
     }
