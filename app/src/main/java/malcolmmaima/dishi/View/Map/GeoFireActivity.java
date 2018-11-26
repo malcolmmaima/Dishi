@@ -104,7 +104,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
 
         try {
             nduthiNumber = getIntent().getStringArrayExtra("nduthi_phone");
-            Toast.makeText(this, "track number: " + nduthiNumber[0], Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "track number: " + nduthiNumber[0], Toast.LENGTH_SHORT).show();
         } catch (Exception e){
             //Toast.makeText(GeoFireActivity.this, "no nduthi code", Toast.LENGTH_SHORT).show();
         }

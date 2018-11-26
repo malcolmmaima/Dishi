@@ -162,11 +162,7 @@ public class ViewProfile extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                if(progressDialog.isShowing()){
-                    progressDialog.dismiss();
-                }
-                Toast.makeText(ViewProfile.this, "Database Error. Load failed!", Toast.LENGTH_SHORT).show();
-                Glide.with(ViewProfile.this).load(R.drawable.default_profile).into(profilePic);
+
             }
         });
         providerRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {

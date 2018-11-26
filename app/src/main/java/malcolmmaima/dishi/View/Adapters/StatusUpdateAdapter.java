@@ -111,7 +111,11 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         profilePic[position] = dataSnapshot.getValue(String.class);
-                        Glide.with(context).load(profilePic[position]).into(holder.profilePic);
+                        try {
+                            Glide.with(context).load(profilePic[position]).into(holder.profilePic);
+                        } catch (Exception e){
+
+                        }
                     }
 
                     @Override
@@ -237,7 +241,11 @@ public class StatusUpdateAdapter extends RecyclerView.Adapter<StatusUpdateAdapte
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         profilePic[position] = dataSnapshot.getValue(String.class);
-                        Glide.with(context).load(profilePic[position]).into(holder.profilePic);
+                        try {
+                            Glide.with(context).load(profilePic[position]).into(holder.profilePic);
+                        } catch (Exception e){
+
+                        }
                     }
 
                     @Override

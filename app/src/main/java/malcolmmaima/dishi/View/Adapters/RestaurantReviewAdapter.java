@@ -220,7 +220,11 @@ public class RestaurantReviewAdapter extends RecyclerView.Adapter<RestaurantRevi
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     profilePic[position] = dataSnapshot.getValue(String.class);
-                    Glide.with(context).load(profilePic[position]).into(holder.profilePic);
+                    try {
+                        Glide.with(context).load(profilePic[position]).into(holder.profilePic);
+                    } catch (Exception e){
+
+                    }
                 }
 
                 @Override
