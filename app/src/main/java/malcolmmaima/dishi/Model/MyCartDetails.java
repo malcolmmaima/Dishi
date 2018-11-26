@@ -12,6 +12,7 @@ public class MyCartDetails {
     public String status;
     public String payType;
     public Boolean sent;
+    String orderedOn;
     public String key; //When deleting menu items from firebase, this key value will help delete individual items from the 'mymenu' node
 
     public String getName() {
@@ -60,5 +61,13 @@ public class MyCartDetails {
 
     public String getProviderNumber() {
         return providerNumber;
+    }
+
+    public String getOrderedOn() {
+        return orderedOn;
+    }
+
+    public void setOrderedOn(String orderedOn) {
+        this.orderedOn = orderedOn;
     }
 }

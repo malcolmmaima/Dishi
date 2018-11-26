@@ -37,9 +37,14 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import malcolmmaima.dishi.Model.MyCartDetails;
@@ -281,6 +286,17 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
         checkoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+                TimeZone timeZone = TimeZone.getTimeZone("GMT+03:00");
+                Calendar calendar = Calendar.getInstance(timeZone);
+                final String time = date+ ":" +
+                        String.format("%02d" , calendar.get(Calendar.HOUR_OF_DAY))+":"+
+                        String.format("%02d" , calendar.get(Calendar.MINUTE))+":"+
+                        String.format("%02d" , calendar.get(Calendar.SECOND)); //+":"+
+                //String.format("%03d" , calendar.get(Calendar.MILLISECOND));
+
+
                 final ProgressDialog progressDialog = new ProgressDialog(MyCart.this);
                 progressDialog.setMessage("processing...");
                 progressDialog.setCancelable(true);
@@ -470,6 +486,7 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                                                                 myCartDetails.customerNumber = myPhone;
                                                                 myCartDetails.status = "pending";
                                                                 myCartDetails.payType = paymentType;
+                                                                myCartDetails.setOrderedOn(time);
 
                                                                 //Post the orders to the respective providers and have them confirm orders
                                                                 providerRef = db.getReference(myCartDetails.getProviderNumber() + "/orders");

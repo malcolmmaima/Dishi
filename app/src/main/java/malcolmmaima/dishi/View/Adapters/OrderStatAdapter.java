@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
@@ -35,7 +36,12 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import malcolmmaima.dishi.Model.MyCartDetails;
 import malcolmmaima.dishi.Model.OrderDetails;
@@ -100,6 +106,8 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
         //Lets create a Double[] array containing the provider lat/lon
         final Double[] provlat = new Double[listdata.size()];
         final Double[] provlon = new Double[listdata.size()];
+        final int[] hrsAgo = new int[listdata.size()];
+        final int[] minsAgo = new int[listdata.size()];
 
         provider.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -113,7 +121,6 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
 
             }
         });
-
 
         //My latitude longitude coordinates
         mylocationRef.child("latitude").addValueEventListener(new ValueEventListener() {
@@ -132,6 +139,51 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
                     }
                 } catch (Exception e){
 
+                }
+
+                //Split time details
+                String[] parts = myCartDetails.getOrderedOn().split(":");
+                final String date = parts[0];
+                final String hours = parts[1];
+                final String minutes = parts[2];
+                final String seconds = parts[3];
+
+                //get current time details and compare
+                final String todaydate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+                TimeZone timeZone = TimeZone.getTimeZone("GMT+03:00");
+                final Calendar calendar = Calendar.getInstance(timeZone);
+                final String currentHr = String.format("%02d" , calendar.get(Calendar.HOUR_OF_DAY));
+                final String currentMin = String.format("%02d" , calendar.get(Calendar.MINUTE));
+                //final String currentSec = String.format("%02d" , calendar.get(Calendar.SECOND));
+
+                //Toast.makeText(context, millisUntilFinished + "", Toast.LENGTH_SHORT).show();
+                String currentSec = String.format("%02d" , calendar.get(Calendar.SECOND));
+
+                //First find out if we're dealing with today
+                if(!date.equals(todaydate)){ //Not today
+                    holder.time.setText("Too long...");
+
+                } else { // Today
+                    hrsAgo[position] = Integer.parseInt(currentHr) - Integer.parseInt(hours);
+                    minsAgo[position] = Integer.parseInt(minutes) - Integer.parseInt(currentMin);
+
+                    if(hrsAgo[position] == 1){
+                        holder.time.setText("1hr ago");
+                    }
+
+                    else if(hrsAgo[position] > 1){
+                        holder.time.setText(Math.abs(hrsAgo[position]) + "hrs ago");
+                    }
+                    else {//hasn't reached 1 hr so is in minutes
+
+                        int minsAgo = Integer.parseInt(currentMin) - Integer.parseInt(minutes);
+                        if(minsAgo < 1){
+                            int secsAGo = Integer.parseInt(currentSec) - Integer.parseInt(seconds);
+                            holder.time.setText(Math.abs(secsAGo) + "s ago");
+                        } else {
+                            holder.time.setText(Math.abs(minsAgo) + "m ago");
+                        }
+                    }
                 }
             }
 
@@ -156,6 +208,51 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
                     }
                 } catch (Exception e){
 
+                }
+
+                //Split time details
+                String[] parts = myCartDetails.getOrderedOn().split(":");
+                final String date = parts[0];
+                final String hours = parts[1];
+                final String minutes = parts[2];
+                final String seconds = parts[3];
+
+                //get current time details and compare
+                final String todaydate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+                TimeZone timeZone = TimeZone.getTimeZone("GMT+03:00");
+                final Calendar calendar = Calendar.getInstance(timeZone);
+                final String currentHr = String.format("%02d" , calendar.get(Calendar.HOUR_OF_DAY));
+                final String currentMin = String.format("%02d" , calendar.get(Calendar.MINUTE));
+                //final String currentSec = String.format("%02d" , calendar.get(Calendar.SECOND));
+
+                //Toast.makeText(context, millisUntilFinished + "", Toast.LENGTH_SHORT).show();
+                String currentSec = String.format("%02d" , calendar.get(Calendar.SECOND));
+
+                //First find out if we're dealing with today
+                if(!date.equals(todaydate)){ //Not today
+                    holder.time.setText("Too long...");
+
+                } else { // Today
+                    hrsAgo[position] = Integer.parseInt(currentHr) - Integer.parseInt(hours);
+                    minsAgo[position] = Integer.parseInt(minutes) - Integer.parseInt(currentMin);
+
+                    if(hrsAgo[position] == 1){
+                        holder.time.setText("1hr ago");
+                    }
+
+                    else if(hrsAgo[position] > 1){
+                        holder.time.setText(Math.abs(hrsAgo[position]) + "hrs ago");
+                    }
+                    else {//hasn't reached 1 hr so is in minutes
+
+                        int minsAgo = Integer.parseInt(currentMin) - Integer.parseInt(minutes);
+                        if(minsAgo < 1){
+                            int secsAGo = Integer.parseInt(currentSec) - Integer.parseInt(seconds);
+                            holder.time.setText(Math.abs(secsAGo) + "s ago");
+                        } else {
+                            holder.time.setText(Math.abs(minsAgo) + "m ago");
+                        }
+                    }
                 }
             }
 
@@ -182,6 +279,51 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
                 } catch (Exception e){
 
                 }
+
+                //Split time details
+                String[] parts = myCartDetails.getOrderedOn().split(":");
+                final String date = parts[0];
+                final String hours = parts[1];
+                final String minutes = parts[2];
+                final String seconds = parts[3];
+
+                //get current time details and compare
+                final String todaydate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+                TimeZone timeZone = TimeZone.getTimeZone("GMT+03:00");
+                final Calendar calendar = Calendar.getInstance(timeZone);
+                final String currentHr = String.format("%02d" , calendar.get(Calendar.HOUR_OF_DAY));
+                final String currentMin = String.format("%02d" , calendar.get(Calendar.MINUTE));
+                //final String currentSec = String.format("%02d" , calendar.get(Calendar.SECOND));
+
+                //Toast.makeText(context, millisUntilFinished + "", Toast.LENGTH_SHORT).show();
+                String currentSec = String.format("%02d" , calendar.get(Calendar.SECOND));
+
+                //First find out if we're dealing with today
+                if(!date.equals(todaydate)){ //Not today
+                    holder.time.setText("Too long...");
+
+                } else { // Today
+                    hrsAgo[position] = Integer.parseInt(currentHr) - Integer.parseInt(hours);
+                    minsAgo[position] = Integer.parseInt(minutes) - Integer.parseInt(currentMin);
+
+                    if(hrsAgo[position] == 1){
+                        holder.time.setText("1hr ago");
+                    }
+
+                    else if(hrsAgo[position] > 1){
+                        holder.time.setText(Math.abs(hrsAgo[position]) + "hrs ago");
+                    }
+                    else {//hasn't reached 1 hr so is in minutes
+
+                        int minsAgo = Integer.parseInt(currentMin) - Integer.parseInt(minutes);
+                        if(minsAgo < 1){
+                            int secsAGo = Integer.parseInt(currentSec) - Integer.parseInt(seconds);
+                            holder.time.setText(Math.abs(secsAGo) + "s ago");
+                        } else {
+                            holder.time.setText(Math.abs(minsAgo) + "m ago");
+                        }
+                    }
+                }
             }
 
             @Override
@@ -206,6 +348,51 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
                     }
                 } catch (Exception e){
 
+                }
+
+                //Split time details
+                String[] parts = myCartDetails.getOrderedOn().split(":");
+                final String date = parts[0];
+                final String hours = parts[1];
+                final String minutes = parts[2];
+                final String seconds = parts[3];
+
+                //get current time details and compare
+                final String todaydate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+                TimeZone timeZone = TimeZone.getTimeZone("GMT+03:00");
+                final Calendar calendar = Calendar.getInstance(timeZone);
+                final String currentHr = String.format("%02d" , calendar.get(Calendar.HOUR_OF_DAY));
+                final String currentMin = String.format("%02d" , calendar.get(Calendar.MINUTE));
+                //final String currentSec = String.format("%02d" , calendar.get(Calendar.SECOND));
+
+                //Toast.makeText(context, millisUntilFinished + "", Toast.LENGTH_SHORT).show();
+                String currentSec = String.format("%02d" , calendar.get(Calendar.SECOND));
+
+                //First find out if we're dealing with today
+                if(!date.equals(todaydate)){ //Not today
+                    holder.time.setText("Too long...");
+
+                } else { // Today
+                    hrsAgo[position] = Integer.parseInt(currentHr) - Integer.parseInt(hours);
+                    minsAgo[position] = Integer.parseInt(minutes) - Integer.parseInt(currentMin);
+
+                    if(hrsAgo[position] == 1){
+                        holder.time.setText("1hr ago");
+                    }
+
+                    else if(hrsAgo[position] > 1){
+                        holder.time.setText(Math.abs(hrsAgo[position]) + "hrs ago");
+                    }
+                    else {//hasn't reached 1 hr so is in minutes
+
+                        int minsAgo = Integer.parseInt(currentMin) - Integer.parseInt(minutes);
+                        if(minsAgo < 1){
+                            int secsAGo = Integer.parseInt(currentSec) - Integer.parseInt(seconds);
+                            holder.time.setText(Math.abs(secsAGo) + "s ago");
+                        } else {
+                            holder.time.setText(Math.abs(minsAgo) + "m ago");
+                        }
+                    }
                 }
             }
 
@@ -350,7 +537,6 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
         holder.foodDescription.setText(myCartDetails.getDescription());
         holder.orderStatus.setText(myCartDetails.status);
 
-
         holder.foodName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -451,7 +637,7 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
 
 
     class MyHolder extends RecyclerView.ViewHolder{
-        TextView foodPrice , foodDescription, foodName, providerName, distAway, orderStatus;
+        TextView foodPrice , foodDescription, foodName, providerName, distAway, orderStatus, time;
         ImageView foodPic, orderStat;
         Button callProvider, confirmOrd, trackProvider;
 
@@ -468,6 +654,7 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
             callProvider = itemView.findViewById(R.id.callProvider);
             confirmOrd = itemView.findViewById(R.id.confirmOrd);
             trackProvider = itemView.findViewById(R.id.trackProvider);
+            time = itemView.findViewById(R.id.timeOrdered);
 
         }
     }

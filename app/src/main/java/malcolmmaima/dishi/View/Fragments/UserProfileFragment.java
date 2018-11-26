@@ -28,10 +28,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
@@ -306,13 +309,14 @@ public class UserProfileFragment extends Fragment {
         postStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
                 TimeZone timeZone = TimeZone.getTimeZone("GMT+03:00");
                 Calendar calendar = Calendar.getInstance(timeZone);
-                String time = String.format("%02d" , calendar.get(Calendar.HOUR_OF_DAY))+":"+
+                String time = date+ ":" +
+                        String.format("%02d" , calendar.get(Calendar.HOUR_OF_DAY))+":"+
                         String.format("%02d" , calendar.get(Calendar.MINUTE))+":"+
-                        String.format("%02d" , calendar.get(Calendar.SECOND))+":"+
-                        String.format("%03d" , calendar.get(Calendar.MILLISECOND));
+                        String.format("%02d" , calendar.get(Calendar.SECOND)); //+":"+
+                        //String.format("%03d" , calendar.get(Calendar.MILLISECOND));
 
                 final StatusUpdateModel statusUpdateModel = new StatusUpdateModel();
                 statusUpdateModel.setStatus(statusPost.getText().toString());

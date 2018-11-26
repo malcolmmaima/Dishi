@@ -13,6 +13,15 @@ public class ReceivedOrders {
     public String payType;
     public String key;
     public Boolean sent;
+    public String orderedOn;
+
+    public String getOrderedOn() {
+        return orderedOn;
+    }
+
+    public void setOrderedOn(String orderedOn) {
+        this.orderedOn = orderedOn;
+    }
 
     public String getName() {
         return name;

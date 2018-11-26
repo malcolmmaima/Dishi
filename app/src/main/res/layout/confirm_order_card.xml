@@ -24,8 +24,8 @@
 
         <com.alexzh.circleimageview.CircleImageView
             android:id="@+id/foodPic"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:src="@drawable/ic_food_menu"
             app:view_shadowRadius="2dp"
             app:view_shadowDx="2dp"
@@ -80,7 +80,7 @@
             android:layout_height="20dp"
             android:layout_marginTop="5dp"
             android:scaleType="centerCrop"
-            android:background="@drawable/ic_account_circle_white_48dp"
+            android:background="@drawable/eating"
             android:backgroundTint="@color/colorPrimary"
             android:layout_marginRight="0dp"
             android:layout_toRightOf="@id/foodPic"
@@ -200,6 +200,29 @@
             </RelativeLayout>
 
         </RelativeLayout>
+
+        <LinearLayout
+            android:layout_marginTop="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:orientation="horizontal"
+            android:layout_below="@id/foodPic">
+
+            <ImageButton
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:scaleType="centerCrop"
+                android:background="@drawable/ic_access_time_black_48dp"
+                android:layout_marginRight="3dp"/>
+
+            <TextView
+                android:id="@+id/timeOrdered"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="loading..."/>
+
+        </LinearLayout>
 
     </RelativeLayout>
 </android.support.v7.widget.CardView>
