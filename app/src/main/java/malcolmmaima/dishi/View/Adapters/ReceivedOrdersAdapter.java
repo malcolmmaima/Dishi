@@ -297,15 +297,18 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                 status[position] = dataSnapshot.getValue(String.class); //Order status
                 //Toast.makeText(context, "Order status: " + status, Toast.LENGTH_SHORT).show();
                 if(status[position].equals("confirmed")){
-                    holder.acceptBtn.setText("Cancel");
+                    //holder.acceptBtn.setText("Cancel");
+                    holder.acceptBtn.setBackgroundResource(R.drawable.ic_close_black_48dp);
                 }
 
                 if(status[position].equals("cancelled")){
-                    holder.acceptBtn.setText("Confirm");
+                    holder.acceptBtn.setBackgroundResource(R.drawable.ic_check_black_48dp);
+                    //holder.acceptBtn.setText("Confirm");
                 }
 
                 if(status[position].equals("pending")){
-                    holder.acceptBtn.setText("Confirm");
+                    //holder.acceptBtn.setText("Confirm");
+                    holder.acceptBtn.setBackgroundResource(R.drawable.ic_check_black_48dp);
                 }
 
                 if(status[position].equals("abort")){
@@ -325,17 +328,20 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                                     status[position] = dataSnapshot.getValue(String.class); //Order status
                                     //Toast.makeText(context, "Order status: " + status, Toast.LENGTH_SHORT).show();
                                     if(status[position].equals("confirmed")){
-                                        holder.acceptBtn.setText("Cancel");
+                                        //holder.acceptBtn.setText("Cancel");
+                                        holder.acceptBtn.setBackgroundResource(R.drawable.ic_close_black_48dp);
                                         holder.trackCustomer.setVisibility(View.VISIBLE);
                                     }
 
                                     if(status[position].equals("cancelled")){
-                                        holder.acceptBtn.setText("Confirm");
+                                        //holder.acceptBtn.setText("Confirm");
+                                        holder.acceptBtn.setBackgroundResource(R.drawable.ic_check_black_48dp);
                                         holder.trackCustomer.setVisibility(View.INVISIBLE);
                                     }
 
                                     if(status[position].equals("pending")){
-                                        holder.acceptBtn.setText("Confirm");
+                                        //holder.acceptBtn.setText("Confirm");
+                                        holder.acceptBtn.setBackgroundResource(R.drawable.ic_check_black_48dp);
                                         holder.trackCustomer.setVisibility(View.VISIBLE);
                                     }
 

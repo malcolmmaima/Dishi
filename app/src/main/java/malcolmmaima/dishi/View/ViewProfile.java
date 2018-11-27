@@ -42,7 +42,7 @@ public class ViewProfile extends AppCompatActivity {
 
     DatabaseReference providerRef, myRef, rootRef;
 
-    TextView userProfileName, profileBio, followersCounter, followingCounter;
+    TextView userProfileName, profileBio, followersCounter, followingCounter, emptyTag;
     ImageView profilePic, coverImg;
     Button followUserBtn;
     String myPhone, picUrl;
@@ -75,6 +75,7 @@ public class ViewProfile extends AppCompatActivity {
         recyclerView = findViewById(R.id.rview);
         postStatus = findViewById(R.id.postStatus);
         statusPost = findViewById(R.id.inputStatus);
+        emptyTag = findViewById(R.id.empty_tag);
 
         Toolbar topToolBar = findViewById(R.id.toolbar);
         setSupportActionBar(topToolBar);
@@ -414,6 +415,7 @@ public class ViewProfile extends AppCompatActivity {
 
                 try {
                     if (!list.isEmpty()) {
+                        emptyTag.setVisibility(View.GONE);
                         Collections.reverse(list);
                         recyclerView.setVisibility(View.VISIBLE);
                         StatusUpdateAdapter recycler = new StatusUpdateAdapter(ViewProfile.this, list);
@@ -430,11 +432,14 @@ public class ViewProfile extends AppCompatActivity {
 
                         recyclerView.setAdapter(recycler);
                     } else {
+                        emptyTag.setVisibility(View.VISIBLE);
                         recyclerView.setVisibility(INVISIBLE);
                     }
                 }
 
                 catch (Exception e){
+                    emptyTag.setVisibility(View.VISIBLE);
+                    emptyTag.setText("ERROR");
                     recyclerView.setVisibility(INVISIBLE);
 
                 }

@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -33,13 +34,21 @@ public class SplashActivity extends AppCompatActivity {
     private PreferenceManager prefManager;
     String myPhone;
     private FirebaseAuth mAuth;
+    ProgressBar progressBar;
 
     private static final int PERMISSIONS_REQUEST = 100;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        progressBar = findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
 
         new CountDownTimer(60000, 10000) { //Check connection status every 10 seconds and prompt user if not connected
             public void onTick(long millisUntilFinished) {
@@ -58,7 +67,7 @@ public class SplashActivity extends AppCompatActivity {
         prefManager = new PreferenceManager(this);
         if (!prefManager.isFirstTimeLaunch()) {
             if (mAuth.getInstance().getCurrentUser() == null || mAuth.getInstance().getCurrentUser().getPhoneNumber() == null) {
-
+                progressBar.setVisibility(View.GONE);
                 //User is not signed in, send them back to verification page
                 //Toast.makeText(this, "Not logged in!", Toast.LENGTH_LONG).show();
                 startActivity(new Intent(SplashActivity.this, MainActivity.class)
@@ -85,7 +94,7 @@ public class SplashActivity extends AppCompatActivity {
                             dbRef.child("verified").setValue(verified).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-
+                                    progressBar.setVisibility(View.GONE);
                                     Intent mainActivity = new Intent(SplashActivity.this, SetupProfile.class);
                                     mainActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);//Load Main Activity and clear activity stack
                                     startActivity(mainActivity);
@@ -97,7 +106,7 @@ public class SplashActivity extends AppCompatActivity {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
                                             // Write failed
-
+                                            progressBar.setVisibility(View.GONE);
                                             Toast.makeText(SplashActivity.this, "Error!", Toast.LENGTH_LONG).show();
                                         }
                                     });
@@ -107,12 +116,13 @@ public class SplashActivity extends AppCompatActivity {
                         else if (verified.toString().equals("true")) { //Will need to check account type as well, then redirect to account type
 
                             //User is verified, so we need to check their account type and redirect accordingly
-                            dbRef.child("account_type").addListenerForSingleValueEvent(new ValueEventListener() {
+                            dbRef.child("account_type").addValueEventListener(new ValueEventListener() {
                                 @Override public void onDataChange(DataSnapshot dataSnapshot) {
                                     String account_type = dataSnapshot.getValue(String.class);
                                     //String account_type = Integer.toString(acc_type);
 
                                     if(account_type.equals("1")){ //Customer account
+                                        progressBar.setVisibility(View.GONE);
                                         //Toast.makeText(SplashActivity.this, "Customer Account", Toast.LENGTH_LONG).show();
                                         Intent slideactivity = new Intent(SplashActivity.this, MyAccountCustomer.class)
                                                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -122,6 +132,7 @@ public class SplashActivity extends AppCompatActivity {
                                     }
 
                                     else if (account_type.equals("2")){ //Provider Restaurant account
+                                        progressBar.setVisibility(View.GONE);
                                         //Toast.makeText(SplashActivity.this, "Provider Account", Toast.LENGTH_LONG).show();
                                         Intent slideactivity = new Intent(SplashActivity.this, MyAccountRestaurant.class)
                                                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -131,6 +142,7 @@ public class SplashActivity extends AppCompatActivity {
                                     }
 
                                     else if (account_type.equals("3")){ //Nduthi account
+                                        progressBar.setVisibility(View.GONE);
                                         //Slide to new activity
                                         Toast.makeText(SplashActivity.this, "Nduthi Account", Toast.LENGTH_LONG).show();
                                         Intent slideactivity = new Intent(SplashActivity.this, MyAccountNduthi.class)
@@ -156,11 +168,13 @@ public class SplashActivity extends AppCompatActivity {
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError databaseError) {
                                     //DB error, try again...if fails login again
-                                    Toast.makeText(SplashActivity.this, "Error: " + databaseError, Toast.LENGTH_SHORT).show();
+                                    //
+
                                 }
                             });
 
                         } else {
+                            progressBar.setVisibility(View.GONE);
                             //User is not verified so have them verify their profile details first
                             startActivity(new Intent(SplashActivity.this, SetupProfile.class)
                                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));//Load Main Activity and clear activity stack
@@ -169,7 +183,6 @@ public class SplashActivity extends AppCompatActivity {
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-                        Toast.makeText(SplashActivity.this, "Error: " + databaseError, Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -177,6 +190,7 @@ public class SplashActivity extends AppCompatActivity {
         }
 
         else {
+            progressBar.setVisibility(View.GONE);
             startActivity(new Intent(SplashActivity.this, WelcomeActivity.class)
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
         }
@@ -197,7 +211,9 @@ public class SplashActivity extends AppCompatActivity {
     public void checkConnection(){
         if(isOnline()){
             //Toast.makeText(SplashActivity.this, "You are connected to Internet", Toast.LENGTH_SHORT).show();
+            progressBar.setVisibility(View.VISIBLE);
         }else{
+            progressBar.setVisibility(View.GONE);
             Toast.makeText(SplashActivity.this, "You are not connected to the Internet", Toast.LENGTH_SHORT).show();
         }
     }

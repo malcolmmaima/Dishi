@@ -1,5 +1,7 @@
 package malcolmmaima.dishi.View;
 
+import android.app.ActivityOptions;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -40,7 +42,7 @@ import static android.view.View.INVISIBLE;
 public class ViewStatus extends AppCompatActivity {
 
     DatabaseReference authorRef, myRef;
-    TextView profileName, userUpdate, likesTotal, commentsTotal, emptyTag;
+    TextView profileName, userUpdate, likesTotal, commentsTotal, emptyTag, timePosted;
     ImageView profilePic, deleteBtn, likePost, comments, sharePost;
     String myPhone;
     Button postStatus;
@@ -70,6 +72,7 @@ public class ViewStatus extends AppCompatActivity {
         statusPost = findViewById(R.id.inputComment);
         recyclerView = findViewById(R.id.rview);
         emptyTag = findViewById(R.id.empty_tag);
+        timePosted = findViewById(R.id.timePosted);
 
         Toolbar topToolBar = findViewById(R.id.toolbar);
         setSupportActionBar(topToolBar);
@@ -95,6 +98,7 @@ public class ViewStatus extends AppCompatActivity {
         final String pic = getIntent().getStringExtra("profilepic");
         final String key = getIntent().getStringExtra("key");
         final String currentWall = getIntent().getStringExtra("currentWall");
+        final String timeposted = getIntent().getStringExtra("timePosted");
 
         authorRef = FirebaseDatabase.getInstance().getReference(currentWall);
         myRef = FirebaseDatabase.getInstance().getReference(myPhone);
@@ -105,6 +109,38 @@ public class ViewStatus extends AppCompatActivity {
         }
 
         profileName.setText(userName);
+        timePosted.setText(timeposted);
+
+        profileName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!myPhone.equals(providerPhone)){
+                    Intent slideactivity = new Intent(ViewStatus.this, ViewProfile.class)
+                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                    slideactivity.putExtra("phone", providerPhone);
+                    Bundle bndlanimation =
+                            ActivityOptions.makeCustomAnimation(ViewStatus.this, R.anim.animation,R.anim.animation2).toBundle();
+                    startActivity(slideactivity, bndlanimation);
+                }
+            }
+        });
+
+        profilePic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!myPhone.equals(providerPhone)){
+                    Intent slideactivity = new Intent(ViewStatus.this, ViewProfile.class)
+                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                    slideactivity.putExtra("phone", providerPhone);
+                    Bundle bndlanimation =
+                            ActivityOptions.makeCustomAnimation(ViewStatus.this, R.anim.animation,R.anim.animation2).toBundle();
+                    startActivity(slideactivity, bndlanimation);
+                }
+            }
+        });
+
         userUpdate.setText(update);
         try {
             Glide.with(ViewStatus.this).load(pic).into(profilePic);

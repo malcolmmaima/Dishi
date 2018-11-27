@@ -54,7 +54,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="20dp"
-                    android:text="profile name"
+                    android:text="loading..."
                     android:textColor="#fff"
                     android:textSize="24sp"
                     android:textStyle="bold" />
@@ -65,7 +65,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/user_profile_name"
                     android:layout_centerHorizontal="true"
-                    android:text="Some short bio bleh bleh"
+                    android:text="loading..."
                     android:textColor="#fff"
                     android:textSize="14sp" />
 
@@ -269,9 +269,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:id="@+id/rview"
-                    >
+                    />
 
-                </android.support.v7.widget.RecyclerView>
+                <TextView
+                    android:id="@+id/empty_tag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="EMPTY"
+                    android:textSize="40dp"
+                    android:layout_margin="20dp"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center_horizontal"
+                    android:visibility="gone"/>
 
 
             </LinearLayout>

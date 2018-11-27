@@ -314,6 +314,21 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyHolder
             }
         });
 
+        holder.profilePic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!myPhone.equals(statusUpdateModel.getAuthor())){
+                    Intent slideactivity = new Intent(context, ViewProfile.class)
+                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                    slideactivity.putExtra("phone", statusUpdateModel.getAuthor());
+                    Bundle bndlanimation =
+                            ActivityOptions.makeCustomAnimation(context, R.anim.animation,R.anim.animation2).toBundle();
+                    context.startActivity(slideactivity, bndlanimation);
+                }
+            }
+        });
+
         /**
          *
          * holder.cardView.setOnClickListener(new View.OnClickListener() {

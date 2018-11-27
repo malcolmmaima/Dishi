@@ -56,7 +56,7 @@ public class UserProfileFragment extends Fragment {
     FirebaseDatabase db;
     FirebaseUser user;
 
-    TextView userProfileName, profileBio, followersCounter, followingCounter;
+    TextView userProfileName, profileBio, followersCounter, followingCounter, emptyTag;
     ImageView profilePic, coverImg;
     Button reviews, stats;
     EditText statusPost;
@@ -97,6 +97,7 @@ public class UserProfileFragment extends Fragment {
         postStatus = v.findViewById(R.id.postStatus);
         statusPost = v.findViewById(R.id.inputStatus);
         recyclerView = v.findViewById(R.id.rview);
+        emptyTag = v.findViewById(R.id.empty_tag);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         myPhone = user.getPhoneNumber(); //Current logged in user phone number
@@ -357,6 +358,7 @@ public class UserProfileFragment extends Fragment {
 
                 try {
                     if (!list.isEmpty()) {
+                        emptyTag.setVisibility(View.GONE);
                         Collections.reverse(list);
                         recyclerView.setVisibility(View.VISIBLE);
                         StatusUpdateAdapter recycler = new StatusUpdateAdapter(getContext(), list);
@@ -373,11 +375,15 @@ public class UserProfileFragment extends Fragment {
 
                         recyclerView.setAdapter(recycler);
                     } else {
+                        emptyTag.setText("NO POSTS");
+                        emptyTag.setVisibility(View.VISIBLE);
                         recyclerView.setVisibility(v.INVISIBLE);
                     }
                 }
 
                 catch (Exception e){
+                    emptyTag.setVisibility(View.VISIBLE);
+                    emptyTag.setText("ERROR");
                     recyclerView.setVisibility(v.INVISIBLE);
 
                 }

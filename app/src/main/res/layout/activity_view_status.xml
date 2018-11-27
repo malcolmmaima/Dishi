@@ -58,6 +58,7 @@
                     android:scaleType="fitXY"
                     />
 
+
                 <LinearLayout
                     android:id="@+id/lin"
                     android:layout_toRightOf="@id/profilePic"
@@ -84,6 +85,8 @@
                         android:layout_marginRight="20dp"
                         android:textColor="#666"/>
 
+
+
                 </LinearLayout>
 
                 <RelativeLayout
@@ -95,6 +98,27 @@
                     android:layout_alignParentEnd="true"
                     android:layout_toRightOf="@id/profilePic"
                     android:gravity="center|left">
+
+                    <LinearLayout
+                        android:layout_marginTop="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <ImageButton
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:scaleType="centerCrop"
+                            android:background="@drawable/ic_access_time_black_48dp"
+                            android:layout_marginRight="3dp"/>
+
+                        <TextView
+                            android:id="@+id/timePosted"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="loading..."/>
+
+                    </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
