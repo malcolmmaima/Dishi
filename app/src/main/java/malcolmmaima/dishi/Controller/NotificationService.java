@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -298,24 +299,50 @@ public class NotificationService extends Service {
             synchronized (this) {
                 while(isRunning) {
 
-                    myOrdersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
+                    dbRef.child("account_type").addValueEventListener(new ValueEventListener() {
+                        @Override public void onDataChange(DataSnapshot dataSnapshot) {
+                            String account_type = dataSnapshot.getValue(String.class);
+                            //String account_type = Integer.toString(acc_type);
 
-                            try {
-                                newOrders = (int) dataSnapshot.getChildrenCount(); //Assign new orders count here
+                            if (account_type.equals("1")) { //Customer account
 
-                                if (newOrders > orders) {
-                                    int count = orders + 1;
-                                    sendNotification("New order request(" + count + ")", "MyAccountRestaurant");
-                                    orders = newOrders;
-                                    //Toast.makeText(NotificationService.this, "New order Request("+orders +")", Toast.LENGTH_SHORT).show();
-                                }
-                                else {
-                                    orders = newOrders;
-                                }
-                            } catch (Exception e){
-                                Toast.makeText(NotificationService.this, "Error: " + e, Toast.LENGTH_SHORT).show();
+                            }
+
+                            else if(account_type.equals("2")){
+                                myOrdersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                        try {
+                                            newOrders = (int) dataSnapshot.getChildrenCount(); //Assign new orders count here
+
+                                            if (newOrders > orders) {
+                                                int count = orders + 1;
+                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                                                    //Implement notifications for android version O
+                                                    Toast.makeText(NotificationService.this, "New order Request", Toast.LENGTH_LONG).show();
+                                                else
+                                                    sendNotification("New order request(" + count + ")", "MyAccountRestaurant");
+                                                orders = newOrders;
+                                                //Toast.makeText(NotificationService.this, "New order Request("+orders +")", Toast.LENGTH_SHORT).show();
+                                            }
+                                            else {
+                                                orders = newOrders;
+                                            }
+                                        } catch (Exception e){
+                                            Toast.makeText(NotificationService.this, "Error: " + e, Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+
+                            else if(account_type.equals("3")){
+
                             }
                         }
 
@@ -324,6 +351,7 @@ public class NotificationService extends Service {
 
                         }
                     });
+
                     try {
 
                         isOnline();
@@ -347,7 +375,7 @@ public class NotificationService extends Service {
                                                 ref.child(receivedOrders.key).setValue(receivedOrders).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
-                                                        sendNotification("Order " + receivedOrders.name + " confirmed", "MyAccountRestaurant");
+                                                        sendNotification("Order " + receivedOrders.name + " confirmed", "MyAccountCustomer");
                                                     }
                                                 }).addOnFailureListener(new OnFailureListener() {
 
@@ -371,7 +399,7 @@ public class NotificationService extends Service {
                                             ref.child(receivedOrders.key).setValue(receivedOrders).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                 @Override
                                                 public void onSuccess(Void aVoid) {
-                                                    sendNotification("Order " + receivedOrders.name + " cancelled", "MyAccountRestaurant");
+                                                    sendNotification("Order " + receivedOrders.name + " cancelled", "MyAccountCustomer");
                                                 }
                                             }).addOnFailureListener(new OnFailureListener() {
 
@@ -474,7 +502,7 @@ public class NotificationService extends Service {
 
     private void sendActiveOrderNotification(String s, String[] phone){
         Notification.Builder builder = new Notification.Builder(NotificationService.this)
-                .setSmallIcon(R.drawable.logo)
+                .setSmallIcon(R.drawable.logo_notification)
                 .setContentTitle("Dishi")
                 .setContentText(s);
 

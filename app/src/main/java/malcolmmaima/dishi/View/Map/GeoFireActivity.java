@@ -896,7 +896,7 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
 
     private void sendNotification(String s) {
         Notification.Builder builder = new Notification.Builder(GeoFireActivity.this)
-                .setSmallIcon(R.drawable.logo)
+                .setSmallIcon(R.drawable.logo_notification)
                 .setContentTitle("Dishi")
                 .setContentText(s);
 
