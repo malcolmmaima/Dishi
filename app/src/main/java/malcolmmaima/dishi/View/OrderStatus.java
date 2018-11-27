@@ -139,22 +139,27 @@ public class OrderStatus extends AppCompatActivity {
                     int counter = 0;
 
                     for (DataSnapshot mycart : dataSnapshot.getChildren()) {
-                        MyCartDetails myCartDetails = mycart.getValue(MyCartDetails.class);
-                        myCartDetails.key = mycart.getKey();
-                        String prices = myCartDetails.getPrice();
-                        temp = Integer.parseInt(prices) + temp;
+                        try {
+                            MyCartDetails myCartDetails = mycart.getValue(MyCartDetails.class);
+                            myCartDetails.key = mycart.getKey();
+                            String prices = myCartDetails.getPrice();
+                            temp = Integer.parseInt(prices) + temp;
 
-                        phoneNumbers[counter] = myCartDetails.providerNumber;
-                        counter++;
+                            phoneNumbers[counter] = myCartDetails.providerNumber;
+                            counter++;
 
-                        if (myCartDetails.status.equals("confirmed")) {
-                            order_status = "confirmed";
-                            trackBtn.setEnabled(true);
+                            if (myCartDetails.status.equals("confirmed")) {
+                                order_status = "confirmed";
+                                trackBtn.setEnabled(true);
+                            }
+                            myBasket.add(myCartDetails);
+                            trackRestaurant = myCartDetails.providerNumber;
+                            myRef.child("active_notifications").child("active_track").setValue(trackRestaurant);
+                            //Toast.makeText(OrderStatus.this, myCartDetails.getName() + " status: " + myCartDetails.status, Toast.LENGTH_SHORT).show();
+
+                        } catch (Exception e){
+
                         }
-                        myBasket.add(myCartDetails);
-                        trackRestaurant = myCartDetails.providerNumber;
-                        myRef.child("active_notifications").child("active_track").setValue(trackRestaurant);
-                        //Toast.makeText(OrderStatus.this, myCartDetails.getName() + " status: " + myCartDetails.status, Toast.LENGTH_SHORT).show();
                     }
                     //Toast.makeText(getContext(), "TOTAL: " + temp, Toast.LENGTH_SHORT).show();
                     //Toast.makeText(getContext(), "Items: " + myBasket.size(), Toast.LENGTH_SHORT).show();

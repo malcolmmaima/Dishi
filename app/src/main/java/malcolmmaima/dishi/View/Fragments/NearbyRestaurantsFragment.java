@@ -249,6 +249,7 @@ public class NearbyRestaurantsFragment extends Fragment {
                         if(progressDialog.isShowing()){
                             progressDialog.dismiss();
                         }
+
                         recyclerview.setVisibility(View.VISIBLE);
                         RestaurantAdapter recycler = new RestaurantAdapter(getContext(), list);
                         RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());

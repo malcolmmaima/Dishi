@@ -141,6 +141,7 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
 
                 }
 
+
                 //Split time details
                 String[] parts = myCartDetails.getOrderedOn().split(":");
                 final String date = parts[0];
