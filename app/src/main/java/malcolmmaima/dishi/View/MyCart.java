@@ -519,6 +519,7 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                                                                                                     .setAction("OK", new View.OnClickListener() {
                                                                                                         @Override
                                                                                                         public void onClick(View view) {
+                                                                                                            finish();
                                                                                                             Intent slideactivity = new Intent(MyCart.this, OrderStatus.class);
                                                                                                             Bundle bndlanimation =
                                                                                                                     ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();

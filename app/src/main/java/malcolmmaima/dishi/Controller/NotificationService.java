@@ -16,6 +16,7 @@ import android.os.Message;
 import android.os.Process;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -37,6 +38,8 @@ import java.util.Random;
 import malcolmmaima.dishi.Model.ReceivedOrders;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.Map.GeoFireActivity;
+import malcolmmaima.dishi.View.MyAccountNduthi;
+import malcolmmaima.dishi.View.MyAccountRestaurant;
 import malcolmmaima.dishi.View.OrderStatus;
 import malcolmmaima.dishi.View.SplashActivity;
 
@@ -53,6 +56,14 @@ public class NotificationService extends Service {
 
     Double nduthiLat, nduthiLng, myLat, myLong, distance;
     Double current;
+
+    String myPhone;
+
+    int orders, newOrders;
+
+    DatabaseReference dbRef, myOrdersRef;
+    FirebaseDatabase db;
+    FirebaseUser user;
 
     @Override
     public void onCreate() {
@@ -73,6 +84,13 @@ public class NotificationService extends Service {
 
         current = 0.0;
 
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        myPhone = user.getPhoneNumber(); //Current logged in user phone number
+        db = FirebaseDatabase.getInstance();
+        dbRef = db.getReference(myPhone);
+        myOrdersRef = db.getReference(myPhone + "/orders");
+
+
     }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -81,13 +99,30 @@ public class NotificationService extends Service {
         notificationServiceHandler.sendMessage(msg);
         //Toast.makeText(this, "Notification service Started.", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "Notification service Started...");
+
+        //Initialize orders count
+        myOrdersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    orders = (int) dataSnapshot.getChildrenCount();
+                    //Toast.makeText(NotificationService.this, "Orders: " + orders, Toast.LENGTH_SHORT).show();
+                } catch (Exception e){
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
         //If service is killed while starting, it restarts.
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String myPhone = user.getPhoneNumber(); //Current logged in user phone number
         final DatabaseReference mylocationRef;
         final DatabaseReference[] nduthiGuyRef = new DatabaseReference[1];
-
 
 
         FirebaseDatabase.getInstance().getReference(myPhone).child("active_notifications")
@@ -239,6 +274,7 @@ public class NotificationService extends Service {
 
         return START_STICKY;
     }
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -261,12 +297,38 @@ public class NotificationService extends Service {
             final String myPhone = user.getPhoneNumber(); //Current logged in user phone number
             synchronized (this) {
                 while(isRunning) {
+
+                    myOrdersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                            try {
+                                newOrders = (int) dataSnapshot.getChildrenCount(); //Assign new orders count here
+
+                                if (newOrders > orders) {
+                                    int count = orders + 1;
+                                    sendNotification("New order request(" + count + ")", "MyAccountRestaurant");
+                                    orders = newOrders;
+                                    //Toast.makeText(NotificationService.this, "New order Request("+orders +")", Toast.LENGTH_SHORT).show();
+                                }
+                                else {
+                                    orders = newOrders;
+                                }
+                            } catch (Exception e){
+                                Toast.makeText(NotificationService.this, "Error: " + e, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
                     try {
 
                         isOnline();
 
                         Log.d(TAG, "Notification service running...");
-
 
 
                         final DatabaseReference ref = FirebaseDatabase.getInstance().getReference(myPhone + "/pending");
@@ -285,7 +347,7 @@ public class NotificationService extends Service {
                                                 ref.child(receivedOrders.key).setValue(receivedOrders).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
-                                                        sendNotification("Order " + receivedOrders.name + " confirmed");
+                                                        sendNotification("Order " + receivedOrders.name + " confirmed", "MyAccountRestaurant");
                                                     }
                                                 }).addOnFailureListener(new OnFailureListener() {
 
@@ -309,7 +371,7 @@ public class NotificationService extends Service {
                                             ref.child(receivedOrders.key).setValue(receivedOrders).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                 @Override
                                                 public void onSuccess(Void aVoid) {
-                                                    sendNotification("Order " + receivedOrders.name + " cancelled");
+                                                    sendNotification("Order " + receivedOrders.name + " cancelled", "MyAccountRestaurant");
                                                 }
                                             }).addOnFailureListener(new OnFailureListener() {
 
@@ -344,7 +406,7 @@ public class NotificationService extends Service {
                                     for(DataSnapshot rideStat : dataSnapshot.getChildren()){
                                         if(rideStat.child("status").getValue().equals("transit") && rideStat.child("notification").getValue().equals("false")){
                                             sendNotification(rideStat.child("name").getValue()
-                                                    + " has confirmed nduthi ride!");
+                                                    + " has confirmed nduthi ride!", "MyAccountNduthi");
                                             reqRide.child(rideStat.getKey()).child("notification").setValue("true");
                                         }
                                     }
@@ -361,7 +423,7 @@ public class NotificationService extends Service {
 
                         Thread.sleep(1000);
                     } catch (Exception e) {
-                        //Log.d(TAG, e.getMessage());
+                        Log.d(TAG, e.getMessage());
                     }
                     if(!isRunning){
                         break;
@@ -372,22 +434,40 @@ public class NotificationService extends Service {
             stopSelfResult(msg.arg1);
         }
 
-        private void sendNotification(String s) {
+        private void sendNotification(String s, String activity) {
             Notification.Builder builder = new Notification.Builder(NotificationService.this)
-                    .setSmallIcon(R.drawable.logo)
+                    .setSmallIcon(R.drawable.logo_notification)
                     .setContentTitle("Dishi")
                     .setContentText(s);
 
-            NotificationManager manager = (NotificationManager)NotificationService.this.getSystemService(Context.NOTIFICATION_SERVICE);
-            Intent intent = new Intent(getApplicationContext(), OrderStatus.class);
-            PendingIntent contentIntent = PendingIntent.getActivity(NotificationService.this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-            builder.setContentIntent(contentIntent);
-            Notification notification = builder.build();
-            notification.flags |= Notification.FLAG_AUTO_CANCEL;
-            notification.defaults |= Notification.DEFAULT_SOUND;
-            notification.icon |= Notification.BADGE_ICON_LARGE;
+            if(activity.equals("MyAccountRestaurant")){
+                NotificationManager manager = (NotificationManager)NotificationService.this.getSystemService(Context.NOTIFICATION_SERVICE);
+                Intent intent = new Intent(getApplicationContext(), MyAccountRestaurant.class);
+                PendingIntent contentIntent = PendingIntent.getActivity(NotificationService.this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+                builder.setContentIntent(contentIntent);
+                Notification notification = builder.build();
+                notification.flags |= Notification.FLAG_AUTO_CANCEL;
+                notification.defaults |= Notification.DEFAULT_SOUND;
+                notification.icon |= Notification.BADGE_ICON_LARGE;
 
-            manager.notify(new Random().nextInt(), notification);
+                manager.notify(new Random().nextInt(), notification);
+            }
+
+            else if(activity.equals("MyAccountNduthi")){
+                NotificationManager manager = (NotificationManager)NotificationService.this.getSystemService(Context.NOTIFICATION_SERVICE);
+                Intent intent = new Intent(getApplicationContext(), MyAccountNduthi.class);
+                PendingIntent contentIntent = PendingIntent.getActivity(NotificationService.this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+                builder.setContentIntent(contentIntent);
+                Notification notification = builder.build();
+                notification.flags |= Notification.FLAG_AUTO_CANCEL;
+                notification.defaults |= Notification.DEFAULT_SOUND;
+                notification.icon |= Notification.BADGE_ICON_LARGE;
+
+                manager.notify(new Random().nextInt(), notification);
+            }
+
+
+
         }
 
     }

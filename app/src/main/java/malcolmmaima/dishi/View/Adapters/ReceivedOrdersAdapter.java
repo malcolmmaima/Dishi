@@ -312,7 +312,8 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                 }
 
                 if(status[position].equals("abort")){
-                    holder.acceptBtn.setText("Aborted");
+                    //holder.acceptBtn.setText("Aborted");
+                    holder.acceptBtn.setBackgroundResource(R.drawable.ic_sentiment_very_dissatisfied_black_48dp);
                     holder.acceptBtn.setEnabled(false);
                     holder.deleteItem.setVisibility(View.VISIBLE);
                     holder.trackCustomer.setVisibility(View.INVISIBLE);
@@ -346,7 +347,8 @@ public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAd
                                     }
 
                                     if(status[position].equals("abort")){
-                                        holder.acceptBtn.setText("Aborted");
+                                        //holder.acceptBtn.setText("Aborted");
+                                        holder.acceptBtn.setBackgroundResource(R.drawable.ic_sentiment_very_dissatisfied_black_48dp);
                                         holder.acceptBtn.setEnabled(false);
                                         holder.deleteItem.setVisibility(View.VISIBLE);
                                         holder.trackCustomer.setVisibility(View.INVISIBLE);

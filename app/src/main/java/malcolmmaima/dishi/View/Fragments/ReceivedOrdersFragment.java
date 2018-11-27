@@ -103,7 +103,7 @@ public class ReceivedOrdersFragment extends Fragment {
                 newOrders = (int)dataSnapshot.getChildrenCount(); //Assign new orders count here
 
                 if(newOrders > orders){
-                    sendNotification("New order request");
+                    //sendNotification("New order request");
                     orders = newOrders;
                 }
 

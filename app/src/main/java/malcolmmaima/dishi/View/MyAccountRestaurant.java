@@ -78,6 +78,7 @@ public class MyAccountRestaurant extends AppCompatActivity implements GoogleApiC
 
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         final DatabaseReference dbRef = db.getReference(myPhone);
+        startService(new Intent(MyAccountRestaurant.this, NotificationService.class));
 
         //Check whether user is verified, if true send them directly to MyAccountRestaurant
         dbRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
