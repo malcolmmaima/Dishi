@@ -18,9 +18,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".View.MainActivity" />
-        <activity android:name=".View.WelcomeActivity" />
-        <activity android:name=".View.SplashActivity">
+        <activity android:name=".View.Activities.MainActivity" />
+        <activity android:name=".View.Activities.WelcomeActivity" />
+        <activity android:name=".View.Activities.SplashActivity">
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,15 +28,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".View.SetupProfile" />
-        <activity android:name=".View.MyAccountRestaurant" />
-        <activity android:name=".View.AddMenu" />
-        <activity android:name=".View.SettingsActivity" />
-        <activity android:name=".View.MyAccountCustomer" />
-        <activity android:name=".View.MyAccountNduthi" />
-        <activity android:name=".View.MyCart" />
-        <activity android:name=".View.SelectNduthiGuy" />
-        <activity android:name=".View.ViewRequestItems" />
+        <activity android:name=".View.Activities.SetupProfile" />
+        <activity android:name=".View.Activities.MyAccountRestaurant" />
+        <activity android:name=".View.Activities.AddMenu" />
+        <activity android:name=".View.Activities.SettingsActivity" />
+        <activity android:name=".View.Activities.MyAccountCustomer" />
+        <activity android:name=".View.Activities.MyAccountNduthi" />
+        <activity android:name=".View.Activities.MyCart" />
+        <activity android:name=".View.Activities.SelectNduthiGuy" />
+        <activity android:name=".View.Activities.ViewRequestItems" />
 
         <service
             android:name=".Controller.TrackingService"
@@ -44,7 +44,7 @@
             android:exported="true" />
         <service android:name=".Controller.NotificationService" />
 
-        <activity android:name=".View.OrderStatus" />
+        <activity android:name=".View.Activities.OrderStatus" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -57,14 +57,14 @@
             android:name=".View.Map.GeoFireActivity"
             android:label="@string/title_activity_geo_fire" />
         <activity
-            android:name=".View.ViewProfile"
+            android:name=".View.Activities.ViewProfile"
             android:windowSoftInputMode="stateHidden" />
-        <activity android:name=".View.ViewPhoto" />
+        <activity android:name=".View.Activities.ViewPhoto" />
         <activity
-            android:name=".View.ViewStatus"
+            android:name=".View.Activities.ViewStatus"
             android:windowSoftInputMode="stateHidden" />
-        <activity android:name=".View.ViewRestaurant" />
-        <activity android:name=".View.SearchActivity"></activity>
+        <activity android:name=".View.Activities.ViewRestaurant" />
+        <activity android:name=".View.Activities.SearchActivity"></activity>
     </application>
 
 </manifest>

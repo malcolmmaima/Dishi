@@ -1,8 +1,6 @@
 package malcolmmaima.dishi.View.Fragments;
 
-import android.app.ActivityOptions;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -38,16 +36,10 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
-import malcolmmaima.dishi.Model.DishiUser;
 
-import malcolmmaima.dishi.Model.RestaurantReview;
 import malcolmmaima.dishi.Model.StatusUpdateModel;
 import malcolmmaima.dishi.R;
-import malcolmmaima.dishi.View.Adapters.RestaurantReviewAdapter;
 import malcolmmaima.dishi.View.Adapters.StatusUpdateAdapter;
-import malcolmmaima.dishi.View.MyAccountCustomer;
-import malcolmmaima.dishi.View.SetupProfile;
-import malcolmmaima.dishi.View.SplashActivity;
 
 public class UserProfileFragment extends Fragment {
 

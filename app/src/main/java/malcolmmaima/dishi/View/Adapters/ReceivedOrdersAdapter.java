@@ -1,28 +1,22 @@
 package malcolmmaima.dishi.View.Adapters;
 
-import android.Manifest;
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,14 +40,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import malcolmmaima.dishi.Model.MyCartDetails;
 import malcolmmaima.dishi.Model.ReceivedOrders;
 import malcolmmaima.dishi.R;
-import malcolmmaima.dishi.View.AddMenu;
 import malcolmmaima.dishi.View.Map.GeoFireActivity;
-import malcolmmaima.dishi.View.MyCart;
-import malcolmmaima.dishi.View.OrderStatus;
-import malcolmmaima.dishi.View.ViewProfile;
+import malcolmmaima.dishi.View.Activities.ViewProfile;
 
 public class ReceivedOrdersAdapter extends RecyclerView.Adapter<ReceivedOrdersAdapter.MyHolder>{
 

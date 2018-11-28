@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,13 +31,7 @@ import java.math.RoundingMode;
 import java.util.List;
 
 import malcolmmaima.dishi.Model.MyCartDetails;
-import malcolmmaima.dishi.Model.OrderDetails;
-import malcolmmaima.dishi.Model.ProductDetails;
 import malcolmmaima.dishi.R;
-import malcolmmaima.dishi.View.AddMenu;
-import malcolmmaima.dishi.View.MyCart;
-
-import static malcolmmaima.dishi.R.drawable.ic_highlight_off_white_48dp;
 
 public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.MyHolder>{
 

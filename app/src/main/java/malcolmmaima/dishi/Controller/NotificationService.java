@@ -17,10 +17,8 @@ import android.os.Message;
 import android.os.Process;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,16 +31,13 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Arrays;
 import java.util.Random;
 
 import malcolmmaima.dishi.Model.ReceivedOrders;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.Map.GeoFireActivity;
-import malcolmmaima.dishi.View.MyAccountNduthi;
-import malcolmmaima.dishi.View.MyAccountRestaurant;
-import malcolmmaima.dishi.View.OrderStatus;
-import malcolmmaima.dishi.View.SplashActivity;
+import malcolmmaima.dishi.View.Activities.MyAccountNduthi;
+import malcolmmaima.dishi.View.Activities.MyAccountRestaurant;
 
 public class NotificationService extends Service {
     private static final String TAG = "NotifService";

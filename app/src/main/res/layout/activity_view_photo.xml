@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#000000"
-    tools:context=".View.ViewPhoto">
+    tools:context=".View.Activities.ViewPhoto">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"

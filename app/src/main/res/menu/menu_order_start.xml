@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".View.OrderStatus">
+    tools:context=".View.Activities.OrderStatus">
 
     <item android:id="@+id/cancel_order"
         android:title="@string/action_save"

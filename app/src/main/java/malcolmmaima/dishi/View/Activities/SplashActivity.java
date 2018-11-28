@@ -1,4 +1,4 @@
-package malcolmmaima.dishi.View;
+package malcolmmaima.dishi.View.Activities;
 
 import android.app.ActivityOptions;
 import android.content.Context;
@@ -9,8 +9,6 @@ import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -24,10 +22,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import malcolmmaima.dishi.Controller.PreferenceManager;
 import malcolmmaima.dishi.R;
-import malcolmmaima.dishi.View.Adapters.CustomerOrderAdapter;
 
 public class SplashActivity extends AppCompatActivity {
 

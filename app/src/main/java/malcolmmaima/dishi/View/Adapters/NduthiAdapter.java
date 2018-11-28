@@ -1,22 +1,16 @@
 package malcolmmaima.dishi.View.Adapters;
 
-import android.app.ActivityOptions;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,9 +32,7 @@ import malcolmmaima.dishi.Model.MyCartDetails;
 import malcolmmaima.dishi.Model.NduthiNearMe;
 import malcolmmaima.dishi.Model.RequestNduthi;
 import malcolmmaima.dishi.R;
-import malcolmmaima.dishi.View.MyCart;
-import malcolmmaima.dishi.View.OrderStatus;
-import malcolmmaima.dishi.View.SelectNduthiGuy;
+import malcolmmaima.dishi.View.Activities.SelectNduthiGuy;
 
 import static malcolmmaima.dishi.R.drawable.ic_delivered_order;
 import static malcolmmaima.dishi.R.drawable.ic_order_in_transit;

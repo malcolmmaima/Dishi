@@ -1,8 +1,9 @@
-package malcolmmaima.dishi.View;
+package malcolmmaima.dishi.View.Activities;
 
 import android.Manifest;
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -12,17 +13,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-
-import android.view.Menu;
-
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -34,6 +33,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -45,21 +45,20 @@ import com.google.firebase.database.ValueEventListener;
 import malcolmmaima.dishi.Controller.NotificationService;
 import malcolmmaima.dishi.Controller.TrackingService;
 import malcolmmaima.dishi.R;
-import malcolmmaima.dishi.View.Fragments.NearbyRestaurantsFragment;
+import malcolmmaima.dishi.View.Fragments.NduthiDeliveriesFragment;
 import malcolmmaima.dishi.View.Fragments.UserProfileFragment;
-import malcolmmaima.dishi.View.Fragments.CustomerOrderFragment;
 
+public class MyAccountNduthi extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
-public class MyAccountCustomer extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     String myPhone;
     private static final int PERMISSIONS_REQUEST = 100;
     private FirebaseAuth mAuth;
-    private DatabaseReference dbRef;
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my_account_customer);
+        setContentView(R.layout.activity_my_account_nduthi);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -67,16 +66,15 @@ public class MyAccountCustomer extends AppCompatActivity implements GoogleApiCli
 
             //User is not signed in, send them back to verification page
             Toast.makeText(this, "Not logged in!", Toast.LENGTH_LONG).show();
-            startActivity(new Intent(MyAccountCustomer.this, MainActivity.class)
+            startActivity(new Intent(MyAccountNduthi.this, MainActivity.class)
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));//Load Main Activity and clear activity stack
         }
-        startService(new Intent(this, NotificationService.class));
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         myPhone = user.getPhoneNumber(); //Current logged in user phone number
 
         FirebaseDatabase db = FirebaseDatabase.getInstance();
-        dbRef = db.getReference(myPhone);
+        final DatabaseReference dbRef = db.getReference(myPhone);
 
         dbRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -87,8 +85,37 @@ public class MyAccountCustomer extends AppCompatActivity implements GoogleApiCli
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Toast.makeText(MyAccountNduthi.this, "Error: " + databaseError.toString() + ". Try again!", Toast.LENGTH_LONG).show();
             }
+        });
+
+        dbRef.child("request_ride").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.hasChildren()){
+                    try {
+                        dbRef.child("engaged").setValue("true").addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(MyAccountNduthi.this, "Active order!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    } catch (Exception e){
+
+                    }
+                }
+                else {
+                    dbRef.child("engaged").setValue("false").addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(MyAccountNduthi.this, "No active order!", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                }
         });
 
         Toolbar topToolBar = findViewById(R.id.toolbar);
@@ -109,14 +136,12 @@ public class MyAccountCustomer extends AppCompatActivity implements GoogleApiCli
                         switch (item.getItemId()) {
 
                             case R.id.action_item1:
-                                selectedFragment = CustomerOrderFragment.newInstance();
+                                selectedFragment = NduthiDeliveriesFragment.newInstance();
                                 break;
                             case R.id.action_item2:
                                 selectedFragment = UserProfileFragment.newInstance();
                                 break;
-                            case R.id.action_item3:
-                                selectedFragment = NearbyRestaurantsFragment.newInstance();
-                                break;
+
                         }
                         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                         transaction.replace(R.id.frame_layout, selectedFragment);
@@ -127,7 +152,7 @@ public class MyAccountCustomer extends AppCompatActivity implements GoogleApiCli
 
         //Manually displaying the first fragment - one time only
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.frame_layout, CustomerOrderFragment.newInstance());
+        transaction.replace(R.id.frame_layout, NduthiDeliveriesFragment.newInstance());
         transaction.commit();
 
         //Used to select an item programmatically
@@ -175,7 +200,7 @@ public class MyAccountCustomer extends AppCompatActivity implements GoogleApiCli
                             try {
                                 // Show the dialog by calling startResolutionForResult(),
                                 // and check the result in onActivityResult().
-                                status.startResolutionForResult(MyAccountCustomer.this, 1000);
+                                status.startResolutionForResult(MyAccountNduthi.this, 1000);
                             } catch (IntentSender.SendIntentException e) {
                                 // Ignore the error.
                             }
@@ -206,19 +231,6 @@ public class MyAccountCustomer extends AppCompatActivity implements GoogleApiCli
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        stopService(new Intent(this, NotificationService.class));
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        startService(new Intent(this, NotificationService.class));
-
-    }
-
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[]
             grantResults) {
 
@@ -242,7 +254,6 @@ public class MyAccountCustomer extends AppCompatActivity implements GoogleApiCli
 
     private void startTrackerService() {
         startService(new Intent(this, TrackingService.class));
-
         //Notify the user that tracking has been enabled//
 
         //Toast.makeText(this, "GPS tracking enabled", Toast.LENGTH_SHORT).show();
@@ -253,31 +264,7 @@ public class MyAccountCustomer extends AppCompatActivity implements GoogleApiCli
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main_customer, menu);
-
-        if (menu != null) {
-            final MenuItem item = menu.findItem(R.id.action_cart);
-            if (item != null) {
-                //Indicate if there is an active order request or not
-                dbRef.child("pending").addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if(dataSnapshot.hasChildren()){
-                            item.setIcon(R.drawable.geo_food);
-                        }
-                        else {
-                            item.setIcon(R.drawable.nduthi_guy);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-            }
-        }
-
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -288,33 +275,26 @@ public class MyAccountCustomer extends AppCompatActivity implements GoogleApiCli
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-
         //noinspection SimplifiableIfStatement
-        if(id == R.id.action_cart){
-            //Toast.makeText(MyAccountRestaurant.this, "Add Menu", Toast.LENGTH_LONG).show();
+        if(id == R.id.action_new){
+            Toast.makeText(MyAccountNduthi.this, "in development", Toast.LENGTH_LONG).show();
 
-            Intent slideactivity = new Intent(MyAccountCustomer.this, OrderStatus.class);
-            Bundle bndlanimation =
-                    ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
-            startActivity(slideactivity, bndlanimation);
 
         }
         if (id == R.id.action_settings) {
-            //Toast.makeText(MyAccountRestaurant.this, "Settings", Toast.LENGTH_LONG).show();
-            Intent slideactivity = new Intent(MyAccountCustomer.this, SettingsActivity.class);
+            Intent slideactivity = new Intent(MyAccountNduthi.this, SettingsActivity.class);
             Bundle bndlanimation =
                     ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
             startActivity(slideactivity, bndlanimation);
         }
         if(id == R.id.action_search){
-            Intent slideactivity = new Intent(MyAccountCustomer.this, SearchActivity.class);
+            Intent slideactivity = new Intent(MyAccountNduthi.this, SearchActivity.class);
             Bundle bndlanimation =
                     ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
             startActivity(slideactivity, bndlanimation);
         }
         if(id == R.id.action_logout){
-
-            final AlertDialog logout = new AlertDialog.Builder(MyAccountCustomer.this)
+            final AlertDialog logout = new AlertDialog.Builder(MyAccountNduthi.this)
                     .setMessage("Logout?")
                     //.setIcon(R.drawable.ic_done_black_48dp) //will replace icon with name of existing icon from project
                     .setCancelable(false)
@@ -323,9 +303,9 @@ public class MyAccountCustomer extends AppCompatActivity implements GoogleApiCli
                         public void onClick(DialogInterface dialog, int whichButton) {
                             //Log out
                             //Toast.makeText(MyAccountRestaurant.this, "Logout", Toast.LENGTH_LONG).show();
-                            stopService(new Intent(MyAccountCustomer.this, NotificationService.class));
+                            stopService(new Intent(MyAccountNduthi.this, NotificationService.class));
                             FirebaseAuth.getInstance().signOut();
-                            startActivity(new Intent(MyAccountCustomer.this,MainActivity.class)
+                            startActivity(new Intent(MyAccountNduthi.this,MainActivity.class)
                                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                             finish();
                         }
@@ -340,7 +320,6 @@ public class MyAccountCustomer extends AppCompatActivity implements GoogleApiCli
 
                     .create();
             logout.show();
-
         }
         return super.onOptionsItemSelected(item);
     }
@@ -360,5 +339,3 @@ public class MyAccountCustomer extends AppCompatActivity implements GoogleApiCli
 
     }
 }
-
-

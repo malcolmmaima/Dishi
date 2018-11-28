@@ -1,6 +1,5 @@
-package malcolmmaima.dishi.View;
+package malcolmmaima.dishi.View.Activities;
 
-import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
@@ -14,10 +13,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.text.method.KeyListener;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
@@ -26,7 +23,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -47,9 +43,7 @@ import com.rey.material.widget.Switch;
 
 import java.io.IOException;
 
-import malcolmmaima.dishi.Model.DishiUser;
 import malcolmmaima.dishi.R;
-import malcolmmaima.dishi.customfonts.EditText_Roboto_Regular;
 
 public class SettingsActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 

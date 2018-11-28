@@ -1,7 +1,6 @@
 package malcolmmaima.dishi.View.Fragments;
 
 import android.app.ActivityOptions;
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -20,7 +18,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.rey.material.widget.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,11 +27,7 @@ import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import malcolmmaima.dishi.Model.OrderDetails;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.Adapters.CustomerOrderAdapter;
-import malcolmmaima.dishi.View.MainActivity;
-import malcolmmaima.dishi.View.MyAccountRestaurant;
-import malcolmmaima.dishi.View.MyCart;
-
-import static com.firebase.ui.auth.AuthUI.getApplicationContext;
+import malcolmmaima.dishi.View.Activities.MyCart;
 
 public class RestaurantMenu extends android.support.v4.app.Fragment {
 

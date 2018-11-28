@@ -4,7 +4,6 @@ import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -14,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -26,18 +24,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import malcolmmaima.dishi.Model.DishiUser;
-import malcolmmaima.dishi.Model.StatusUpdateModel;
 import malcolmmaima.dishi.R;
-import malcolmmaima.dishi.View.ViewProfile;
-import malcolmmaima.dishi.View.ViewStatus;
+import malcolmmaima.dishi.View.Activities.ViewProfile;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.MyHolder> {
 

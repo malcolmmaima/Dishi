@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:id="@+id/parentlayout"
-    tools:context=".View.OrderStatus">
+    tools:context=".View.Activities.OrderStatus">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"

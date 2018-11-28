@@ -4,7 +4,6 @@ import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -34,8 +33,7 @@ import java.util.TimeZone;
 
 import malcolmmaima.dishi.Model.StatusUpdateModel;
 import malcolmmaima.dishi.R;
-import malcolmmaima.dishi.View.ViewProfile;
-import malcolmmaima.dishi.View.ViewStatus;
+import malcolmmaima.dishi.View.Activities.ViewProfile;
 
 public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyHolder> {
 

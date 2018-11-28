@@ -36,8 +36,8 @@ import java.util.List;
 import malcolmmaima.dishi.Model.MyCartDetails;
 import malcolmmaima.dishi.Model.OrderDetails;
 import malcolmmaima.dishi.R;
-import malcolmmaima.dishi.View.ViewPhoto;
-import malcolmmaima.dishi.View.ViewProfile;
+import malcolmmaima.dishi.View.Activities.ViewPhoto;
+import malcolmmaima.dishi.View.Activities.ViewProfile;
 
 public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdapter.MyHolder>{
 

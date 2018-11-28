@@ -1,4 +1,4 @@
-package malcolmmaima.dishi.View;
+package malcolmmaima.dishi.View.Activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;

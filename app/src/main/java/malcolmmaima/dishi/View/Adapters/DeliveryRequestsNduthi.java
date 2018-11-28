@@ -15,10 +15,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -31,16 +29,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
-import malcolmmaima.dishi.Model.MyCartDetails;
-import malcolmmaima.dishi.Model.NduthiNearMe;
 import malcolmmaima.dishi.Model.RequestNduthi;
 import malcolmmaima.dishi.R;
-import malcolmmaima.dishi.View.MyAccountCustomer;
-import malcolmmaima.dishi.View.SelectNduthiGuy;
-import malcolmmaima.dishi.View.SetupProfile;
-import malcolmmaima.dishi.View.ViewRequestItems;
+import malcolmmaima.dishi.View.Activities.ViewRequestItems;
 
-import static android.support.v4.content.ContextCompat.startActivity;
 import static malcolmmaima.dishi.R.drawable.ic_delivered_order;
 import static malcolmmaima.dishi.R.drawable.ic_order_in_transit;
 import static malcolmmaima.dishi.R.drawable.ic_pending_order;

@@ -1,4 +1,4 @@
-package malcolmmaima.dishi.View;
+package malcolmmaima.dishi.View.Activities;
 
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
@@ -30,17 +30,11 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import malcolmmaima.dishi.Model.NduthiNearMe;
 import malcolmmaima.dishi.Model.OrderDetails;
-import malcolmmaima.dishi.Model.RequestNduthi;
 import malcolmmaima.dishi.R;
-import malcolmmaima.dishi.View.Adapters.CustomerOrderAdapter;
-import malcolmmaima.dishi.View.Adapters.NduthiAdapter;
 import malcolmmaima.dishi.View.Adapters.ShoppingListAdapter;
 import malcolmmaima.dishi.View.Map.GeoFireActivity;
 

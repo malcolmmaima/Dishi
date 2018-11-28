@@ -1,6 +1,5 @@
-package malcolmmaima.dishi.View;
+package malcolmmaima.dishi.View.Activities;
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,10 +7,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -27,11 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import malcolmmaima.dishi.Model.NduthiNearMe;
-import malcolmmaima.dishi.Model.ReceivedOrders;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.Adapters.NduthiAdapter;
-import malcolmmaima.dishi.View.Adapters.ReceivedOrdersAdapter;
-import malcolmmaima.dishi.View.Fragments.ConfirmedDeliveriesFragment;
 
 public class SelectNduthiGuy extends AppCompatActivity {
 

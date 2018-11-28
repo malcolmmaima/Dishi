@@ -1,9 +1,8 @@
-package malcolmmaima.dishi.View;
+package malcolmmaima.dishi.View.Activities;
 
 import android.Manifest;
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -46,22 +45,21 @@ import com.google.firebase.database.ValueEventListener;
 import malcolmmaima.dishi.Controller.NotificationService;
 import malcolmmaima.dishi.Controller.TrackingService;
 import malcolmmaima.dishi.R;
-import malcolmmaima.dishi.View.Fragments.ConfirmedDeliveriesFragment;
-import malcolmmaima.dishi.View.Fragments.ReceivedOrdersFragment;
-import malcolmmaima.dishi.View.Fragments.RestaurantMenuFragment;
+import malcolmmaima.dishi.View.Fragments.NearbyRestaurantsFragment;
 import malcolmmaima.dishi.View.Fragments.UserProfileFragment;
+import malcolmmaima.dishi.View.Fragments.CustomerOrderFragment;
 
 
-public class MyAccountRestaurant extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class MyAccountCustomer extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     String myPhone;
     private static final int PERMISSIONS_REQUEST = 100;
     private FirebaseAuth mAuth;
-    Context context;
+    private DatabaseReference dbRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my_account_restaurant);
+        setContentView(R.layout.activity_my_account_customer);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -69,18 +67,17 @@ public class MyAccountRestaurant extends AppCompatActivity implements GoogleApiC
 
             //User is not signed in, send them back to verification page
             Toast.makeText(this, "Not logged in!", Toast.LENGTH_LONG).show();
-            startActivity(new Intent(MyAccountRestaurant.this, MainActivity.class)
+            startActivity(new Intent(MyAccountCustomer.this, MainActivity.class)
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));//Load Main Activity and clear activity stack
         }
+        startService(new Intent(this, NotificationService.class));
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         myPhone = user.getPhoneNumber(); //Current logged in user phone number
 
         FirebaseDatabase db = FirebaseDatabase.getInstance();
-        final DatabaseReference dbRef = db.getReference(myPhone);
-        startService(new Intent(MyAccountRestaurant.this, NotificationService.class));
+        dbRef = db.getReference(myPhone);
 
-        //Check whether user is verified, if true send them directly to MyAccountRestaurant
         dbRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -90,6 +87,7 @@ public class MyAccountRestaurant extends AppCompatActivity implements GoogleApiC
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
+
             }
         });
 
@@ -111,33 +109,25 @@ public class MyAccountRestaurant extends AppCompatActivity implements GoogleApiC
                         switch (item.getItemId()) {
 
                             case R.id.action_item1:
-                                selectedFragment = ReceivedOrdersFragment.newInstance();
+                                selectedFragment = CustomerOrderFragment.newInstance();
                                 break;
                             case R.id.action_item2:
                                 selectedFragment = UserProfileFragment.newInstance();
                                 break;
                             case R.id.action_item3:
-                                selectedFragment = RestaurantMenuFragment.newInstance();
-                                break;
-                            case R.id.action_deliveries:
-                                selectedFragment = ConfirmedDeliveriesFragment.newInstance();
+                                selectedFragment = NearbyRestaurantsFragment.newInstance();
                                 break;
                         }
-
-                        try {
-                            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                            transaction.replace(R.id.frame_layout, selectedFragment);
-                            transaction.commit();
-                        } catch (Exception e){
-
-                        }
+                        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                        transaction.replace(R.id.frame_layout, selectedFragment);
+                        transaction.commit();
                         return true;
                     }
                 });
 
         //Manually displaying the first fragment - one time only
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.frame_layout, ReceivedOrdersFragment.newInstance());
+        transaction.replace(R.id.frame_layout, CustomerOrderFragment.newInstance());
         transaction.commit();
 
         //Used to select an item programmatically
@@ -185,7 +175,7 @@ public class MyAccountRestaurant extends AppCompatActivity implements GoogleApiC
                             try {
                                 // Show the dialog by calling startResolutionForResult(),
                                 // and check the result in onActivityResult().
-                                status.startResolutionForResult(MyAccountRestaurant.this, 1000);
+                                status.startResolutionForResult(MyAccountCustomer.this, 1000);
                             } catch (IntentSender.SendIntentException e) {
                                 // Ignore the error.
                             }
@@ -197,7 +187,7 @@ public class MyAccountRestaurant extends AppCompatActivity implements GoogleApiC
             });
         }
 
-        //Check whether dshi app has access to the location permission//
+        //Check whether this app has access to the location permission//
 
         int permission = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
@@ -214,6 +204,19 @@ public class MyAccountRestaurant extends AppCompatActivity implements GoogleApiC
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     PERMISSIONS_REQUEST);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopService(new Intent(this, NotificationService.class));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startService(new Intent(this, NotificationService.class));
+
     }
 
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[]
@@ -239,6 +242,7 @@ public class MyAccountRestaurant extends AppCompatActivity implements GoogleApiC
 
     private void startTrackerService() {
         startService(new Intent(this, TrackingService.class));
+
         //Notify the user that tracking has been enabled//
 
         //Toast.makeText(this, "GPS tracking enabled", Toast.LENGTH_SHORT).show();
@@ -249,7 +253,31 @@ public class MyAccountRestaurant extends AppCompatActivity implements GoogleApiC
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_main_customer, menu);
+
+        if (menu != null) {
+            final MenuItem item = menu.findItem(R.id.action_cart);
+            if (item != null) {
+                //Indicate if there is an active order request or not
+                dbRef.child("pending").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.hasChildren()){
+                            item.setIcon(R.drawable.geo_food);
+                        }
+                        else {
+                            item.setIcon(R.drawable.nduthi_guy);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        }
+
         return true;
     }
 
@@ -260,11 +288,12 @@ public class MyAccountRestaurant extends AppCompatActivity implements GoogleApiC
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+
         //noinspection SimplifiableIfStatement
-        if(id == R.id.action_new){
+        if(id == R.id.action_cart){
             //Toast.makeText(MyAccountRestaurant.this, "Add Menu", Toast.LENGTH_LONG).show();
 
-            Intent slideactivity = new Intent(MyAccountRestaurant.this, AddMenu.class);
+            Intent slideactivity = new Intent(MyAccountCustomer.this, OrderStatus.class);
             Bundle bndlanimation =
                     ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
             startActivity(slideactivity, bndlanimation);
@@ -272,19 +301,20 @@ public class MyAccountRestaurant extends AppCompatActivity implements GoogleApiC
         }
         if (id == R.id.action_settings) {
             //Toast.makeText(MyAccountRestaurant.this, "Settings", Toast.LENGTH_LONG).show();
-            Intent slideactivity = new Intent(MyAccountRestaurant.this, SettingsActivity.class);
+            Intent slideactivity = new Intent(MyAccountCustomer.this, SettingsActivity.class);
             Bundle bndlanimation =
                     ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
             startActivity(slideactivity, bndlanimation);
         }
         if(id == R.id.action_search){
-            Intent slideactivity = new Intent(MyAccountRestaurant.this, SearchActivity.class);
+            Intent slideactivity = new Intent(MyAccountCustomer.this, SearchActivity.class);
             Bundle bndlanimation =
                     ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
             startActivity(slideactivity, bndlanimation);
         }
         if(id == R.id.action_logout){
-            final AlertDialog logout = new AlertDialog.Builder(MyAccountRestaurant.this)
+
+            final AlertDialog logout = new AlertDialog.Builder(MyAccountCustomer.this)
                     .setMessage("Logout?")
                     //.setIcon(R.drawable.ic_done_black_48dp) //will replace icon with name of existing icon from project
                     .setCancelable(false)
@@ -293,9 +323,9 @@ public class MyAccountRestaurant extends AppCompatActivity implements GoogleApiC
                         public void onClick(DialogInterface dialog, int whichButton) {
                             //Log out
                             //Toast.makeText(MyAccountRestaurant.this, "Logout", Toast.LENGTH_LONG).show();
-                            stopService(new Intent(MyAccountRestaurant.this, NotificationService.class));
+                            stopService(new Intent(MyAccountCustomer.this, NotificationService.class));
                             FirebaseAuth.getInstance().signOut();
-                            startActivity(new Intent(MyAccountRestaurant.this,MainActivity.class)
+                            startActivity(new Intent(MyAccountCustomer.this,MainActivity.class)
                                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                             finish();
                         }
@@ -310,6 +340,7 @@ public class MyAccountRestaurant extends AppCompatActivity implements GoogleApiC
 
                     .create();
             logout.show();
+
         }
         return super.onOptionsItemSelected(item);
     }

@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,9 +31,7 @@ import java.math.RoundingMode;
 import java.util.List;
 import malcolmmaima.dishi.Model.RestaurantDetails;
 import malcolmmaima.dishi.R;
-import malcolmmaima.dishi.View.MainActivity;
-import malcolmmaima.dishi.View.MyAccountRestaurant;
-import malcolmmaima.dishi.View.ViewRestaurant;
+import malcolmmaima.dishi.View.Activities.ViewRestaurant;
 
 public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.MyHolder> {
 
