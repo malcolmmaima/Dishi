@@ -43,6 +43,7 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
 
     Context context;
     List<OrderDetails> listdata;
+    String acc_type;
 
     public CustomerOrderAdapter(Context context, List<OrderDetails> listdata) {
         this.listdata = listdata;
@@ -65,7 +66,7 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
         FirebaseDatabase db;
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        String myPhone = user.getPhoneNumber(); //Current logged in user phone number
+        final String myPhone = user.getPhoneNumber(); //Current logged in user phone number
 
         // Assign FirebaseStorage instance to storageReference.
 
@@ -86,6 +87,35 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
         final Double[] provlon = new Double[listdata.size()];
 
         final int[] location_filter = new int[listdata.size()];
+        holder.orderBtn.setVisibility(View.GONE);
+
+        //Only customer accounts can add to cart
+        dbRef.child("account_type").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    acc_type = dataSnapshot.getValue(String.class);
+                    if(acc_type.equals("1")){
+                        holder.orderBtn.setVisibility(View.VISIBLE);
+                    }
+
+                    if(acc_type.equals("2")){
+                        holder.orderBtn.setVisibility(View.GONE);
+                    }
+                    if(acc_type.equals("3")){
+                        holder.orderBtn.setVisibility(View.GONE);
+                    }
+
+                } catch (Exception e){
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         dbRef.child("location-filter").addValueEventListener(new ValueEventListener() {
             @Override
@@ -210,14 +240,21 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
         holder.providerName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Slide to new activity
-                Intent slideactivity = new Intent(context, ViewProfile.class)
-                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                if(orderDetails.providerNumber != null) {
+                    if (!myPhone.equals(orderDetails.providerNumber)) {
+                        //Slide to new activity
+                        Intent slideactivity = new Intent(context, ViewProfile.class)
+                                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-                slideactivity.putExtra("phone", orderDetails.providerNumber);
-                Bundle bndlanimation =
-                        ActivityOptions.makeCustomAnimation(context, R.anim.animation,R.anim.animation2).toBundle();
-                context.startActivity(slideactivity, bndlanimation);
+                        slideactivity.putExtra("phone", orderDetails.providerNumber);
+                        Bundle bndlanimation =
+                                ActivityOptions.makeCustomAnimation(context, R.anim.animation,R.anim.animation2).toBundle();
+                        context.startActivity(slideactivity, bndlanimation);
+                    }
+                } else {
+                    Toast.makeText(context, "Error fetching data, try again!", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 

@@ -282,14 +282,16 @@ public class MyAccountNduthi extends AppCompatActivity implements GoogleApiClien
 
         }
         if (id == R.id.action_settings) {
-            //Toast.makeText(MyAccountRestaurant.this, "Settings", Toast.LENGTH_LONG).show();
             Intent slideactivity = new Intent(MyAccountNduthi.this, SettingsActivity.class);
             Bundle bndlanimation =
                     ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
             startActivity(slideactivity, bndlanimation);
         }
-        if(id == R.id.action_refresh){
-            Toast.makeText(MyAccountNduthi.this, "Refresh App", Toast.LENGTH_LONG).show();
+        if(id == R.id.action_search){
+            Intent slideactivity = new Intent(MyAccountNduthi.this, SearchActivity.class);
+            Bundle bndlanimation =
+                    ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+            startActivity(slideactivity, bndlanimation);
         }
         if(id == R.id.action_logout){
             final AlertDialog logout = new AlertDialog.Builder(MyAccountNduthi.this)

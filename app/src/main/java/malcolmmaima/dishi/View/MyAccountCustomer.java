@@ -306,8 +306,11 @@ public class MyAccountCustomer extends AppCompatActivity implements GoogleApiCli
                     ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
             startActivity(slideactivity, bndlanimation);
         }
-        if(id == R.id.action_refresh){
-            Toast.makeText(MyAccountCustomer.this, "Refresh App", Toast.LENGTH_LONG).show();
+        if(id == R.id.action_search){
+            Intent slideactivity = new Intent(MyAccountCustomer.this, SearchActivity.class);
+            Bundle bndlanimation =
+                    ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+            startActivity(slideactivity, bndlanimation);
         }
         if(id == R.id.action_logout){
 

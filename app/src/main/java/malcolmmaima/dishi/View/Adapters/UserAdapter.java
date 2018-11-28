@@ -134,6 +134,23 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.MyHolder> {
             }
         });
 
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(dishiUser.getPhone() != null){
+                    if(!myPhone.equals(dishiUser.getPhone())){
+                        Intent slideactivity = new Intent(context, ViewProfile.class)
+                                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                        slideactivity.putExtra("phone", dishiUser.getPhone());
+                        Bundle bndlanimation =
+                                ActivityOptions.makeCustomAnimation(context, R.anim.animation,R.anim.animation2).toBundle();
+                        context.startActivity(slideactivity, bndlanimation);
+                    }
+                }
+            }
+        });
+
         holder.followUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

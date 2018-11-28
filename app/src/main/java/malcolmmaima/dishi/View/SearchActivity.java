@@ -32,8 +32,11 @@ import java.util.List;
 
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import malcolmmaima.dishi.Model.DishiUser;
+import malcolmmaima.dishi.Model.OrderDetails;
+import malcolmmaima.dishi.Model.RestaurantDetails;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.Adapters.CustomerOrderAdapter;
+import malcolmmaima.dishi.View.Adapters.RestaurantAdapter;
 import malcolmmaima.dishi.View.Adapters.UserAdapter;
 
 import static android.view.View.INVISIBLE;
@@ -57,6 +60,8 @@ public class SearchActivity extends AppCompatActivity {
     DatabaseReference databaseReference;
 
     List <DishiUser> users;
+    List <OrderDetails> foods;
+    List <RestaurantDetails> restaurants;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,6 +136,22 @@ public class SearchActivity extends AppCompatActivity {
                 selectedPreference = radioButton.getText().toString();
                 //Toast.makeText(SearchActivity.this, "Selected: " + selectedPreference, Toast.LENGTH_SHORT).show();
                 searchWord.setEnabled(true);
+                recyclerView.setVisibility(View.GONE);
+                if(selectedPreference.equals("Users")){
+                    emptyTag.setText("Users");
+                    emptyTag.setVisibility(VISIBLE);
+                }
+
+                if(selectedPreference.equals("Food")){
+                    emptyTag.setText("Food");
+                    emptyTag.setVisibility(VISIBLE);
+                }
+
+                if(selectedPreference.equals("Restaurants")){
+                    emptyTag.setText("Restaurants");
+                    emptyTag.setVisibility(VISIBLE);
+                }
+
             }
         });
 
@@ -155,6 +176,7 @@ public class SearchActivity extends AppCompatActivity {
 
                 if(isStringNullOrWhiteSpace(word)){
                     progressBar.setVisibility(View.GONE);
+                    emptyTag.setText("Type something");
                     emptyTag.setVisibility(VISIBLE);
                     recyclerView.setVisibility(View.GONE);
                     //Toast.makeText(SearchActivity.this, "empty", Toast.LENGTH_SHORT).show();
@@ -223,7 +245,7 @@ public class SearchActivity extends AppCompatActivity {
                                 recyclerView.getItemAnimator().setChangeDuration(1000);
 
                                 recyclerView.setAdapter(recycler);
-                                emptyTag.setVisibility(INVISIBLE);
+                                emptyTag.setVisibility(View.GONE);
                             } else {
                                 progressBar.setVisibility(View.GONE);
                                 recyclerView.setVisibility(INVISIBLE);
@@ -240,6 +262,174 @@ public class SearchActivity extends AppCompatActivity {
 
                     }
                 });
+        }
+
+        if(selectedPreference.equals("Food")){
+
+            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                        foods = new ArrayList<>();
+
+                        //So first we loop through the users in the firebase db
+                        for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                            //afterwards we check if that user has a 'mymenu' child node, if so loop through it and show the products
+                            //NOTE: only restaurant/provider accounts have the 'mymenu', so essentially we are fetching restaurant menus into our customers fragment via the adapter
+                            for (DataSnapshot dataSnapshot2 : dataSnapshot1.child("mymenu").getChildren()) {
+
+                                try {
+
+                                    final OrderDetails orderDetails = dataSnapshot2.getValue(OrderDetails.class);
+                                    //Toast.makeText(getContext(), "mymenu: " + dataSnapshot2.getKey(), Toast.LENGTH_SHORT).show();
+                                    orderDetails.providerNumber = dataSnapshot1.getKey();
+                                    orderDetails.providerName = dataSnapshot1.child("name").getValue().toString();
+                                    orderDetails.key = dataSnapshot2.getKey(); //we'll use this to prevent duplicates
+
+                                    if (orderDetails.getName().toLowerCase().contains(word.toLowerCase())) {
+                                        foods.add(orderDetails);
+                                    }
+
+                                    else if(word.toLowerCase().contains(orderDetails.getName().toLowerCase())){
+                                        foods.add(orderDetails);
+                                    }
+
+                                    //search if word is equal to user name object
+                                    else if(word.toLowerCase() == orderDetails.getName().toLowerCase()){
+                                        foods.add(orderDetails);
+                                    }
+                                    else if(orderDetails.getName().toLowerCase().equals(word.toLowerCase())) {
+                                        foods.add(orderDetails);
+                                    }
+
+                            } catch (Exception e){
+                                progressBar.setVisibility(View.GONE);
+                                emptyTag.setVisibility(VISIBLE);
+                                emptyTag.setText("TRY AGAIN");
+                                recyclerView.setVisibility(View.GONE);
+                            }
+
+                                if (!foods.isEmpty()) {
+                                    recyclerView.setVisibility(View.VISIBLE);
+                                    progressBar.setVisibility(View.GONE);
+                                    recyclerView.setVisibility(VISIBLE);
+                                    CustomerOrderAdapter recycler = new CustomerOrderAdapter(SearchActivity.this, foods);
+                                    RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(SearchActivity.this);
+                                    recyclerView.setLayoutManager(layoutmanager);
+                                    recyclerView.setItemAnimator(new SlideInLeftAnimator());
+
+                                    recycler.notifyDataSetChanged();
+
+                                    recyclerView.getItemAnimator().setAddDuration(1000);
+                                    recyclerView.getItemAnimator().setRemoveDuration(1000);
+                                    recyclerView.getItemAnimator().setMoveDuration(1000);
+                                    recyclerView.getItemAnimator().setChangeDuration(1000);
+
+                                    recyclerView.setAdapter(recycler);
+                                    emptyTag.setVisibility(View.GONE);
+                                } else {
+                                    progressBar.setVisibility(View.GONE);
+                                    recyclerView.setVisibility(INVISIBLE);
+                                    emptyTag.setVisibility(VISIBLE);
+                                    recyclerView.setVisibility(View.GONE);
+                                    emptyTag.setText("Nothing found");
+                                }
+                            }
+                        }
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+
+        if(selectedPreference.equals("Restaurants")){
+            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    restaurants = new ArrayList<>();
+                    //Loop through all users
+                    for (DataSnapshot users : dataSnapshot.getChildren()){
+
+                        //loop through each user and find out if they're a restaurant
+                        for(DataSnapshot restaurant : users.getChildren()){
+                            if(restaurant.getKey().equals("account_type")){
+                                String accType = restaurant.getValue(String.class);
+                                if(accType.equals("2")){
+
+                                    try {
+                                        //Assign details to our Model
+                                        final RestaurantDetails restaurantDetails = users.getValue(RestaurantDetails.class);
+                                        restaurantDetails.phone = users.getKey().toString();
+                                        //Toast.makeText(SearchActivity.this,
+                                        //        "details: " + restaurantDetails.getName(), Toast.LENGTH_SHORT).show();
+
+                                        if (restaurantDetails.getName().toLowerCase().contains(word.toLowerCase())) {
+                                            restaurants.add(restaurantDetails);
+                                        }
+
+                                        else if(word.toLowerCase().contains(restaurantDetails.getName().toLowerCase())){
+                                            restaurants.add(restaurantDetails);
+                                        }
+
+                                        //search if word is equal to user name object
+                                        else if(word.toLowerCase() == restaurantDetails.getName().toLowerCase()){
+                                            restaurants.add(restaurantDetails);
+                                        }
+                                        else if(restaurantDetails.getName().toLowerCase().equals(word.toLowerCase())) {
+                                            restaurants.add(restaurantDetails);
+                                        }
+
+                                    } catch (Exception e){
+                                        progressBar.setVisibility(View.GONE);
+                                        emptyTag.setVisibility(VISIBLE);
+                                        emptyTag.setText("TRY AGAIN");
+                                        recyclerView.setVisibility(View.GONE);
+                                    }
+
+                                    if (!restaurants.isEmpty()) {
+                                        recyclerView.setVisibility(View.VISIBLE);
+                                        progressBar.setVisibility(View.GONE);
+                                        recyclerView.setVisibility(VISIBLE);
+                                        RestaurantAdapter recycler = new RestaurantAdapter(SearchActivity.this, restaurants);
+                                        RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(SearchActivity.this);
+                                        recyclerView.setLayoutManager(layoutmanager);
+                                        recyclerView.setItemAnimator(new SlideInLeftAnimator());
+
+                                        recycler.notifyDataSetChanged();
+
+                                        recyclerView.getItemAnimator().setAddDuration(1000);
+                                        recyclerView.getItemAnimator().setRemoveDuration(1000);
+                                        recyclerView.getItemAnimator().setMoveDuration(1000);
+                                        recyclerView.getItemAnimator().setChangeDuration(1000);
+
+                                        recyclerView.setAdapter(recycler);
+                                        emptyTag.setVisibility(View.GONE);
+                                    } else {
+                                        progressBar.setVisibility(View.GONE);
+                                        recyclerView.setVisibility(INVISIBLE);
+                                        emptyTag.setVisibility(VISIBLE);
+                                        recyclerView.setVisibility(View.GONE);
+                                        emptyTag.setText("Nothing found");
+                                    }
+                                    //filter duplicates from the list
+
+                                }
+                            }
+
+                        }
+
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
         }
     }
 
