@@ -112,6 +112,63 @@ public class RestaurantMenu extends android.support.v4.app.Fragment {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     try {
                         restaurantName = dataSnapshot.getValue(String.class);
+
+                        if(restaurantName != null){
+                            menuItemsRef.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    list = new ArrayList<>();
+                                    for(DataSnapshot items : dataSnapshot.getChildren()){
+                                        try {
+                                            //Toast.makeText(getContext(), "menu-node: " + items.getKey(), Toast.LENGTH_SHORT).show();
+                                            final OrderDetails mymenu = items.getValue(OrderDetails.class);
+                                            mymenu.providerNumber = getPhone;
+                                            mymenu.providerName = restaurantName;
+                                            list.add(mymenu);
+                                        } catch (Exception e){
+
+                                        }
+                                    }
+
+                                    try {
+                                        if (!list.isEmpty()) {
+                                            Collections.reverse(list);
+                                            recyclerview.setVisibility(View.VISIBLE);
+                                            CustomerOrderAdapter recycler = new CustomerOrderAdapter(getContext(), list);
+                                            RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
+                                            recyclerview.setLayoutManager(layoutmanager);
+                                            recyclerview.setItemAnimator(new SlideInLeftAnimator());
+
+                                            recycler.notifyDataSetChanged();
+
+                                            recyclerview.getItemAnimator().setAddDuration(1000);
+                                            recyclerview.getItemAnimator().setRemoveDuration(1000);
+                                            recyclerview.getItemAnimator().setMoveDuration(1000);
+                                            recyclerview.getItemAnimator().setChangeDuration(1000);
+
+                                            recyclerview.setAdapter(recycler);
+                                            emptyTag.setVisibility(v.INVISIBLE);
+                                        } else {
+                                            recyclerview.setVisibility(v.INVISIBLE);
+                                            emptyTag.setVisibility(v.VISIBLE);
+                                            emptyTag.setText("EMPTY");
+                                        }
+                                    }
+
+                                    catch (Exception e){
+                                        recyclerview.setVisibility(v.INVISIBLE);
+                                        emptyTag.setVisibility(v.VISIBLE);
+                                        emptyTag.setText("Error");
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+                        }
+
                     } catch (Exception e){}
                 }
 
@@ -121,55 +178,6 @@ public class RestaurantMenu extends android.support.v4.app.Fragment {
                 }
             });
 
-            menuItemsRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    list = new ArrayList<>();
-                    for(DataSnapshot items : dataSnapshot.getChildren()){
-                        //Toast.makeText(getContext(), "menu-node: " + items.getKey(), Toast.LENGTH_SHORT).show();
-                        final OrderDetails mymenu = items.getValue(OrderDetails.class);
-                        mymenu.providerNumber = getPhone;
-                        mymenu.providerName = restaurantName;
-                        list.add(mymenu);
-                    }
-
-                    try {
-                        if (!list.isEmpty()) {
-                            Collections.reverse(list);
-                            recyclerview.setVisibility(View.VISIBLE);
-                            CustomerOrderAdapter recycler = new CustomerOrderAdapter(getContext(), list);
-                            RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
-                            recyclerview.setLayoutManager(layoutmanager);
-                            recyclerview.setItemAnimator(new SlideInLeftAnimator());
-
-                            recycler.notifyDataSetChanged();
-
-                            recyclerview.getItemAnimator().setAddDuration(1000);
-                            recyclerview.getItemAnimator().setRemoveDuration(1000);
-                            recyclerview.getItemAnimator().setMoveDuration(1000);
-                            recyclerview.getItemAnimator().setChangeDuration(1000);
-
-                            recyclerview.setAdapter(recycler);
-                            emptyTag.setVisibility(v.INVISIBLE);
-                        } else {
-                            recyclerview.setVisibility(v.INVISIBLE);
-                            emptyTag.setVisibility(v.VISIBLE);
-                            emptyTag.setText("EMPTY");
-                        }
-                    }
-
-                    catch (Exception e){
-                        recyclerview.setVisibility(v.INVISIBLE);
-                        emptyTag.setVisibility(v.VISIBLE);
-                        emptyTag.setText("Error");
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
 
         } catch (Exception e){
 

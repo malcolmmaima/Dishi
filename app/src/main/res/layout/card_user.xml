@@ -79,7 +79,7 @@
                 android:text="userBio"
                 android:id="@+id/userBio"
                 android:layout_marginLeft="5dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginRight="90dp"
                 android:textColor="#666"/>
 
         </RelativeLayout>

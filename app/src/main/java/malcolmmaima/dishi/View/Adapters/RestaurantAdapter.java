@@ -309,6 +309,8 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.My
                     Bundle bndlanimation =
                             ActivityOptions.makeCustomAnimation(context, R.anim.animation,R.anim.animation2).toBundle();
                     context.startActivity(slideactivity, bndlanimation);
+                } else {
+                    Toast.makeText(context, "Error fetching details, try again!", Toast.LENGTH_SHORT).show();
                 }
 
             }
