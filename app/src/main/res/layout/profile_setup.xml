@@ -30,7 +30,7 @@
         android:elevation="5dp"
         android:padding="10dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/default_profile"
+        android:src="@drawable/profile_setup"
         app:view_borderColor="#cccccc"
         app:view_borderWidth="2dp"
         app:view_shadowDx="2dp"

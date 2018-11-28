@@ -123,9 +123,14 @@ public class MyAccountRestaurant extends AppCompatActivity implements GoogleApiC
                                 selectedFragment = ConfirmedDeliveriesFragment.newInstance();
                                 break;
                         }
-                        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                        transaction.replace(R.id.frame_layout, selectedFragment);
-                        transaction.commit();
+
+                        try {
+                            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                            transaction.replace(R.id.frame_layout, selectedFragment);
+                            transaction.commit();
+                        } catch (Exception e){
+
+                        }
                         return true;
                     }
                 });
@@ -272,8 +277,11 @@ public class MyAccountRestaurant extends AppCompatActivity implements GoogleApiC
                     ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
             startActivity(slideactivity, bndlanimation);
         }
-        if(id == R.id.action_refresh){
-            Toast.makeText(MyAccountRestaurant.this, "Refresh App", Toast.LENGTH_LONG).show();
+        if(id == R.id.action_search){
+            Intent slideactivity = new Intent(MyAccountRestaurant.this, SearchActivity.class);
+            Bundle bndlanimation =
+                    ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+            startActivity(slideactivity, bndlanimation);
         }
         if(id == R.id.action_logout){
             final AlertDialog logout = new AlertDialog.Builder(MyAccountRestaurant.this)

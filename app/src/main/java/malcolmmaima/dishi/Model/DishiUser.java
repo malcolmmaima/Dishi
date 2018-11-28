@@ -2,6 +2,16 @@ package malcolmmaima.dishi.Model;
 
 public class DishiUser {
 
+    public  String phone;
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
     public String name;
     public String profilepic;
     public String bio;

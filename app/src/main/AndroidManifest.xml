@@ -56,12 +56,15 @@
         <activity
             android:name=".View.Map.GeoFireActivity"
             android:label="@string/title_activity_geo_fire" />
-        <activity android:name=".View.ViewProfile"
+        <activity
+            android:name=".View.ViewProfile"
             android:windowSoftInputMode="stateHidden" />
         <activity android:name=".View.ViewPhoto" />
-        <activity android:name=".View.ViewStatus"
-            android:windowSoftInputMode="stateHidden"/>
+        <activity
+            android:name=".View.ViewStatus"
+            android:windowSoftInputMode="stateHidden" />
         <activity android:name=".View.ViewRestaurant" />
+        <activity android:name=".View.SearchActivity"></activity>
     </application>
 
 </manifest>

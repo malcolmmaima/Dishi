@@ -54,12 +54,12 @@
             android:layout_alignParentRight="true"
             >
 
-            <ImageView
-                android:id="@+id/deleteBtn"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@drawable/ic_delete_forever_white_48dp"
-                android:visibility="invisible"/>
+            <Button
+                android:id="@+id/followUser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="follow"
+                android:visibility="visible"/>
 
 
 
@@ -76,33 +76,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="Update..."
-                android:id="@+id/userUpdate"
+                android:text="userBio"
+                android:id="@+id/userBio"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="20dp"
                 android:textColor="#666"/>
 
-            <LinearLayout
-                android:layout_marginTop="20dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_below="@id/userUpdate">
-
-                <ImageButton
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:scaleType="centerCrop"
-                    android:background="@drawable/ic_access_time_black_48dp"
-                    android:layout_marginRight="3dp"/>
-
-                <TextView
-                    android:id="@+id/timePosted"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="loading..."/>
-
-            </LinearLayout>
         </RelativeLayout>
 
 
