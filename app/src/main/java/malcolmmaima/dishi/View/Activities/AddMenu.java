@@ -138,7 +138,7 @@ public class AddMenu extends AppCompatActivity {
                                 try {
                                     Glide.with(AddMenu.this).load(imageLink).into(foodPic);
                                 }catch (Exception e){
-                                    Toast.makeText(AddMenu.this, "image load failed!", Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(AddMenu.this, "image load failed!", Toast.LENGTH_SHORT).show();
                                 }
 
                             }
@@ -192,7 +192,7 @@ public class AddMenu extends AppCompatActivity {
                 // Checking whether FilePathUri Is empty or not and passes validation check.
                 if (FilePathUri != null && CheckFieldValidation()) {
                     // Setting progressDialog Title.
-                    progressDialog.setTitle("Adding...");
+                    progressDialog.setMessage("Adding...");
 
                     // Showing progressDialog.
                     progressDialog.show();
@@ -202,7 +202,7 @@ public class AddMenu extends AppCompatActivity {
                 }
                 else if(FilePathUri == null && CheckFieldValidation() && key != null){
 
-                    progressDialog.setTitle("Saving...");
+                    progressDialog.setMessage("Saving...");
                     // Showing progressDialog.
                     progressDialog.show();
                     progressDialog.setCancelable(false);
@@ -242,7 +242,7 @@ public class AddMenu extends AppCompatActivity {
             // Checking whether FilePathUri Is empty or not and passes validation check.
             if (FilePathUri != null && CheckFieldValidation()) {
                 // Setting progressDialog Title.
-                progressDialog.setTitle("Adding...");
+                progressDialog.setMessage("Adding...");
 
                 // Showing progressDialog.
                 progressDialog.show();
@@ -252,7 +252,7 @@ public class AddMenu extends AppCompatActivity {
             }
             else if(FilePathUri == null && CheckFieldValidation() && key != null){
 
-                    progressDialog.setTitle("Saving...");
+                    progressDialog.setMessage("Saving...");
                     // Showing progressDialog.
                     progressDialog.show();
                     progressDialog.setCancelable(false);

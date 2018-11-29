@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ import java.util.List;
 import malcolmmaima.dishi.Model.MyCartDetails;
 import malcolmmaima.dishi.Model.OrderDetails;
 import malcolmmaima.dishi.R;
+import malcolmmaima.dishi.View.Activities.SelectNduthiGuy;
 import malcolmmaima.dishi.View.Activities.ViewPhoto;
 import malcolmmaima.dishi.View.Activities.ViewProfile;
 
@@ -62,7 +64,7 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
     public void onBindViewHolder(final MyHolder holder, final int position) {
         final OrderDetails orderDetails = listdata.get(position);
 
-        final DatabaseReference mylocationRef, providerRef, myCartRef, dbRef;
+        final DatabaseReference mylocationRef, providerRef, myCartRef, dbRef, providerAcc;
         FirebaseDatabase db;
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -75,6 +77,7 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
         providerRef = db.getReference(orderDetails.providerNumber + "/location"); //food item provider location reference
         myCartRef = db.getReference(myPhone + "/mycart");
         dbRef = db.getReference(myPhone);
+        providerAcc = db.getReference(orderDetails.providerNumber);
 
         final Double[] dist = new Double[listdata.size()];
 
@@ -87,12 +90,15 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
         final Double[] provlon = new Double[listdata.size()];
 
         final int[] location_filter = new int[listdata.size()];
+
+        final  String[] provAccType = new String[listdata.size()];
         holder.orderBtn.setVisibility(View.GONE);
 
         //Only customer accounts can add to cart
         dbRef.child("account_type").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
                 try {
                     acc_type = dataSnapshot.getValue(String.class);
                     if(acc_type.equals("1")){
@@ -105,6 +111,30 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
                     if(acc_type.equals("3")){
                         holder.orderBtn.setVisibility(View.GONE);
                     }
+
+                } catch (Exception e){
+
+                }
+
+                //Can't order from your own items
+                if (myPhone.equals(orderDetails.providerNumber)) {
+                    holder.orderBtn.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        //Only customer accounts can add to cart
+        providerAcc.child("account_type").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                try {
+                    provAccType[position] = dataSnapshot.getValue(String.class);
 
                 } catch (Exception e){
 
@@ -229,12 +259,17 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
         holder.providerName.setText(orderDetails.providerName);
 
 
+
         try {
             //Loading image from Glide library.
             Glide.with(context).load(orderDetails.getImageURL()).into(holder.foodPic);
             Log.d("glide", "onBindViewHolder: imageUrl: " + orderDetails.getImageURL());
         } catch (Exception e){
 
+        }
+
+        if(orderDetails.providerNumber.equals(myPhone)){
+            holder.orderBtn.setVisibility(View.GONE);
         }
 
         holder.providerName.setOnClickListener(new View.OnClickListener() {
@@ -275,62 +310,78 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
         holder.orderBtn.setOnClickListener(new View.OnClickListener(){
 
             @Override
-            public  void onClick(final View view){
-                final AlertDialog addCartDialogBox = new AlertDialog.Builder(view.getContext())
-                        //set message, title, and icon
-                        .setTitle("Add to cart")
-                        .setMessage("Add "+ orderDetails.getName() + " to cart?")
-                        //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
-                        //set three option buttons
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
+            public  void onClick(final View view) {
 
-                                String key = myCartRef.push().getKey(); //The child node in mycart for storing menu items
-                                final MyCartDetails myCart = new MyCartDetails();
+                //Make sure the provider of the item is currently set to provider. They might have switched their account to another type
+                if(!provAccType[position].equals("2")){
+                    Toast toast = Toast.makeText(context,orderDetails.providerName +" is currently not a provider!", Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.show();
+                } else {
+                    if (myPhone.equals(orderDetails.providerNumber)) {
+                        holder.orderBtn.setVisibility(View.GONE);
+                        Toast.makeText(context, "You cant order your own items!", Toast.LENGTH_LONG).show();
+                    }
 
-                                myCart.setName(orderDetails.getName());
-                                myCart.setPrice(orderDetails.getPrice());
-                                myCart.setDescription(orderDetails.getDescription());
-                                myCart.setImageURL(orderDetails.getImageURL());
-                                myCart.setProvider(orderDetails.providerName);
-                                myCart.setProviderNumber((orderDetails.providerNumber));
+                    else {
+                        final AlertDialog addCartDialogBox = new AlertDialog.Builder(view.getContext())
+                                //set message, title, and icon
+                                .setTitle("Add to cart")
+                                .setMessage("Add " + orderDetails.getName() + " to cart?")
+                                //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
+                                //set three option buttons
+                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int whichButton) {
+
+                                        String key = myCartRef.push().getKey(); //The child node in mycart for storing menu items
+                                        final MyCartDetails myCart = new MyCartDetails();
+
+                                        myCart.setName(orderDetails.getName());
+                                        myCart.setPrice(orderDetails.getPrice());
+                                        myCart.setDescription(orderDetails.getDescription());
+                                        myCart.setImageURL(orderDetails.getImageURL());
+                                        myCart.setProvider(orderDetails.providerName);
+                                        myCart.setProviderNumber((orderDetails.providerNumber));
 
 
-                                myCartRef.child(key).setValue(myCart).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        // Write was successful!
+                                        myCartRef.child(key).setValue(myCart).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                // Write was successful!
 
-                                        Snackbar snackbar = Snackbar
-                                                .make(view, "Added!", Snackbar.LENGTH_LONG);
+                                                Snackbar snackbar = Snackbar
+                                                        .make(view, "Added!", Snackbar.LENGTH_LONG);
 
-                                        snackbar.show();
+                                                snackbar.show();
+
+                                            }
+                                        })
+                                                .addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        // Write failed
+                                                        Toast.makeText(context, "Failed: " + e.toString() + ". Try again!", Toast.LENGTH_LONG).show();
+                                                    }
+                                                });
 
                                     }
-                                })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                // Write failed
-                                                Toast.makeText(context, "Failed: " + e.toString() + ". Try again!", Toast.LENGTH_LONG).show();
-                                            }
-                                        });
-
-                            }
-                        })//setPositiveButton
+                                })//setPositiveButton
 
 
-                        .setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                //Do not delete
-                                //Toast.makeText(context, "No", Toast.LENGTH_SHORT).show();
+                                .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int whichButton) {
+                                        //Do not delete
+                                        //Toast.makeText(context, "No", Toast.LENGTH_SHORT).show();
 
-                            }
-                        })//setNegativeButton
+                                    }
+                                })//setNegativeButton
 
-                        .create();
-                addCartDialogBox.show();
+                                .create();
+                        addCartDialogBox.show();
+
+                    }
                 }
+            }
         });
     }
 
