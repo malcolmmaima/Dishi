@@ -141,7 +141,7 @@ public class NduthiDeliveriesFragment extends Fragment {
 
             private void sendNotification(String s) {
                 Notification.Builder builder = new Notification.Builder(getContext())
-                        .setSmallIcon(R.drawable.logo)
+                        .setSmallIcon(R.drawable.logo_notification)
                         .setContentTitle("Dishi")
                         .setContentText(s);
 

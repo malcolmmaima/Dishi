@@ -369,6 +369,28 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                                                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                                             public void onClick(DialogInterface dialog, int whichButton) {
 
+                                                                myRef.child("nearby_nduthis").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                    @Override
+                                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                                        if(dataSnapshot.exists()){
+                                                                            try {
+                                                                                progressDialog.dismiss();
+                                                                            } catch (Exception e){
+
+                                                                            }
+                                                                            Intent slideactivity = new Intent(MyCart.this, SelectNduthiGuy.class);
+                                                                            Bundle bndlanimation =
+                                                                                    ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
+                                                                            startActivity(slideactivity, bndlanimation);
+                                                                        }
+                                                                    }
+
+                                                                    @Override
+                                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                                    }
+                                                                });
+
                                                                 nduthisNearby();
                                                                 // Setting progressDialog Title.
                                                                 progressDialog.setMessage("Searching...");
@@ -403,7 +425,12 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                                                         })//setNegativeButton
 
                                                         .create();
-                                                myQuittingDialogBox.show();
+                                                try {
+                                                    myQuittingDialogBox.show();
+
+                                                } catch (Exception e){
+
+                                                }
 
 
                                             }
@@ -619,66 +646,66 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
     public void nduthisNearby(){
         progressDialog.setMessage("Searching...");
         progressDialog.setCancelable(true);
-        progressDialog.show();
-        ///////
+        try {
+            progressDialog.show();
+        } catch (Exception e){
+
+        }
+
         //Loop through all the users
-        nduthisRef.addValueEventListener(new ValueEventListener() {
+        nduthisRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                try {
-                    nduthiNearMeList = new ArrayList<>();
 
-                    // StringBuffer stringbuffer = new StringBuffer();
+                    nduthiNearMeList = new ArrayList<>();
 
                     //So first we loop through the users in the firebase db
                     for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                         //Toast.makeText(MyCart.this, "User: " + dataSnapshot1.getKey()
                         //+ " is of account type: " + dataSnapshot1.child("account_type").getValue(), Toast.LENGTH_SHORT).show();
 
-                        //And get users of account type = 3 (Nduthi account)
-                        if(dataSnapshot1.child("account_type").getValue().equals("3")){
-                            //Toast.makeText(MyCart.this, "User: " + dataSnapshot1.getKey()
-                            //       + " is nduthi", Toast.LENGTH_SHORT).show();
+                        try {
+                            //And get users of account type = 3 (Nduthi account)
+                            if (dataSnapshot1.child("account_type").getValue().equals("3")) {
+                                //Toast.makeText(MyCart.this, "User: " + dataSnapshot1.getKey()
+                                //       + " is nduthi", Toast.LENGTH_SHORT).show();
 
-                            NduthiNearMe nduthiNearMe = new NduthiNearMe();
+                                NduthiNearMe nduthiNearMe = new NduthiNearMe();
 
-                            nduthiNearMe.name = dataSnapshot1.child("name").getValue(String.class);
-                            nduthiNearMe.profilepic = dataSnapshot1.child("profilepic").getValue(String.class);
-                            nduthiNearMe.bio = dataSnapshot1.child("bio").getValue(String.class);
-                            nduthiNearMe.email = dataSnapshot1.child("email").getValue(String.class);
-                            nduthiNearMe.gender = dataSnapshot1.child("gender").getValue(String.class);
+                                nduthiNearMe.name = dataSnapshot1.child("name").getValue(String.class);
+                                nduthiNearMe.profilepic = dataSnapshot1.child("profilepic").getValue(String.class);
+                                nduthiNearMe.bio = dataSnapshot1.child("bio").getValue(String.class);
+                                nduthiNearMe.email = dataSnapshot1.child("email").getValue(String.class);
+                                nduthiNearMe.gender = dataSnapshot1.child("gender").getValue(String.class);
 
-                            nduthiNearMeList.add(nduthiNearMe);
-                            myRef.child("nearby_nduthis").child(dataSnapshot1.getKey().toString()).setValue(nduthiNearMe).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    //Toast.makeText(MyCart.this, "Added: " + nduthiNearMeList.size() + " nduthis", Toast.LENGTH_SHORT).show();
-                                    avail_nduthi = true;
-                                }
-                            });
+                                nduthiNearMeList.add(nduthiNearMe);
+                                myRef.child("nearby_nduthis").child(dataSnapshot1.getKey().toString()).setValue(nduthiNearMe).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        //Toast.makeText(MyCart.this, "Added: " + nduthiNearMeList.size() + " nduthis", Toast.LENGTH_SHORT).show();
+                                        avail_nduthi = true;
+                                        try {
+                                            progressDialog.dismiss();
+                                        } catch (Exception e){
 
-                            //Toast.makeText(MyCart.this, "nduthiNearMeList size: " + nduthiNearMeList.size(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+
+                                //Toast.makeText(MyCart.this, "nduthiNearMeList size: " + nduthiNearMeList.size(), Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (Exception e){
+
                         }
 
                     }
 
-
-                } catch (Exception e){
-                    //Toast.makeText(MyCart.this, e.toString(), Toast.LENGTH_SHORT).show();
-                    if(progressDialog.isShowing()){
-                        progressDialog.dismiss();
-                    }
-                }
 
                 if(nduthiNearMeList.size() != 0 && completeOrder == true){
                     if(progressDialog.isShowing()){
                         progressDialog.dismiss();
                     }
 
-                    Intent slideactivity = new Intent(MyCart.this, SelectNduthiGuy.class);
-                    Bundle bndlanimation =
-                            ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.animation,R.anim.animation2).toBundle();
-                    startActivity(slideactivity, bndlanimation);
                     completeOrder = false;
                 }
 

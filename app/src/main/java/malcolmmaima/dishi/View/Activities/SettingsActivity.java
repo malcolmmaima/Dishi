@@ -57,7 +57,7 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
     Switch notifications;
     String myPhone;
     String account_type;
-    String temp, picUrl;
+    String temp, picUrl, account;
 
     String [] profilePicActions = {"View Profile Picture","Change Profile Picture"};
 
@@ -293,7 +293,7 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
                         progressDialog.dismiss();
                     }
 
-                    String account = dataSnapshot.getValue(String.class);
+                    account = dataSnapshot.getValue(String.class);
                     if(account.equals("1")){
                         account_type = "1";
                         accType.setSelection(1);
@@ -652,7 +652,6 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
                 //User has selected new account type. Prompt!
                 account_type = Integer.toString(position);
 
-                //Note for future: check if there's active order before allowing acc change
 
                 AlertDialog changeAcc = new AlertDialog.Builder(SettingsActivity.this)
                         //set message, title, and icon
@@ -662,17 +661,153 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
                         //set three option buttons
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                //save account type
-                                if (!account_type.equals("0")) {
-                                    databaseReference.child("account_type").setValue(account_type).addOnSuccessListener(new OnSuccessListener<Void>() {
+
+                                if(account.equals("1")){
+                                    databaseReference.child("pending").addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
-                                        public void onSuccess(Void aVoid) {
-                                            Toast.makeText(SettingsActivity.this, "You will be redirected to your new account type on re-loading app", Toast.LENGTH_LONG).show();
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                            if(dataSnapshot.exists()){
+                                                AlertDialog activeOrder = new AlertDialog.Builder(SettingsActivity.this)
+                                                        //set message, title, and icon
+                                                        //.setTitle("Account change")
+                                                        .setCancelable(false)
+                                                        .setMessage("You cannot change your account type while there's an active order!")
+                                                        //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
+                                                        //set three option buttons
+                                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                            public void onClick(DialogInterface dialog, int whichButton) {
+                                                                //Do nothing...
+                                                            }
+                                                        }).create();
+                                                activeOrder.show();
+                                            } else {
+                                                if (!account_type.equals("0")) {
+                                                    databaseReference.child("account_type").setValue(account_type).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+                                                            //Toast.makeText(SettingsActivity.this, "You will be redirected to your new account type on re-loading app", Toast.LENGTH_LONG).show();
+                                                        }
+                                                    });
+                                                }
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
                                         }
                                     });
-                                } else {
-                                    Toast.makeText(SettingsActivity.this, "Invalid account type!", Toast.LENGTH_LONG).show();
                                 }
+                                if(account.equals("2")){
+                                    databaseReference.child("orders").addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                            if(dataSnapshot.exists()){
+                                                AlertDialog activeOrder = new AlertDialog.Builder(SettingsActivity.this)
+                                                        //set message, title, and icon
+                                                        //.setTitle("Account change")
+                                                        .setCancelable(false)
+                                                        .setMessage("You cannot change your account type while there's an active order!")
+                                                        //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
+                                                        //set three option buttons
+                                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                            public void onClick(DialogInterface dialog, int whichButton) {
+                                                                //Do nothing...
+                                                            }
+                                                        }).create();
+                                                activeOrder.show();
+                                            } else {
+                                                //Now check if there are deliveries active
+                                                databaseReference.child("deliveries").addListenerForSingleValueEvent(new ValueEventListener() {
+
+                                                    @Override
+                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                        if(dataSnapshot.exists()){
+                                                            AlertDialog activeOrder = new AlertDialog.Builder(SettingsActivity.this)
+                                                                    //set message, title, and icon
+                                                                    //.setTitle("Account change")
+                                                                    .setCancelable(false)
+                                                                    .setMessage("You cannot change your account type while there's an active order!")
+                                                                    //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
+                                                                    //set three option buttons
+                                                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                                        public void onClick(DialogInterface dialog, int whichButton) {
+                                                                            //Do nothing...
+                                                                        }
+                                                                    }).create();
+                                                            activeOrder.show();
+                                                        } else {
+                                                            //no deliveries or pending
+                                                            //save account type
+                                                            if (!account_type.equals("0")) {
+                                                                databaseReference.child("account_type").setValue(account_type).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                    @Override
+                                                                    public void onSuccess(Void aVoid) {
+                                                                        //Toast.makeText(SettingsActivity.this, "You will be redirected to your new account type on re-loading app", Toast.LENGTH_LONG).show();
+                                                                    }
+                                                                });
+                                                            }
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                    }
+
+                                                });
+
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
+                                }
+                                if(account.equals("3")){
+
+                                    databaseReference.child("nearby_nduthis").addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                            if(dataSnapshot.exists()){
+                                                AlertDialog activeOrder = new AlertDialog.Builder(SettingsActivity.this)
+                                                        //set message, title, and icon
+                                                        //.setTitle("Account change")
+                                                        .setCancelable(false)
+                                                        .setMessage("You cannot change your account type while there's an active order!")
+                                                        //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
+                                                        //set three option buttons
+                                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                            public void onClick(DialogInterface dialog, int whichButton) {
+                                                                //Do nothing...
+                                                            }
+                                                        }).create();
+                                                activeOrder.show();
+                                            } else {
+                                                //save account type
+                                                if (!account_type.equals("0")) {
+                                                    databaseReference.child("account_type").setValue(account_type).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+                                                            //Toast.makeText(SettingsActivity.this, "You will be redirected to your new account type on re-loading app", Toast.LENGTH_LONG).show();
+                                                        }
+                                                    });
+                                                }
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
+                                }
+
                             }
                         }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {

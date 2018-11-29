@@ -449,14 +449,22 @@ public class OrderStatAdapter extends RecyclerView.Adapter<OrderStatAdapter.MyHo
                                                         provider.child("deliveries").child(myCartDetails.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                                                             @Override
                                                             public void onSuccess(Void aVoid) {
-                                                                progressDialog.dismiss();
-                                                                Toast.makeText(context, myCartDetails.getName() + " confirmed!", Toast.LENGTH_LONG).show();
+                                                                try {
+                                                                    progressDialog.dismiss();
+                                                                    Toast.makeText(context, myCartDetails.getName() + " confirmed!", Toast.LENGTH_LONG).show();
+                                                                } catch (Exception e){
+
+                                                                }
                                                             }
                                                         }).addOnFailureListener(new OnFailureListener() {
                                                             @Override
                                                             public void onFailure(@NonNull Exception e) {
-                                                                progressDialog.dismiss();
-                                                                Toast.makeText(context, "Something wrong occured!", Toast.LENGTH_LONG).show();
+                                                                try {
+                                                                    progressDialog.dismiss();
+                                                                    Toast.makeText(context, "Something wrong occured!", Toast.LENGTH_LONG).show();
+                                                                } catch (Exception e1){
+
+                                                                }
                                                             }
                                                         });
                                                     }

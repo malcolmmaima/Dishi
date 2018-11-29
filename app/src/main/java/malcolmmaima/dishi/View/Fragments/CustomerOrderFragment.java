@@ -244,82 +244,89 @@ public class CustomerOrderFragment extends Fragment {
 
                             //So first we loop through the users in the firebase db
                             for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                                //DishiUser dishiUser = dataSnapshot1.getValue(DishiUser.class); //Assign values to model
-                                //Toast.makeText(getContext(), "User: " + dishiUser.getName(), Toast.LENGTH_SHORT).show();
+                                try {
+                                    DishiUser dishiUser = dataSnapshot1.getValue(DishiUser.class); //Assign values to model
 
-                                //afterwards we check if that user has a 'mymenu' child node, if so loop through it and show the products
-                                //NOTE: only restaurant/provider accounts have the 'mymenu', so essentially we are fetching restaurant menus into our customers fragment via the adapter
-                                for (DataSnapshot dataSnapshot2 : dataSnapshot1.child("mymenu").getChildren()) {
+                                    if (dishiUser.getAccount_type().equals("2")) {
+                                        for (DataSnapshot dataSnapshot2 : dataSnapshot1.child("mymenu").getChildren()) {
 
-                                    final String[] keys = new String[(int) dataSnapshot1.getChildrenCount()];
+                                            final String[] keys = new String[(int) dataSnapshot1.getChildrenCount()];
 
-                                    final OrderDetails orderDetails = dataSnapshot2.getValue(OrderDetails.class);
-                                    //Toast.makeText(getContext(), "mymenu: " + dataSnapshot2.getKey(), Toast.LENGTH_SHORT).show();
-                                    orderDetails.providerNumber = dataSnapshot1.getKey();
-                                    orderDetails.providerName = dataSnapshot1.child("name").getValue().toString();
-                                    orderDetails.key = dataSnapshot2.getKey(); //we'll use this to prevent duplicates
+                                            final OrderDetails orderDetails = dataSnapshot2.getValue(OrderDetails.class);
+                                            //Toast.makeText(getContext(), "mymenu: " + dataSnapshot2.getKey(), Toast.LENGTH_SHORT).show();
+                                            orderDetails.providerNumber = dataSnapshot1.getKey();
+                                            orderDetails.providerName = dataSnapshot1.child("name").getValue().toString();
+                                            orderDetails.key = dataSnapshot2.getKey(); //we'll use this to prevent duplicates
 
-                                    keys[counter] = orderDetails.key;
+                                            keys[counter] = orderDetails.key;
 
-                                    //Toast.makeText(getContext(), "keys["+counter+"] = "+keys[counter], Toast.LENGTH_SHORT).show();
+                                            //Toast.makeText(getContext(), "keys["+counter+"] = "+keys[counter], Toast.LENGTH_SHORT).show();
 
-                                    counter = counter + 1;
+                                            counter = counter + 1;
 
-                                    providerRef = db.getReference(orderDetails.providerNumber);
-                                    //Item provider latitude longitude coordinates
-                                    providerRef.child("location").addValueEventListener(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            providerRef = db.getReference(orderDetails.providerNumber);
+                                            //Item provider latitude longitude coordinates
+                                            providerRef.child("location").addValueEventListener(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(DataSnapshot dataSnapshot) {
 
-                                            for(DataSnapshot providerLoc : dataSnapshot.getChildren()){
+                                                    for(DataSnapshot providerLoc : dataSnapshot.getChildren()){
 
-                                                try {
-                                                    if(providerLoc.getKey().equals("longitude")){
-                                                        provlon[0] = providerLoc.getValue(Double.class);
-                                                        //Toast.makeText(getContext(), "(prov lat): " + provlon[0], Toast.LENGTH_SHORT).show();
+                                                        try {
+                                                            if(providerLoc.getKey().equals("longitude")){
+                                                                provlon[0] = providerLoc.getValue(Double.class);
+                                                                //Toast.makeText(getContext(), "(prov lat): " + provlon[0], Toast.LENGTH_SHORT).show();
+                                                            }
+
+                                                            if(providerLoc.getKey().equals("latitude")){
+                                                                provlat[0] = providerLoc.getValue(Double.class);
+                                                                //Toast.makeText(getContext(), "(prov lon): " + provlat[0], Toast.LENGTH_SHORT).show();
+                                                            }
+
+
+                                                        } catch (Exception e){
+                                                            Toast.makeText(getContext(), "" + e, Toast.LENGTH_SHORT).show();
+                                                        }
                                                     }
-
-                                                    if(providerLoc.getKey().equals("latitude")){
-                                                        provlat[0] = providerLoc.getValue(Double.class);
-                                                        //Toast.makeText(getContext(), "(prov lon): " + provlat[0], Toast.LENGTH_SHORT).show();
-                                                    }
-
-
-                                                } catch (Exception e){
-                                                    Toast.makeText(getContext(), "" + e, Toast.LENGTH_SHORT).show();
-                                                }
-                                            }
                                     /*
                                     Toast.makeText(getContext(), "Thresh: " + distanceThreshold[0] + "Km. You are " + distance(myLat[0], myLong[0], provlat[0], provlon[0], "K")
                                             + " Km away from " + orderDetails.getName(), Toast.LENGTH_SHORT).show();
                                     */
 
-                                            //If the distance between me and the provider of the product is above the distance threshold(filter), then
-                                            //dont add it to the recycler view list else add it
-                                            try {
+                                                    //If the distance between me and the provider of the product is above the distance threshold(filter), then
+                                                    //dont add it to the recycler view list else add it
+                                                    try {
 
-                                                if(filter > distance(myLat[0], myLong[0], provlat[0], provlon[0], "K")){
-                                                    if(orderDetails.providerNumber.equals(myPhone) == false){ //make sure my menus are not on my filter
+                                                        if(filter > distance(myLat[0], myLong[0], provlat[0], provlon[0], "K")){
+                                                            if(orderDetails.providerNumber.equals(myPhone) == false){ //make sure my menus are not on my filter
 
-                                                        //filter duplicates from the list
-                                                        if(list.contains(orderDetails.key)){
-                                                            // is present ... :)
-                                                            list.remove(orderDetails);
-                                                        } else { list.add(orderDetails); }
+                                                                //filter duplicates from the list
+                                                                if(list.contains(orderDetails.key)){
+                                                                    // is present ... :)
+                                                                    list.remove(orderDetails);
+                                                                } else { list.add(orderDetails); }
+                                                            }
+
+                                                        } } catch (Exception e){
+                                                        //Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
                                                     }
+                                                }
 
-                                                } } catch (Exception e){
-                                                //Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
-                                            }
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                }
+                                            });
+
                                         }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                        }
-                                    });
+                                    }
+                                } catch (Exception e){
 
                                 }
+
+                                //afterwards we check if that user has a 'mymenu' child node, if so loop through it and show the products
+                                //NOTE: only restaurant/provider accounts have the 'mymenu', so essentially we are fetching restaurant menus into our customers fragment via the adapter
+
                                 //Toast.makeText(getContext(), "Phone: " + dataSnapshot1.getKey(), Toast.LENGTH_SHORT).show(); //Phone numbers
 
                             }

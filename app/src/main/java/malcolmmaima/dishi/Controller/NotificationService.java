@@ -428,8 +428,8 @@ public class NotificationService extends Service {
                                 try {
                                     for(DataSnapshot rideStat : dataSnapshot.getChildren()){
                                         if(rideStat.child("status").getValue().equals("transit") && rideStat.child("notification").getValue().equals("false")){
-                                            sendNotification(rideStat.child("name").getValue()
-                                                    + " has confirmed nduthi ride!", "MyAccountNduthi");
+                                            //sendNotification(rideStat.child("name").getValue()
+                                            //        + " has confirmed nduthi ride!", "MyAccountNduthi");
                                             reqRide.child(rideStat.getKey()).child("notification").setValue("true");
                                         }
                                     }

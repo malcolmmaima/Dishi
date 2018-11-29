@@ -82,7 +82,7 @@ public class OrderStatus extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        setTitle("Delivery Status");
+        setTitle("Order Status");
         order_status = "pending";
 
         //Back button on toolbar
@@ -304,7 +304,7 @@ public class OrderStatus extends AppCompatActivity {
                     if (trackRestaurant == null) {
                         trackRestaurant = trackNduthi[0];
                         //unable to fetch tracking codes or doesn't exist
-                        Toast.makeText(OrderStatus.this, "tracking code is empty, try again!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(OrderStatus.this, "tracking code set, try again!", Toast.LENGTH_LONG).show();
                     } else {
                         trackNduthi[0] = trackRestaurant;
                         Intent slideactivity = new Intent(OrderStatus.this, GeoFireActivity.class);

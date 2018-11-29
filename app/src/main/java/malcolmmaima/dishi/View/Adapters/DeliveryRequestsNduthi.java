@@ -100,7 +100,7 @@ public class DeliveryRequestsNduthi extends RecyclerView.Adapter<DeliveryRequest
                     Glide.with(context).load(ic_order_in_transit).into(holder.orderStatIcon);
                     holder.orderStatus.setText("transit"); }
 
-            customerRequests.addListenerForSingleValueEvent(new ValueEventListener() {
+            customerRequests.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     itemCount[position] = String.valueOf(dataSnapshot.getChildrenCount());

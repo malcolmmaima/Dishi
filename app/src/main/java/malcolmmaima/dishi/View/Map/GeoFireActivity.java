@@ -266,7 +266,12 @@ public class GeoFireActivity extends AppCompatActivity implements OnMapReadyCall
                                                                                     FirebaseDatabase.getInstance().getReference(myPhone).child("confirmed_order").child("confirmed_" + nduthiNumber[0]).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                                         @Override
                                                                                         public void onSuccess(Void aVoid) {
-                                                                                            progressDialog.dismiss();
+                                                                                            try {
+                                                                                                progressDialog.dismiss();
+                                                                                            } catch (Exception e){
+
+                                                                                            }
+
                                                                                             Toast.makeText(GeoFireActivity.this, "Enjoy your order fam!", Toast.LENGTH_LONG).show();
                                                                                             finish();
                                                                                         }

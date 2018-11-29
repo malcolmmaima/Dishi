@@ -1,12 +1,16 @@
 package malcolmmaima.dishi.View.Activities;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Toast;
 
@@ -29,7 +33,7 @@ import malcolmmaima.dishi.View.Adapters.NduthiAdapter;
 public class SelectNduthiGuy extends AppCompatActivity {
 
     RecyclerView recyclerview;
-    DatabaseReference nduthisNearmeRef;
+    DatabaseReference nduthisNearmeRef, myRef, dbRef;
     List<NduthiNearMe> nduthis;
     FirebaseAuth mAuth;
 
@@ -55,13 +59,16 @@ public class SelectNduthiGuy extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         setTitle("Nearby Nduthis");
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        final String myPhone = user.getPhoneNumber();
+        myRef = FirebaseDatabase.getInstance().getReference(myPhone);
+        dbRef = FirebaseDatabase.getInstance().getReference();
 
         //Back button on toolbar
         topToolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                String myPhone = user.getPhoneNumber();
+
                 nduthisNearmeRef = FirebaseDatabase.getInstance().getReference(myPhone + "/nearby_nduthis");
 
                 nduthisNearmeRef.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -83,8 +90,69 @@ public class SelectNduthiGuy extends AppCompatActivity {
 
         recyclerview = findViewById(R.id.rview);
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        String myPhone = user.getPhoneNumber();
+        //Check to see if nduthi has confirmed ride request
+        myRef.child("confirmed_order").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    for(DataSnapshot confirmed : dataSnapshot.getChildren()){
+                        try {
+                            String phone = confirmed.getKey();
+                            phone = phone.replace("confirmed_", "");
+                            final String[] name = new String[1];
+
+                            //Get the name of the nduthi guy who has confirmed ride request
+                            dbRef.child(phone).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    try {
+                                        name[0] = dataSnapshot.getValue(String.class);
+                                        final AlertDialog rideRequest = new AlertDialog.Builder(SelectNduthiGuy.this)
+                                                //set message, title, and icon
+                                                .setIcon(R.drawable.nduthi_guy)
+                                                .setCancelable(false)
+                                                .setMessage(name[0] +" has confirmed ride! Go check order status.")
+                                                //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
+                                                //set three option buttons
+                                                .setCancelable(false)
+                                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                            public void onClick(DialogInterface dialog, int whichButton) {
+                                                                finish();
+                                                            }
+                                                        }).create();
+                                        rideRequest.show();
+
+                                    } catch (Exception e){
+
+                                        Toast toast = Toast.makeText(SelectNduthiGuy.this,name[0] +" has confirmed ride! Go check order status.", Toast.LENGTH_LONG);
+                                        toast.setGravity(Gravity.CENTER, 0, 0);
+                                        toast.show();
+
+                                        finish();
+
+                                    }
+
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+                        } catch (Exception e){
+
+                        }
+                    }
+
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         nduthisNearmeRef = FirebaseDatabase.getInstance().getReference(myPhone + "/nearby_nduthis");
 
