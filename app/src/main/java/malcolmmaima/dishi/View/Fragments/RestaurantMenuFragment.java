@@ -83,7 +83,7 @@ public class RestaurantMenuFragment extends Fragment {
                 // StringBuffer stringbuffer = new StringBuffer();
                 for(DataSnapshot dataSnapshot1 :dataSnapshot.getChildren()){
                     ProductDetails productDetails = dataSnapshot1.getValue(ProductDetails.class); //Assign values to model
-                    productDetails.key = dataSnapshot1.getKey(); //Get item keys, useful when performing delete operations
+                    productDetails.setKey(dataSnapshot1.getKey()); //Get item keys, useful when performing delete operations
                     list.add(productDetails);
                     //progressDialog.dismiss();
                 }

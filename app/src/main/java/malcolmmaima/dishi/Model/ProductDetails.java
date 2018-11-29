@@ -48,4 +48,12 @@ public class ProductDetails {
     public void setStorageLocation(String storageLocation) {
         this.storageLocation = storageLocation;
     }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
 }

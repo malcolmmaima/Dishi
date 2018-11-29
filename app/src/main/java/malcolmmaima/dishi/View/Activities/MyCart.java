@@ -353,7 +353,11 @@ public class MyCart extends AppCompatActivity implements AdapterView.OnItemSelec
                                                         })//setPositiveButton
 
                                                         .create();
-                                                myQuittingDialogBox.show();
+                                                try {
+                                                    myQuittingDialogBox.show();
+                                                } catch (Exception e){
+
+                                                }
                                             } else {
                                                 //No pending orders
 

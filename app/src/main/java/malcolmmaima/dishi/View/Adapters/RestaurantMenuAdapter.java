@@ -1,9 +1,12 @@
 package malcolmmaima.dishi.View.Adapters;
 
+import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
@@ -32,6 +35,8 @@ import java.util.List;
 
 import malcolmmaima.dishi.Model.ProductDetails;
 import malcolmmaima.dishi.R;
+import malcolmmaima.dishi.View.Activities.AddMenu;
+import malcolmmaima.dishi.View.Activities.ViewProfile;
 
 public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAdapter.MyHolder>{
 
@@ -60,7 +65,7 @@ public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAd
         StorageReference storageReference;
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        String myPhone = user.getPhoneNumber(); //Current logged in user phone number
+        final String myPhone = user.getPhoneNumber(); //Current logged in user phone number
         // Assign FirebaseStorage instance to storageReference.
 
         storageReference = FirebaseStorage.getInstance().getReference();
@@ -85,8 +90,16 @@ public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAd
         holder.editBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public  void onClick(final View view){
-                Toast.makeText(context, "Edit " + productDetails.getName(), Toast.LENGTH_LONG).show();
-                //Toast.makeText(context, "(key): "+productDetails.key, Toast.LENGTH_LONG).show();
+                if(productDetails.getKey() != null){
+                    Intent slideactivity = new Intent(context, AddMenu.class)
+                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                    slideactivity.putExtra("phone", myPhone);
+                    slideactivity.putExtra("key", productDetails.getKey());
+                    Bundle bndlanimation =
+                            ActivityOptions.makeCustomAnimation(context, R.anim.animation,R.anim.animation2).toBundle();
+                    context.startActivity(slideactivity, bndlanimation);
+                }
             }
         });
 
@@ -109,7 +122,7 @@ public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAd
                                 progressDialog.setMessage("Please wait...");
                                 progressDialog.show();
                                 */
-                                menusRef.child(productDetails.key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                menusRef.child(productDetails.getKey()).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         storageReference2nd.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
