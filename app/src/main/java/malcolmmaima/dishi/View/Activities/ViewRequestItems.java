@@ -46,7 +46,7 @@ public class ViewRequestItems extends AppCompatActivity {
 
     RecyclerView recyclerview;
     TextView customername, itemcount, distanceAway, orderStatus, totalKsh;
-    Button callCustomer, acceptOrder;
+    Button callCustomer, acceptOrder, cancelOrder;
     ImageView profilepic, orderStat;
     DatabaseReference incomingRequestsRef, requestStatus, customerRef, customerDelRef, myRef;
     List<OrderDetails> nduthis;
@@ -80,6 +80,7 @@ public class ViewRequestItems extends AppCompatActivity {
         orderStat = findViewById(R.id.orderStat);
         callCustomer = findViewById(R.id.callCustomer);
         acceptOrder = findViewById(R.id.acceptBtn);
+        cancelOrder = findViewById(R.id.cancelBtn);
         totalKsh = findViewById(R.id.totalKsh);
 
         totalPrice = 0;
@@ -151,8 +152,9 @@ public class ViewRequestItems extends AppCompatActivity {
                         Glide.with(ViewRequestItems.this).load(ic_order_in_transit).into(orderStat);
                         orderStatus.setText("transit");
                         acceptOrder.setEnabled(true);
-                        acceptOrder.setText("Track");
+                        acceptOrder.setBackgroundResource(R.drawable.ic_location_black_48dp);
                         myRef.child("engaged").setValue("true");
+                        cancelOrder.setVisibility(View.GONE);
                     }
 
 
@@ -194,6 +196,59 @@ public class ViewRequestItems extends AppCompatActivity {
             }
         });
 
+        cancelOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final AlertDialog declineBox = new AlertDialog.Builder(view.getContext())
+
+                        //set message, title, and icon
+                        .setTitle("Decline ride request")
+                        .setMessage("Decline " + customerName + "'s order of " + itemCount + " items?")
+                        //.setIcon(R.drawable.icon) will replace icon with name of existing icon from project
+                        //set three option buttons
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                customerDelRef.child("request_ride").child(key).child("status").setValue("declined").addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+
+                                        requestStatus.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                incomingRequestsRef.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        customerDelRef.child("nearby_nduthis").child(myPhone).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void aVoid) {
+                                                                finish();
+                                                                Toast.makeText(ViewRequestItems.this, "Ride Declined!", Toast.LENGTH_LONG).show();
+                                                            }
+                                                        });
+
+                                                    }
+                                                });
+
+                                            }
+                                        });
+
+
+                                    }
+                                });
+                            }
+                        }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                //Toast.makeText(ViewRequestItems.this, "Update respective fireB nodes", Toast.LENGTH_SHORT).show();
+
+                            }
+                        })//setNegativeButton
+
+                        .create();
+
+                declineBox.show();
+
+            }
+        });
 
         acceptOrder.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -264,7 +319,7 @@ public class ViewRequestItems extends AppCompatActivity {
                                 }
                             }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
-                                    Toast.makeText(ViewRequestItems.this, "Update respective fireB nodes", Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(ViewRequestItems.this, "Update respective fireB nodes", Toast.LENGTH_SHORT).show();
 
                                 }
                             })//setNegativeButton

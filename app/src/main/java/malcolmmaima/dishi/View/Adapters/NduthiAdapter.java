@@ -167,7 +167,7 @@ public class NduthiAdapter extends RecyclerView.Adapter<NduthiAdapter.MyHolder>{
             public void onClick(final View v) {
 
                 //Send my profile pic with the order request
-                myRef.child("profilepic").addListenerForSingleValueEvent(new ValueEventListener() {
+                myRef.child("profilepic").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         profilepic[0] = dataSnapshot.getValue(String.class);
@@ -180,7 +180,7 @@ public class NduthiAdapter extends RecyclerView.Adapter<NduthiAdapter.MyHolder>{
                 });
 
                 //Send my name with the order request
-                myRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+                myRef.child("name").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         myName[0] = dataSnapshot.getValue(String.class);

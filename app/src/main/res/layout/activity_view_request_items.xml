@@ -150,9 +150,9 @@
                         android:layout_below="@id/distanceAway">
 
                         <Button
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Accept"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:background="@drawable/ic_check_black_48dp"
                             android:id="@+id/acceptBtn"
                             android:layout_alignParentEnd="true"
                             android:layout_alignParentRight="true"
@@ -160,12 +160,20 @@
                             />
                         />
 
+
                         <Button
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Call"
-                            android:id="@+id/callCustomer"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:background="@drawable/ic_close_black_48dp"
+                            android:id="@+id/cancelBtn"
                             android:layout_toLeftOf="@id/acceptBtn"/>
+
+                        <Button
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:background="@drawable/ic_phone_black_24dp"
+                            android:id="@+id/callCustomer"
+                            android:layout_toLeftOf="@id/cancelBtn"/>
                     </RelativeLayout>
 
                 </RelativeLayout>

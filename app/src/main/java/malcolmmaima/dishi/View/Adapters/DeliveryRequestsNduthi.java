@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -147,22 +148,28 @@ public class DeliveryRequestsNduthi extends RecyclerView.Adapter<DeliveryRequest
             }
         });
 
-        holder.viewBtn.setOnClickListener(new View.OnClickListener() {
+
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                //Toast.makeText(context, "accept order", Toast.LENGTH_SHORT).show();
+            public void onClick(View view) {
+
                 Intent slideactivity = new Intent(context, ViewRequestItems.class);
                 String [] nduthiPhone = new String[1];
                 nduthiPhone[0] = requestNduthi.phone;
-                slideactivity.putExtra("customer_phone", nduthiPhone);
-                slideactivity.putExtra("customer_name", requestNduthi.name);
-                slideactivity.putExtra("item_count", itemCount[position]);
-                slideactivity.putExtra("profile_pic", requestNduthi.profilepic);
-                slideactivity.putExtra("key", requestNduthi.key);
 
-                Bundle bndlanimation =
-                        ActivityOptions.makeCustomAnimation(context, R.anim.animation,R.anim.animation2).toBundle();
-                context.startActivity(slideactivity, bndlanimation);
+                if(nduthiPhone != null && itemCount[position] != null && requestNduthi.key != null){
+
+                    slideactivity.putExtra("customer_phone", nduthiPhone);
+                    slideactivity.putExtra("customer_name", requestNduthi.name);
+                    slideactivity.putExtra("item_count", itemCount[position]);
+                    slideactivity.putExtra("profile_pic", requestNduthi.profilepic);
+                    slideactivity.putExtra("key", requestNduthi.key);
+
+                    Bundle bndlanimation =
+                            ActivityOptions.makeCustomAnimation(context, R.anim.animation,R.anim.animation2).toBundle();
+                    context.startActivity(slideactivity, bndlanimation);
+                }
+
             }
         });
 
@@ -275,7 +282,8 @@ public class DeliveryRequestsNduthi extends RecyclerView.Adapter<DeliveryRequest
     class MyHolder extends RecyclerView.ViewHolder{
         TextView customerName , itemCount, distanceAway, orderStatus;
         ImageView customerPic, orderStatIcon;
-        Button callCustomer, viewBtn;
+        Button callCustomer;
+        CardView cardView;
 
         public MyHolder(View itemView) {
             super(itemView);
@@ -286,7 +294,7 @@ public class DeliveryRequestsNduthi extends RecyclerView.Adapter<DeliveryRequest
             distanceAway = itemView.findViewById(R.id.distanceAway);
             orderStatus = itemView.findViewById(R.id.orderStatus);
             callCustomer = itemView.findViewById(R.id.callCustomer);
-            viewBtn = itemView.findViewById(R.id.viewBtn);
+            cardView = itemView.findViewById(R.id.card_view);
 
         }
     }

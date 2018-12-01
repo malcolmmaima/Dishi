@@ -88,7 +88,7 @@ public class Following extends AppCompatActivity {
                     recyclerView.setVisibility(INVISIBLE);
                     emptyTag.setVisibility(VISIBLE);
                     recyclerView.setVisibility(View.GONE);
-                    emptyTag.setText("No followers");
+                    emptyTag.setText("0 Following");
                 }
 
                 for(int i = 0; i < phones.size(); i++ ){
