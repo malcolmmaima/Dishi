@@ -242,11 +242,16 @@ public class AddMenu extends AppCompatActivity {
             // Checking whether FilePathUri Is empty or not and passes validation check.
             if (FilePathUri != null && CheckFieldValidation()) {
                 // Setting progressDialog Title.
-                progressDialog.setMessage("Adding...");
 
-                // Showing progressDialog.
-                progressDialog.show();
-                progressDialog.setCancelable(false);
+                try {
+                    progressDialog.setMessage("Adding...");
+
+                    // Showing progressDialog.
+                    progressDialog.show();
+                    progressDialog.setCancelable(false);
+                } catch (Exception e){
+
+                }
                 uploadMenu();
 
             }
