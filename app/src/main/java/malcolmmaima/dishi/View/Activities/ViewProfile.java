@@ -1,5 +1,6 @@
 package malcolmmaima.dishi.View.Activities;
 
+import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -45,7 +46,7 @@ public class ViewProfile extends AppCompatActivity {
 
     DatabaseReference providerRef, myRef, rootRef;
 
-    TextView userProfileName, profileBio, followersCounter, followingCounter, emptyTag;
+    TextView userProfileName, profileBio, followersCounter, followingCounter, emptyTag, following, followingTitle, followers, followersTitle;
     ImageView profilePic, coverImg;
     Button followUserBtn;
     String myPhone, picUrl;
@@ -79,6 +80,10 @@ public class ViewProfile extends AppCompatActivity {
         postStatus = findViewById(R.id.postStatus);
         statusPost = findViewById(R.id.inputStatus);
         emptyTag = findViewById(R.id.empty_tag);
+        following = findViewById(R.id.following);
+        followingTitle = findViewById(R.id.followingTitle);
+        followers = findViewById(R.id.followers);
+        followersTitle = findViewById(R.id.followersTitle);
 
         Toolbar topToolBar = findViewById(R.id.toolbar);
         setSupportActionBar(topToolBar);
@@ -104,6 +109,58 @@ public class ViewProfile extends AppCompatActivity {
             Toast.makeText(this, "Error fetching provider details, try again!", Toast.LENGTH_LONG).show();
             finish();
         }
+
+        following.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent slideactivity = new Intent(ViewProfile.this, Following.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                slideactivity.putExtra("phone", providerPhone);
+                Bundle bndlanimation =
+                        ActivityOptions.makeCustomAnimation(ViewProfile.this, R.anim.animation, R.anim.animation2).toBundle();
+                startActivity(slideactivity, bndlanimation);
+            }
+        });
+
+        followingTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent slideactivity = new Intent(ViewProfile.this, Following.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                slideactivity.putExtra("phone", providerPhone);
+                Bundle bndlanimation =
+                        ActivityOptions.makeCustomAnimation(ViewProfile.this, R.anim.animation, R.anim.animation2).toBundle();
+                startActivity(slideactivity, bndlanimation);
+            }
+        });
+
+        followers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent slideactivity = new Intent(ViewProfile.this, Followers.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                slideactivity.putExtra("phone", providerPhone);
+                Bundle bndlanimation =
+                        ActivityOptions.makeCustomAnimation(ViewProfile.this, R.anim.animation, R.anim.animation2).toBundle();
+                startActivity(slideactivity, bndlanimation);
+            }
+        });
+
+        followersTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent slideactivity = new Intent(ViewProfile.this, Followers.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                slideactivity.putExtra("phone", providerPhone);
+                Bundle bndlanimation =
+                        ActivityOptions.makeCustomAnimation(ViewProfile.this, R.anim.animation,R.anim.animation2).toBundle();
+                startActivity(slideactivity, bndlanimation);
+            }
+        });
 
         //Set db reference to provider phone number then fetch user data (profile pic, name, bio)
         providerRef = FirebaseDatabase.getInstance().getReference(providerPhone);

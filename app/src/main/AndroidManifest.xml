@@ -72,7 +72,8 @@
             android:windowSoftInputMode="stateHidden" />
         <activity android:name=".View.Activities.ViewRestaurant" />
         <activity android:name=".View.Activities.SearchActivity" />
-        <activity android:name=".View.Activities.Followers"></activity>
+        <activity android:name=".View.Activities.Followers" />
+        <activity android:name=".View.Activities.Following"></activity>
     </application>
 
 </manifest>

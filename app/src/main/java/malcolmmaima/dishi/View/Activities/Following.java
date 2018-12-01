@@ -28,7 +28,7 @@ import malcolmmaima.dishi.View.Adapters.UserAdapter;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
-public class Followers extends AppCompatActivity {
+public class Following extends AppCompatActivity {
 
     String phone;
     DatabaseReference dbRef;
@@ -41,7 +41,7 @@ public class Followers extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_followers);
+        setContentView(R.layout.activity_following);
 
         recyclerView = findViewById(R.id.rview);
         emptyTag = findViewById(R.id.empty_tag);
@@ -54,11 +54,11 @@ public class Followers extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        setTitle("Followers");
+        setTitle("Following");
 
         phone = getIntent().getStringExtra("phone");
         //Toast.makeText(this, "phone: " + phone, Toast.LENGTH_SHORT).show();
-        dbRef = FirebaseDatabase.getInstance().getReference(phone + "/followers");
+        dbRef = FirebaseDatabase.getInstance().getReference(phone + "/following");
 
         //Back button on toolbar
         topToolBar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -80,6 +80,7 @@ public class Followers extends AppCompatActivity {
                 for(DataSnapshot users_ : dataSnapshot.getChildren()){
                     userPhone = users_.getKey();
                     phones.add(userPhone); //Store the followers phone numbers in an arraylist, will be primary key for getting their data
+
                 }
 
                 if(phones.size() == 0){
@@ -106,12 +107,12 @@ public class Followers extends AppCompatActivity {
                             users.add(dishiUser);
 
                             if (!users.isEmpty()) {
-                                setTitle("Followers("+users.size()+")");
+                                setTitle("Following("+users.size()+")");
                                 recyclerView.setVisibility(View.VISIBLE);
                                 progressBar.setVisibility(View.GONE);
                                 recyclerView.setVisibility(VISIBLE);
-                                UserAdapter recycler = new UserAdapter(Followers.this, users);
-                                RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(Followers.this);
+                                UserAdapter recycler = new UserAdapter(Following.this, users);
+                                RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(Following.this);
                                 recyclerView.setLayoutManager(layoutmanager);
                                 recyclerView.setItemAnimator(new SlideInLeftAnimator());
 

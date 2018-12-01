@@ -127,6 +127,7 @@
                                 android:textSize="24sp" />
 
                             <TextView
+                                android:id="@+id/followingTitle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Following"
@@ -159,6 +160,7 @@
                                 android:textSize="24sp" />
 
                             <TextView
+                                android:id="@+id/followersTitle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Followers"

@@ -42,6 +42,7 @@ import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import malcolmmaima.dishi.Model.StatusUpdateModel;
 import malcolmmaima.dishi.R;
 import malcolmmaima.dishi.View.Activities.Followers;
+import malcolmmaima.dishi.View.Activities.Following;
 import malcolmmaima.dishi.View.Activities.ViewProfile;
 import malcolmmaima.dishi.View.Adapters.StatusUpdateAdapter;
 
@@ -307,8 +308,37 @@ public class UserProfileFragment extends Fragment {
             }
         });
 
+        following.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(myPhone != null) {
+                    Intent slideactivity = new Intent(getContext(), Following.class)
+                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        followersTitle.setOnClickListener(new View.OnClickListener() {
+                    slideactivity.putExtra("phone", myPhone);
+                    Bundle bndlanimation =
+                            ActivityOptions.makeCustomAnimation(getContext(), R.anim.animation, R.anim.animation2).toBundle();
+                    getContext().startActivity(slideactivity, bndlanimation);
+                }
+            }
+        });
+
+        followingTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(myPhone != null) {
+                    Intent slideactivity = new Intent(getContext(), Following.class)
+                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                    slideactivity.putExtra("phone", myPhone);
+                    Bundle bndlanimation =
+                            ActivityOptions.makeCustomAnimation(getContext(), R.anim.animation, R.anim.animation2).toBundle();
+                    getContext().startActivity(slideactivity, bndlanimation);
+                }
+            }
+        });
+
+        followers.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(myPhone != null) {
