@@ -135,7 +135,12 @@ public class ReceivedOrdersFragment extends Fragment {
 
                 else {
                     if(progressDialog.isShowing()){
-                        progressDialog.dismiss();
+                        try {
+                            progressDialog.dismiss();
+                        } catch (Exception e){
+
+                        }
+
                     }
                     ReceivedOrdersAdapter recycler = new ReceivedOrdersAdapter(getContext(),list);
                     RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());

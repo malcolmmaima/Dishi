@@ -247,7 +247,12 @@ public class NearbyRestaurantsFragment extends Fragment {
                 try {
                     if (!list.isEmpty()) {
                         if(progressDialog.isShowing()){
-                            progressDialog.dismiss();
+                            try {
+                                progressDialog.dismiss();
+                            } catch (Exception e){
+
+                            }
+
                         }
 
                         recyclerview.setVisibility(View.VISIBLE);
@@ -268,7 +273,11 @@ public class NearbyRestaurantsFragment extends Fragment {
                         added = false;
                     } else {
                         if(progressDialog.isShowing()){
-                            progressDialog.dismiss();
+                            try {
+                                progressDialog.dismiss();
+                            } catch (Exception e){
+
+                            }
                         }
                         recyclerview.setVisibility(v.INVISIBLE);
                         emptyTag.setVisibility(v.VISIBLE);

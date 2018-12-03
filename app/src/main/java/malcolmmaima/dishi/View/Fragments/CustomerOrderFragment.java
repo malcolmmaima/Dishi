@@ -341,7 +341,11 @@ public class CustomerOrderFragment extends Fragment {
                         // Failed to read value
                         //  Log.w(TAG, "Failed to read value.", error.toException());
 
-                        progressDialog.dismiss();
+                        try {
+                            progressDialog.dismiss();
+                        } catch (Exception e){
+
+                        }
                     }
                 });
 
@@ -352,7 +356,11 @@ public class CustomerOrderFragment extends Fragment {
 
                     public void onFinish() {
                         //Toast.makeText(getContext(), "done!", Toast.LENGTH_SHORT).show();
-                        progressDialog.dismiss();
+                        try {
+                            progressDialog.dismiss();
+                        } catch (Exception e){
+
+                        }
                         try {
                             if (!list.isEmpty()) {
                                 recyclerview.setVisibility(View.VISIBLE);
@@ -522,9 +530,6 @@ public class CustomerOrderFragment extends Fragment {
                         // Failed to read value
                         //  Log.w(TAG, "Failed to read value.", error.toException());
 
-                        progressDialog.dismiss();
-
-                        Toast.makeText(getActivity(), "Failed, " + error, Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -542,7 +547,11 @@ public class CustomerOrderFragment extends Fragment {
 
                     public void onFinish() {
                         //Toast.makeText(getContext(), "done!", Toast.LENGTH_SHORT).show();
-                        progressDialog.dismiss();
+                        try {
+                            progressDialog.dismiss();
+                        } catch (Exception e){
+
+                        }
                         try {
                             if (!list.isEmpty()) {
                                 recyclerview.setVisibility(View.VISIBLE);

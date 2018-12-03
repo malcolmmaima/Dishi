@@ -109,7 +109,11 @@ public class ConfirmedDeliveriesFragment extends Fragment {
                 //Refresh list
                 if(!list.isEmpty() && list.size() > listSize){
                     if(progressDialog.isShowing()){
-                        progressDialog.dismiss();
+                        try {
+                            progressDialog.dismiss();
+                        } catch (Exception e){
+
+                        }
                     }
                     Collections.reverse(list);
                     ReceivedOrdersAdapter recycler = new ReceivedOrdersAdapter(getContext(),list);
@@ -122,7 +126,11 @@ public class ConfirmedDeliveriesFragment extends Fragment {
 
                 else {
                     if(progressDialog.isShowing()){
-                        progressDialog.dismiss();
+                        try {
+                            progressDialog.dismiss();
+                        } catch (Exception e){
+
+                        }
                     }
                     ReceivedOrdersAdapter recycler = new ReceivedOrdersAdapter(getContext(),list);
                     RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
@@ -141,7 +149,11 @@ public class ConfirmedDeliveriesFragment extends Fragment {
                 //  Log.w(TAG, "Failed to read value.", error.toException());
 
                 if(progressDialog.isShowing()){
-                    progressDialog.dismiss();
+                    try {
+                        progressDialog.dismiss();
+                    } catch (Exception e){
+
+                    }
                 }
             }
         });
