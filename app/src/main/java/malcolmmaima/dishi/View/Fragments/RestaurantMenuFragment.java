@@ -121,11 +121,6 @@ public class RestaurantMenuFragment extends Fragment {
                 // Failed to read value
                 //  Log.w(TAG, "Failed to read value.", error.toException());
 
-                if(progressDialog.isShowing()){
-                    progressDialog.dismiss();
-                }
-
-                Toast.makeText(getActivity(), "Failed, " + error, Toast.LENGTH_SHORT).show();
             }
         });
 

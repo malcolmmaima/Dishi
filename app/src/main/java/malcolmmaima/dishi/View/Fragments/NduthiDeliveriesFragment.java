@@ -166,9 +166,6 @@ public class NduthiDeliveriesFragment extends Fragment {
                 // Failed to read value
                 //  Log.w(TAG, "Failed to read value.", error.toException());
 
-                progressDialog.dismiss();
-
-                Toast.makeText(getActivity(), "Failed, " + error, Toast.LENGTH_SHORT).show();
             }
         });
 
