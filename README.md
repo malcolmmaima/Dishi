@@ -93,7 +93,7 @@ in a social way that allows them to interact on a personal basis. In the case of
 a customer, he or she is able to do a small background check and see the reviews
 and comments about the service of a particular restaurant.
 
-<a href="url"><img src=./screenshots/social.png height="550"  ></a>
+<a href="url"><img src=./screenshots/social1.png height="550"  ></a>
 <a href="url"><img src=./screenshots/social2.png height="550"  ></a>
 
 ### Ordering Process
@@ -106,17 +106,17 @@ items is fetched and displayed, they are able to add to Cart and if satisfied ca
 complete the order. Once the provider confirms their order, they can monitor the
 status of their order in real-time using the tracking module.
 
-<a href="url"><img src=./screenshots/order1.png height="550"  ></a>
-<a href="url"><img src=./screenshots/order2.png height="550"  ></a>
-<a href="url"><img src=./screenshots/order3.png height="550"  ></a>
+<a href="url"><img src=./screenshots/order1.png height="450"  ></a>
+<a href="url"><img src=./screenshots/order2.png height="450"  ></a>
+<a href="url"><img src=./screenshots/order3.png height="450"  ></a>
 
 After adding items to Cart, you can view your cart and complete the order,
 this sends the order to the respective provider(s) who will receive a
 notification of the order items.
 
-<a href="url"><img src=./screenshots/order4.png height="550"  ></a>
-<a href="url"><img src=./screenshots/order5.png height="550"  ></a>
-<a href="url"><img src=./screenshots/order6.png height="550"  ></a>
+<a href="url"><img src=./screenshots/order4.png height="450"  ></a>
+<a href="url"><img src=./screenshots/order5.png height="450"  ></a>
+<a href="url"><img src=./screenshots/order6.png height="450"  ></a>
 
 On successful order sent, you can view order status in real-time.
 Immediately the provider confirms your order the status indicator changes to
@@ -124,17 +124,17 @@ green indicating order confirmed. This activates the “TRACK” button that all
 you to view the live location of your order and whether the provider has started
 the journey towards you.
 
-<a href="url"><img src=./screenshots/order7.png height="550"  ></a>
-<a href="url"><img src=./screenshots/order8.png height="550"  ></a>
-<a href="url"><img src=./screenshots/order9.png height="550"  ></a>
+<a href="url"><img src=./screenshots/order7.png height="450"  ></a>
+<a href="url"><img src=./screenshots/order8.png height="450"  ></a>
+<a href="url"><img src=./screenshots/order9.png height="450"  ></a>
 
 The tracking module tracks the first item on the list that has been confirmed.
 This gives priority to confirmed items. If Customer has received the order from
 the provider they can confirm in the tracking module which later flags the order
 as complete allowing the provider to fulfil other orders.
 
-<a href="url"><img src=./screenshots/order10png height="550"  ></a>
-<a href="url"><img src=./screenshots/order11.png height="550"  ></a>
+<a href="url"><img src=./screenshots/order10.png height="450"  ></a>
+<a href="url"><img src=./screenshots/order11.png height="450"  ></a>
 
 ### Confirming Order
 
@@ -146,10 +146,10 @@ you saw earlier which changes the indicator to green. On the provider end,
 he/she is able to track individual item customer’s location and deliver to the
 exact location the customer is in.
 
-<a href="url"><img src=./screenshots/confirm1.png height="550"  ></a>
-<a href="url"><img src=./screenshots/confirm2.png height="550"  ></a>
-<a href="url"><img src=./screenshots/confirm3.png height="550"  ></a>
-<a href="url"><img src=./screenshots/confirm4.png height="550"  ></a>
+<a href="url"><img src=./screenshots/confirm1.png height="450"  ></a>
+<a href="url"><img src=./screenshots/confirm2.png height="450"  ></a>
+<a href="url"><img src=./screenshots/confirm3.png height="450"  ></a>
+<a href="url"><img src=./screenshots/confirm4.png height="450"  ></a>
 
 After the customer has confirmed receiving the order on their end the live
 tracking module on the provider’s side will be closed and a notification given.
