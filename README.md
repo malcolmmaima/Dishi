@@ -1,5 +1,11 @@
 # Dishi
 
+Before you proceed, feel free to download the apk and have a go at it.
+Note as you read the documentation below, you'll notice that there are three different
+account types and so while testing you may require atleast two devices to test the whole app concept.
+
+Download: https://bit.ly/2DYSIYW
+
 ## Introduction
 
 This project seeks to show the effectiveness of a digital distributed
