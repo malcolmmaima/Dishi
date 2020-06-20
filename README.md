@@ -10,8 +10,8 @@ Download (debug): https://bit.ly/2DYSIYW
 
 https://play.google.com/store/apps/details?id=com.malcolmmaima.dishi
 
-Dishi 2.0 inherits quite a bit from this version. A learning curve if you will. 
-This version had major perfomance and optimization downfalls and a more refined and complete
+Dishi 2.0 inherits quite a bit from this repo version. A learning curve if you will. 
+This repo version had major perfomance and optimization downfalls and a more refined and complete
 redesign was neccessary. From database schema to more robusts tests on perfomance. The source code to Dishi 2.0 is
 not available publicly at the moment but if you're interested in contributing to the project do let me know.
 
