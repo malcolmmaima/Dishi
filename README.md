@@ -4,7 +4,10 @@ Before you proceed, feel free to download the apk and have a go at it.
 Note as you read the documentation below, you'll notice that there are three different
 account types and so while testing you may require atleast two devices to test the whole app concept.
 
-Download: https://bit.ly/2DYSIYW
+Download (debug): https://bit.ly/2DYSIYW
+
+Download official version 2.0 (A redesign of this version):
+https://play.google.com/store/apps/details?id=com.malcolmmaima.dishi
 
 ## Introduction
 
