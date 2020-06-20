@@ -6,7 +6,7 @@ account types and so while testing you may require atleast two devices to test t
 
 Download (debug): https://bit.ly/2DYSIYW
 
-## Download official version 2.0 (A redesign of this version):
+## Download official version 2.0 (A redesign of this repo version):
 
 https://play.google.com/store/apps/details?id=com.malcolmmaima.dishi
 
