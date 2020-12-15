@@ -8,7 +8,7 @@ Download (debug): https://bit.ly/2DYSIYW
 
 ## Download official version 2.0 (A redesign of this repo version):
 
-https://play.google.com/store/apps/details?id=com.malcolmmaima.dishi
+https://play.google.com/store/apps/details?id=com.malcolmmaima.dishiapp
 
 Dishi 2.0 inherits quite a bit from this repo version. A learning curve if you will. 
 This repo version had major perfomance and optimization downfalls and a more refined and complete
